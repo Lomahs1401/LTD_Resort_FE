@@ -28,8 +28,6 @@ const Login = () => {
     },
   };
 
-  const [form] = Form.useForm();
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLoginBySocial = (e) => {
@@ -44,6 +42,8 @@ const Login = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   }
+
+  const [form] = Form.useForm();
 
   const onFinish = (values) => {
     console.log('Success:', values);
