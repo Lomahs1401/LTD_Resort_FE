@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from './ImageSlider.module.scss'
 import classNames from "classnames/bind";
 
@@ -36,6 +36,25 @@ const ImageSlider = ({ slides }) => {
     ...slideStyles,
     backgroundImage: `url(${slides[currentIndex].url})`,
   };
+
+  // useEffect(() => {
+  //   const timerId = setInterval(() => {
+  //     setCurrentIndex((prev) => {
+  //       console.log(prev);
+  //       if (prev === slides.length - 1) {
+  //         console.log('Last');
+  //         return 0;
+  //       }
+  //       else {
+  //         return prev + 1;
+  //       }
+  //     })
+
+  //     return (() => {
+  //       clearInterval(timerId);
+  //     })
+  //   }, 2000)
+  // }, [])
 
   return (
     <div className={cx("slider")}>

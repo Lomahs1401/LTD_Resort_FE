@@ -14,6 +14,12 @@
         justify-content: center;
         margin-right: 4%;
     }
+    &__modal {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 }
 
 .login-container {
@@ -51,10 +57,17 @@
     margin-bottom: 30px;
 }
 
+.form-container {
+    position: relative;
+}
+
 .forgot__password {
     text-align: right;
     display: inline-block;
-    width: 76%;
+    position: absolute;
+    right: 0;
+    bottom: 58px;
+
     &__link {
         color: #FF8682;
         cursor: pointer;
