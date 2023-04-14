@@ -3,7 +3,6 @@ import styles from './Footer.module.scss'
 import classNames from "classnames/bind"
 import { Link } from 'react-router-dom';
 import { FaFacebook } from 'react-icons/fa'
-import { BsInstagram } from 'react-icons/bs'
 import { FiInstagram } from 'react-icons/fi'
 
 const cx = classNames.bind(styles);
