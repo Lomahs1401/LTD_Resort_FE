@@ -62,9 +62,9 @@ const Register = () => {
       </div>
       <div className={cx("wrapper__right")}>
         <div className={cx("register-container")}>
-          <div className={cx("register-container__logo")}>
+          <Link to='/'>
             <img src={logo} alt='Logo' />
-          </div>
+          </Link>
           <div className={cx("register-container__main")}>
             <div>
               <h1 className={cx("title")}>Sign up</h1>

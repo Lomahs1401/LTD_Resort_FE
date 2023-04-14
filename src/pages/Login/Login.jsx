@@ -60,7 +60,9 @@ const Login = () => {
       <div className={cx("wrapper__left")}>
         <div className={cx("login-container")}>
           <div className={cx("login-container__logo")}>
-            <img src={logo} alt='Logo' />
+            <Link to='/'>
+              <img src={logo} alt='Logo' />
+            </Link>
           </div>
           <div className={cx("login-container__main")}>
             <div>
