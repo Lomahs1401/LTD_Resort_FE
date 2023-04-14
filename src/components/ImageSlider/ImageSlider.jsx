@@ -1,11 +1,25 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from './ImageSlider.module.scss'
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(styles);
 
-const ImageSlider = ({ slides }) => {
+const slidesContainerStyles = {
+  display: 'flex',
+  height: '100%',
+  transition: 'transform ease-out 0.5s',
+}
+
+const slidesContainerOverflowStyles = {
+  overflow: 'hidden',
+  height: '100%',
+  borderRadius: '30px'
+}
+
+const ImageSlider = ({ slides, parentWidth }) => {
+  
   const [currentIndex, setCurrentIndex] = useState(0);
+  const timeRef = useRef(null);
 
   const goToPrevious = () => {
     const isFirstSlide = currentIndex === 0;
@@ -13,48 +27,40 @@ const ImageSlider = ({ slides }) => {
     setCurrentIndex(newIndex);
   };
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     const isLastSlide = currentIndex === slides.length - 1;
     const newIndex = isLastSlide ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
-  };
+  }, [currentIndex, slides]);
 
   const goToSlide = (slideIndex) => {
     setCurrentIndex(slideIndex);
   };
 
-  const slideStyles = {
-    width: "100%",
-    height: "100%",
-    borderRadius: "10px",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    boxShadow: "rgba(149, 157, 165, 0.7) 0px 8px 24px",
-  };
+  const getSlideStylesWithBackground = (slideIndex) => ({
+    backgroundImage: `url(${slides[slideIndex].url})`,
+    width: `${parentWidth}px`,
+  })
 
-  const slideStylesWidthBackground = {
-    ...slideStyles,
-    backgroundImage: `url(${slides[currentIndex].url})`,
-  };
+  const getSliderContainerStylesWithWidth = () => ({
+    ...slidesContainerStyles,
+    width: parentWidth * slides.length,
+    transform: `translateX(${-(currentIndex * parentWidth)}px)`
+  })
 
-  // useEffect(() => {
-  //   const timerId = setInterval(() => {
-  //     setCurrentIndex((prev) => {
-  //       console.log(prev);
-  //       if (prev === slides.length - 1) {
-  //         console.log('Last');
-  //         return 0;
-  //       }
-  //       else {
-  //         return prev + 1;
-  //       }
-  //     })
+  useEffect(() => {
+    if (timeRef.current) {
+      clearTimeout(timeRef.current);
+    }
 
-  //     return (() => {
-  //       clearInterval(timerId);
-  //     })
-  //   }, 2000)
-  // }, [])
+    timeRef.current = setTimeout(() => {
+      goToNext();
+    }, 2000)
+
+    return ((() => {
+      clearTimeout(timeRef.current)
+    }))
+  }, [goToNext])
 
   return (
     <div className={cx("slider")}>
@@ -66,7 +72,19 @@ const ImageSlider = ({ slides }) => {
           ❱
         </div>
       </div>
-      <div style={slideStylesWidthBackground} className={cx("")}></div>
+
+      <div style={slidesContainerOverflowStyles}>
+        <div style={getSliderContainerStylesWithWidth()}>
+          {slides.map((_, slideIndex) => (
+            <div 
+            className={cx("slide")}
+              key={slideIndex} 
+              style={getSlideStylesWithBackground(slideIndex)} 
+            />
+          ))}
+        </div>
+      </div>
+
       <div className={cx("dot-container")}>
         {slides.map((_, slideIndex) => (
           <div

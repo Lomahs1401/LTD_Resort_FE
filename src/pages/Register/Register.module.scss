@@ -1,19 +1,23 @@
 .wrapper {
     display: flex;
-    margin: 4% 4% 6% 6%;
+    margin: 2% 1% 6% 6%;
     justify-content: space-between;
+    overflow-x: hidden;
+    overflow-y: hidden;
 
     &__left {
         display: flex;
         flex: 0 0 45%;
-        justify-content: center;
-        margin-left: 3%;
+        justify-content: flex-start;
+        margin-left: 5%;
+        margin-right: -54%;
     }
     &__right {
+        overflow: hidden;
         display: flex;
         flex: 0 0 40%;
         justify-content: center;
-        margin-right: 5%;
+        margin-right: 8%;
     }
     &__modal {
         display: flex;

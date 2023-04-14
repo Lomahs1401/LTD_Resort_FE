@@ -14,9 +14,9 @@ const cx = classNames.bind(styles);
 const Login = () => {
 
   const slides = [
-    { url: 'http://localhost:3000/img/carousel1.jpg', title: 'Carousel 1' },
-    { url: 'http://localhost:3000/img/carousel2.jpg', title: 'Carousel 2' },
-    { url: 'http://localhost:3000/img/carousel3.jpg', title: 'Carousel 3' },
+    { url: 'http://localhost:3000/img/carousel1.png', title: 'Carousel 1' },
+    { url: 'http://localhost:3000/img/carousel2.png', title: 'Carousel 2' },
+    { url: 'http://localhost:3000/img/carousel3.png', title: 'Carousel 3' },
   ]
 
   const loginFormLayout = {
@@ -177,7 +177,7 @@ const Login = () => {
         </div>
       </div>
       <div className={cx("wrapper__right")}>
-        <ImageSlider slides={slides} />
+        <ImageSlider slides={slides} parentWidth={600} />
       </div>
       <Modal
         title="Tính năng đang phát triển"

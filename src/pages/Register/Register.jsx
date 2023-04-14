@@ -7,16 +7,16 @@ import googleIcon from '../../img/google.png'
 import gif_cat from '../../img/cat.gif'
 import ImageSlider from '../../components/ImageSlider/ImageSlider'
 import { Form, Button, Input, Divider, message, Modal } from 'antd'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const cx = classNames.bind(styles);
 
 const Register = () => {
 
   const slides = [
-    { url: 'http://localhost:3000/img/carousel1.jpg', title: 'Carousel 1' },
-    { url: 'http://localhost:3000/img/carousel2.jpg', title: 'Carousel 2' },
-    { url: 'http://localhost:3000/img/carousel3.jpg', title: 'Carousel 3' },
+    { url: 'http://localhost:3000/img/carousel1.png', title: 'Carousel 1' },
+    { url: 'http://localhost:3000/img/carousel2.png', title: 'Carousel 2' },
+    { url: 'http://localhost:3000/img/carousel3.png', title: 'Carousel 3' },
   ]
 
   const registerFormLayout = {
@@ -58,7 +58,7 @@ const Register = () => {
   return (
     <div className={cx("wrapper")}>
       <div className={cx("wrapper__left")}>
-        <ImageSlider slides={slides} />
+        <ImageSlider slides={slides} parentWidth={600} />
       </div>
       <div className={cx("wrapper__right")}>
         <div className={cx("register-container")}>
