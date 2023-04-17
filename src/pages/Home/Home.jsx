@@ -30,7 +30,7 @@ const Home = () => {
             <div className={cx("header-navbar__link")}>
               <ul className={cx("link-container")}>
                 <li className={cx("link-item")}>
-                  <Link to="/register" className={cx("navbar-link__active")}>
+                  <Link to="/" className={cx("navbar-link__active")}>
                     <span>Home</span>
                   </Link>
                 </li>
