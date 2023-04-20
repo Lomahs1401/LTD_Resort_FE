@@ -133,7 +133,7 @@ const Register = () => {
                   />
                 </Form.Item>
                 <Form.Item
-                  name="confirm"
+                  name="confirmPassword"
                   label="Confirm Password"
                   dependencies={['password']}
                   hasFeedback
