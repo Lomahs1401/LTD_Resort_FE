@@ -11,7 +11,7 @@ import facilities1 from '../../img/facilities1.png'
 import facilities2 from '../../img/facilities2.png'
 import treatments1 from '../../img/treatments1.png'
 import treatments2 from '../../img/treatments2.png'
-import booknow from '../../img/booknow.png'
+import { BsFillCalendarCheckFill } from 'react-icons/bs'
 import { Link } from 'react-router-dom';
 import Footer from '../../layouts/Footer/Footer';
 
@@ -81,12 +81,9 @@ const Home = () => {
         </nav>
         <div className={cx("header-bottom")}>
           <Link to="/register">
+            
             <button className={cx("btn-booking")}>
-              <img
-                src={booknow}
-                alt="Book Now"
-                style={{ width: 40 }}
-              />
+              <BsFillCalendarCheckFill size={24} />
               <span className={cx("btn-booking__title")}>BOOK NOW</span>
             </button>
           </Link>

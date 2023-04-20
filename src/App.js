@@ -5,6 +5,7 @@ import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import Facilities from './pages/Facilities/Facilities';
+import Room from './pages/Room/Room';
 
 function App() {
   return (
@@ -16,8 +17,7 @@ function App() {
           <Route path='/forgot_password' element={<ForgotPassword />} />
           <Route path="/" element={<Home />} />
           <Route path="/facilities" element={<Facilities />} />
-          {/* <Route path="/rooms" element={<Room />} />
-          <Route path="/contact_us" element={<Facilities />} /> */}
+          <Route path="/rooms" element={<Room />} />
         </Routes>
       </BrowserRouter>
     </div>

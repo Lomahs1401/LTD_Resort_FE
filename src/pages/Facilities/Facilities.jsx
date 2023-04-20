@@ -3,9 +3,13 @@ import styles from './Facilities.module.scss'
 import classNames from "classnames/bind";
 import facilities from '../../img/facilities.jpg'
 import poolside_bar from '../../img/poolside_bar.jpg'
-import ImageSlider from '../../components/ImageSlider/ImageSlider';
-
-import booknow from '../../img/booknow.png'
+import testimonial1 from '../../img/testimonial1.png'
+import testimonial2 from '../../img/testimonial2.png'
+import testimonial3 from '../../img/testimonial3.png'
+import testimonial4 from '../../img/testimonial4.png'
+import testimonial5 from '../../img/testimonial5.png'
+import { BsFillCalendarCheckFill } from 'react-icons/bs'
+import { ImQuotesLeft } from 'react-icons/im'
 import { Link } from 'react-router-dom';
 import Footer from '../../layouts/Footer/Footer';
 
@@ -86,11 +90,7 @@ const Facilities = () => {
         <div className={cx("header-bottom")}>
           <Link to="/register">
             <button className={cx("btn-booking")}>
-              <img
-                src={booknow}
-                alt="Book Now"
-                style={{ width: 40 }}
-              />
+              <BsFillCalendarCheckFill size={24} />
               <span className={cx("btn-booking__title")}>BOOK NOW</span>
             </button>
           </Link>
@@ -126,12 +126,24 @@ const Facilities = () => {
         </div>
       </div>
 
-      {/* <div className={cx("galleries")}>
-        <div className={cx("galleries__title")}>OUR FACILITIES</div>
-        <div className={cx("galleries__slide")}>
-          <ImageSlider slides={slides} parentWidth={800} />
+      <div className={cx("section-testimonial")}>
+        <h1 className={cx("section-testimonial__title")}>WHAT OUR CUSTOMERS SAY</h1>
+        <div className={cx("section-testimonial__container")}>
+            <div className={cx("testimonial-content")}>
+                <div className={cx("testimonial-slide")}>
+                    <img src={testimonial1} alt="Testimonials 1" />
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cursus nibh mauris, nec turpis orci lectus maecenas. Suspendisse sed magna eget nibh in turpis. Consequat duis diam lacus arcu. Faucibus venenatis felis id augue sit cursus pellentesque enim arcu. Elementum felis magna pretium in tincidunt. Suspendisse sed magna eget nibh in turpis. 
+                    </p>
+                    <ImQuotesLeft className={cx("quote-icon")} />
+                    <div className={cx("testimonial-detail")}>
+                        <span className={cx("testimonial-name")}>Marnie Lotter</span>
+                        <span className={cx("testimonial-job")}>Web Developer</span>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div> */}
+      </div>
 
       <Footer />
 
