@@ -2,7 +2,6 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 import styles from './Customer_info.module.scss'
 import classNames from 'classnames/bind'
-import { FontAwesomeIcon } from "@fontwesome/react-fontawesome";
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles)
@@ -33,7 +32,6 @@ const Customer_info = () => {
             </div>
             <button className={cx("button-change")}>
                 <div className={cx("change-icon")}>
-                 <FontAwesomeIcon icon={faPenToSquare} />
                 </div>
                 <div className={cx("style-frame")}>
                     change
