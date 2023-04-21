@@ -6,6 +6,10 @@ import Register from './pages/Register/Register';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import Facilities from './pages/Facilities/Facilities';
 import Room from './pages/Room/Room';
+import AccountInfo from './pages/Account_home/Account_home';
+import CustomerInfo from './components/Account_info_/Customer_info/Customer_info';
+import 'antd/dist/reset.css';
+
 
 function App() {
   return (
@@ -18,6 +22,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/facilities" element={<Facilities />} />
           <Route path="/rooms" element={<Room />} />
+          <Route path="/account_info" element={<AccountInfo />} />
+          <Route path="/customer-info" element={<CustomerInfo />} />
         </Routes>
       </BrowserRouter>
     </div>
