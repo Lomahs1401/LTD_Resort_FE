@@ -8,14 +8,8 @@ import Facilities from './pages/Facilities/Facilities';
 import Room from './pages/Room/Room';
 import AccountInfo from './pages/Account_home/Account_home';
 import CustomerInfo from './components/Account_info_/Customer_info/Customer_info';
-import AuthUser from './AuthUser';
 
 function App() {
-  const { getToken } = AuthUser();
-  if (!getToken()) {
-    return <Login />
-  }
-
   return (
     <div className="App">
       <BrowserRouter>
