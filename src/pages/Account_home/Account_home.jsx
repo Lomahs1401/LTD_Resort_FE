@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Steps, theme } from 'antd';
 import styles from "./Account_home.module.scss";
 import classNames from "classnames/bind";
+// import 'antd/dist/reset.css';
 
 import info from "../../components/Account_info_/Customer_info/Customer_info";
 

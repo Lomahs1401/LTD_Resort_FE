@@ -7,7 +7,8 @@ import googleIcon from '../../img/google.png'
 import gif_cat from '../../img/cat.gif'
 import ImageSlider from '../../components/ImageSlider/ImageSlider'
 import { Form, Button, Input, Divider, message, Modal } from 'antd'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import AuthUser from '../../AuthUser';
 
 const cx = classNames.bind(styles);
 
@@ -43,16 +44,39 @@ const Register = () => {
     setIsModalOpen(false);
   }
 
+  const { http } = AuthUser(); 
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   
   const onFinish = (values) => {
-    console.log('Success: ', values);
-    message.success('Create account successful!');
+    console.log('Success:', values);
+
+    const ENABLED_ACCOUNT = 1;
+    const ROLE_CUSTOMER_ID = 3;
+
+    const formData = new FormData();
+    formData.append('username', values.username);
+    formData.append('email', values.email);
+    formData.append('password', values.password);
+    formData.append('confirm_password', values.confirmPassword);
+    formData.append('enabled', ENABLED_ACCOUNT);
+    formData.append('role_id', ROLE_CUSTOMER_ID);
+
+    http.post('/auth/register', formData)
+      .then((resolve) => {
+        console.log(resolve);
+        message.success('Create account successful!');
+        navigate('/login');
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Oops. Try again..');
+      })
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed: ', errorInfo);
-    message.error('Create account failed!');
+    message.error('Please input all fields!');
   };
 
   return (
