@@ -8,6 +8,7 @@ import gif_cat from '../../img/cat.gif'
 import { Form, Button, Checkbox, Input, Divider, Modal, message } from 'antd'
 import ImageSlider from '../../components/ImageSlider/ImageSlider';
 import { Link } from 'react-router-dom';
+import AuthUser from '../../AuthUser';
 
 const cx = classNames.bind(styles);
 
@@ -43,16 +44,31 @@ const Login = () => {
     setIsModalOpen(false);
   }
 
+  const { http, setToken } = AuthUser();  
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
     console.log('Success:', values);
-    message.success('Login successful!');
+
+    const formData = new FormData();
+    formData.append('email', values.email);
+    formData.append('password', values.password);
+
+    http.post('/auth/login', formData)
+      .then((resolve) => {
+        console.log(resolve);
+        setToken(resolve.data.user, resolve.data.access_token);
+        message.success(`Welcome back ${resolve.data.user.username}`);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Email or password is incorrect..');
+      })
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
-    message.error('Login failed');
+    message.error('Please input all fields');
   };
 
   return (
