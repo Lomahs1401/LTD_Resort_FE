@@ -1,10 +1,16 @@
 .Account{
-    
     margin: 25px;
     margin-top: 20px;
     background-color: #FFFFFF;
 }
-
+.header{
+    line-height: normal;
+    text-align: left;
+    color: black;
+}
+.change{
+    line-height: normal;
+}
 .Header{
     display: flex;
     justify-content: space-between;
@@ -135,6 +141,8 @@
     line-height: normal;
     position: relative;    
     width: fit-content;
+    font-weight: 700;
+    color: black;
 }
 .title-text{
     letter-spacing: 0;
