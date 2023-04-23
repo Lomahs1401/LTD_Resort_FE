@@ -1,0 +1,139 @@
+.booking-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-block: 2%;
+    box-shadow: rgba(149, 157, 165, 0.7) 0px 8px 24px;
+    padding-right: 12px;
+    border-radius: 10px;
+    gap: 40px;
+    
+    &__left {
+
+        position: relative;
+        
+        img {
+            border-radius: 10px;
+            width: 300px;
+            height: 304px;
+            vertical-align: middle;
+        }
+
+        &-images {
+            position: absolute;
+            right: 10px;
+            top: 20px;
+
+            > span {
+                color: #2D484A;
+                font-size: 14px;
+                padding: 8px;
+                border-radius: 5px;
+                border: none;
+                background-color: rgba(211, 189, 176, 0.9);
+            }
+        }
+    }
+
+    &__right {
+        flex: 0 0 68%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-content: flex-start;
+    }
+}
+
+.amenities {
+    margin-left: 5%;
+    margin-right: 2%;
+}
+
+.top-content {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    &__left {
+        flex: 0 0 62%;
+    }
+
+    &__right {
+        flex: 0 0 38%;
+
+        > p {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        h1 {
+            color: #FF8682;
+        }
+    }
+}
+
+.middle-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    &__top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+
+        &-icon {
+            margin-right: 8px;
+        }
+    }
+}
+
+.seperate-line {
+    border: 1px solid #BFC4C1;
+}
+
+.bottom-content {
+   
+    &__left {
+        > button {
+            background-color: #FFF;
+            border-radius: 5px;
+            border: 1px solid #8DD3BB;
+            padding: 16px 8px;
+            width: 8%;
+            transition: 0.3s;
+            float: left;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #FFF;
+                border: 1px solid rgb(30, 30, 216);
+                opacity: 0.8;
+            }
+        }
+    }
+
+    &__right {
+        float: left;
+        width: 90%;
+        margin-left: 12px;
+
+        > button {
+            background-color: #8DD3BB;
+            border-radius: 5px;
+            border: none;
+            width: 100%;
+            padding-inline: 12%;
+            transition: 0.3s;
+            
+
+            &:hover {
+                cursor: pointer;
+                background-color: #8DD3BB;
+                opacity: 0.8;
+            }
+        }
+    }
+}
