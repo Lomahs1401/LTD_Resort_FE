@@ -12,7 +12,7 @@ import Footer from '../../layouts/Footer/Footer';
 import cover from '../../img/content1.jpg'
 import test from '../../img/testimonial1.png'
 import logo from '../../img/logo.png'
-
+import Headers from '../../layouts/Header/Header'
 const cx = classNames.bind(styles);
 
 const steps = [
@@ -59,46 +59,7 @@ const Account_home = () => {
   return (
     <div>
       <div className={cx("Account")}>
-        <div className={cx("Header")}>
-          <div className={cx("left")}>
-            {/* <Link className={cx("button-head")} to="/login" >
-            <span>Login</span>
-            </Link>
-            
-            <Link className={cx("button-head")} to="/register">
-              Register
-            </Link> */}
-            <div className={cx("button-head")}> 
-              <FontAwesomeIcon icon={faBed} />
-              <span>Find Rooms </span>
-            </div>
-            <div className={cx("button-head")}>
-              <FontAwesomeIcon icon={faMugHot} />
-              <span>Find Services</span> 
-            </div>
-            <div className={cx("button-head")} style={{color: "#8DD3BB"}}>
-              <FontAwesomeIcon icon={faGear} />
-              <span>Manage Accounts</span>
-            </div>
-          </div>
-          <img src={logo} style={{height: "50px"}}/>
-          <div className={cx("right")}>
-            <div className={cx("frame-010")}>
-              <div className={cx("frame-007")}>welcome</div>
-              <div className={cx("Name")}>duc</div>
-              
-            </div>
-            <div className={cx("small_avatar")}>
-              <img
-                className={cx("account__image-small")}
-                src={test}
-              />
-            </div>
-            <div className={cx("Button-Logout")}>
-              <button className={cx("Logout")}>LOG OUT</button>
-            </div>
-          </div>
-        </div>
+        <Headers />
         
         <div className={cx("Cover")}>
           <div className={cx("image")} >

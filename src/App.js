@@ -9,7 +9,8 @@ import Room from './pages/Room/Room';
 import AccountInfo from './pages/Account_home/Account_home';
 import CustomerInfo from './components/Account_info_/Customer_info/Customer_info';
 import FindRoom from './pages/FindRoom/FindRoom';
-
+import FindService from './pages/FindService/FindService';
+import OverviewCard from './components/OverviewCard/OverviewCard';
 function App() {
   return (
     <div className="App">
@@ -24,6 +25,10 @@ function App() {
           <Route path="/find-rooms" element={<FindRoom />} />
           <Route path="/account_info" element={<AccountInfo />} />
           <Route path="/customer-info" element={<CustomerInfo />} />
+          <Route path="/find-services" element={<FindService />} />
+          <Route path="/headers" element={<OverviewCard />} />
+
+
         </Routes>
       </BrowserRouter>
     </div>
