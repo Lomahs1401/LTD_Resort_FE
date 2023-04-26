@@ -4,10 +4,6 @@ import classNames from "classnames/bind";
 import facilities from '../../img/facilities.jpg'
 import poolside_bar from '../../img/poolside_bar.jpg'
 import testimonial1 from '../../img/testimonial1.png'
-import testimonial2 from '../../img/testimonial2.png'
-import testimonial3 from '../../img/testimonial3.png'
-import testimonial4 from '../../img/testimonial4.png'
-import testimonial5 from '../../img/testimonial5.png'
 import { BsFillCalendarCheckFill } from 'react-icons/bs'
 import { ImQuotesLeft } from 'react-icons/im'
 import { Link } from 'react-router-dom';
@@ -16,15 +12,6 @@ import Footer from '../../layouts/Footer/Footer';
 const cx = classNames.bind(styles);
 
 const Facilities = () => {
-
-  const slides = [
-    { url: 'http://localhost:3000/img/gym.png', title: 'Gym' },
-    { url: 'http://localhost:3000/img/poolside.jpg', title: 'Poolside Bar' },
-    { url: 'http://localhost:3000/img/spa.jpg', title: 'The SPA' },
-    { url: 'http://localhost:3000/img/oceans.jpg', title: 'The oceans' },
-    { url: 'http://localhost:3000/img/restaurants.jpg', title: 'The restaurants' },
-    { url: 'http://localhost:3000/img/laundry.jpg', title: 'Laundry' },
-  ]
 
   return (
     <div className={cx("wrapper")}>

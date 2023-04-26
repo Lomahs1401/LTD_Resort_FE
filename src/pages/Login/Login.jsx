@@ -7,7 +7,7 @@ import googleIcon from '../../img/google.png'
 import gif_cat from '../../img/cat.gif'
 import { Form, Button, Checkbox, Input, Divider, Modal, message } from 'antd'
 import ImageSlider from '../../components/ImageSlider/ImageSlider';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthUser from '../../AuthUser';
 
 const cx = classNames.bind(styles);
@@ -43,6 +43,8 @@ const Login = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   }
+  
+  const navigate = useNavigate();
 
   const { http, setToken } = AuthUser();  
   const [form] = Form.useForm();
@@ -58,6 +60,7 @@ const Login = () => {
       .then((resolve) => {
         console.log(resolve);
         setToken(resolve.data.user, resolve.data.access_token);
+        navigate('/find-rooms');
         message.success(`Welcome back ${resolve.data.user.username}`);
       })
       .catch((reject) => {

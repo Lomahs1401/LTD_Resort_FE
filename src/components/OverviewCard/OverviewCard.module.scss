@@ -23,7 +23,7 @@
     }
 }
 
-.bedroom-type, .room-type {
+.bedroom-type, .room-type, .service-type {
     color: #FFF;
     font-size: 20px;
     font-weight: 500;
@@ -62,11 +62,11 @@
 }
 
 .btn-booking {
-    padding: 5% 35%;
+    padding: 5% 33%;
     background: #8DD3BB;
     border: none;
     border-radius: 5px;
-    margin-top: 12px;
+    margin-top: 20px;
     transition: 0.3s;
 
     p {

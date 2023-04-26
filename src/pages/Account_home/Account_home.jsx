@@ -1,18 +1,17 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Steps, theme } from 'antd';
 import styles from "./Account_home.module.scss";
 import classNames from "classnames/bind";
-// import 'antd/dist/reset.css';
-
 import Customer_info from "../../components/Account_info_/Customer_info/Customer_info";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBed , faMugHot, faGear, faPen} from '@fortawesome/free-solid-svg-icons'
+import { faPen } from '@fortawesome/free-solid-svg-icons'
 import Footer from '../../layouts/Footer/Footer';
 import cover from '../../img/content1.jpg'
 import test from '../../img/testimonial1.png'
 import logo from '../../img/logo.png'
 import Headers from '../../layouts/Header/Header'
+import AuthUser from "../../AuthUser";
 const cx = classNames.bind(styles);
 
 const steps = [
@@ -31,10 +30,8 @@ const steps = [
 ];
 
 const Account_home = () => {
-   //
-   //
-
   const { token } = theme.useToken();
+  const { user } = AuthUser();
   const [current, setCurrent] = useState(0);
   const onChange = (value) => {
     console.log('onChange:', value);
@@ -59,7 +56,7 @@ const Account_home = () => {
   return (
     <div>
       <div className={cx("Account")}>
-        <Headers />
+        <Headers active='Manage Accounts' userInfo={user} />
         
         <div className={cx("Cover")}>
           <div className={cx("image")} >
@@ -83,8 +80,6 @@ const Account_home = () => {
           </div>
           <div style={contentStyle}>{steps[current].content}</div>
         </div>
-        
-
 
         <Footer/>
       </div>

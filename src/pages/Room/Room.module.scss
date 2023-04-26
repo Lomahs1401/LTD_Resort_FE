@@ -167,6 +167,11 @@
 .image-container {
     background-color: #14274A;
     z-index: 1;
+
+    img {
+        object-fit: cover;
+        height: 100vh;
+    }
 }
 
 .header-image {

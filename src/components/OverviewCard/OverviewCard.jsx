@@ -6,15 +6,16 @@ const { Meta } = Card;
 
 const cx = classNames.bind(styles);
 
-const OverviewCard = ({ image, bedroomType, roomType, price, ranking, description }) => {
+const OverviewCard = ({ image, bedroomType = '', roomType = '', service = '', price, ranking, type, description }) => {
 
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
 
   return (
     <div className={cx("card-container")}>
       <div className={cx("card-content")}>
-        <p className={cx("bedroom-type")}>{bedroomType}</p>
-        <p className={cx("room-type")}>{roomType}</p>
+        {bedroomType && <p className={cx("bedroom-type")}>{bedroomType}</p>}
+        {roomType && <p className={cx("room-type")}>{roomType}</p>}
+        {service && <p className={cx("service-type")}>{service}</p>}
         <Divider className={cx("seperate-line-content")}/>
         <span className={cx("price")}>{price} VND</span>
         <div className={cx("ranking-container")}>
@@ -24,14 +25,14 @@ const OverviewCard = ({ image, bedroomType, roomType, price, ranking, descriptio
             defaultValue={ranking}
             style={{color: '#FF8682'}}
           />
-          <p className="ant-rate-text">{ranking} Star Room</p>
+          <p className="ant-rate-text">{ranking} Star {type}</p>
         </div>
         <button className={cx("btn-booking")}>
-          <p>Book room</p>
+          <p>{description}</p>
         </button>
       </div>
       <div className={cx("card-img")}>
-        <img alt="example" src={image} />
+        <img alt={`${bedroomType} - ${roomType} ${service}`} src={image} />
       </div>
     </div>
   )

@@ -1,3 +1,4 @@
+import { message } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -6,13 +7,10 @@ export default function AuthUser() {
     const navigate = useNavigate();
 
     const getToken = () => {
-        const tokenString = sessionStorage.getItem('token');
+        const tokenString = sessionStorage.getItem('access_token');
         const userToken = JSON.parse(tokenString);
         return userToken;
     }
-
-    const [token, setToken] = useState(getToken());
-    const [user, setUser] = useState();
 
     const getUser = () => {
         const userString = sessionStorage.getItem('user');
@@ -20,8 +18,11 @@ export default function AuthUser() {
         return userDetail;
     }
 
+    const [token, setToken] = useState(getToken());
+    const [user, setUser] = useState(getUser());
+
     const saveToken = (user, token) => {
-        sessionStorage.setItem('token', JSON.stringify(token));
+        sessionStorage.setItem('access_token', JSON.stringify(token));
         sessionStorage.setItem('user', JSON.stringify(user));
 
         setToken(token);
@@ -31,6 +32,7 @@ export default function AuthUser() {
     const logout = () => {
         sessionStorage.clear();
         navigate('/login')
+        message.success(`Logout successful!`);
     }
 
     const http = axios.create({

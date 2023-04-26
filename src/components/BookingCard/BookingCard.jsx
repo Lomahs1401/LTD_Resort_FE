@@ -9,13 +9,15 @@ const cx = classNames.bind(styles);
 
 const BookingCard = ({
   image,
-  bedroomType,
-  roomType,
+  bedroomType = '',
+  roomType = '',
+  service = '',
   price,
   ranking,
-  capacity,
-  listRooms,
-  area,
+  type,
+  capacity = '',
+  listRooms = '',
+  area = '',
   totalReviews,
 }) => {
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
@@ -23,7 +25,7 @@ const BookingCard = ({
   return (
     <div className={cx("booking-container")}>
       <div className={cx("booking-container__left")}>
-        <img src={image} alt={`${bedroomType} - ${roomType}`} />
+        <img src={image} alt={`${bedroomType} - ${roomType} ${service}`} />
         <div className={cx("booking-container__left-images")}>
           <span>9 images</span>
         </div>
@@ -31,41 +33,49 @@ const BookingCard = ({
       <div className={cx("booking-container__right")}>
         <div className={cx("top-content")}>
           <div className={cx("top-content__left")}>
-            <h2>{bedroomType} - {roomType}</h2>
+            {type === 'Room' && <h2>{bedroomType} - {roomType}</h2>}
+            {type === 'Service' && <h2>{service}</h2>}
             <Rate
               disabled
               tooltips={RATING_DESC}
               defaultValue={ranking}
               style={{ color: '#FF8682' }}
             />
-            <p className="ant-rate-text" style={{ fontSize: 16 }}>{ranking} Star Room</p>
-            <FaCoffee className={cx("amenities")} size={16} />
-            <span>20+ Amenities</span>
+            <p className="ant-rate-text" style={{ fontSize: 16 }}>{ranking} Star {type}</p>
+            {type === 'Room' && (
+              <>
+                <FaCoffee className={cx("amenities")} size={16} />
+                <span>20+ Amenities</span>
+              </>
+            )}
           </div>
           <div className={cx("top-content__right")}>
             <p>Price from</p>
-            <h1>{price} VND<sub>/Night</sub></h1>
+            <h1>{price} VND{type === 'Room' && <sub>/Night</sub>}</h1>
           </div>
         </div>
-        <div className={cx("middle-content")}>
-          <div className={cx("middle-content__top")}>
-            <span>
-              <FaUser size={20} className={cx("middle-content__top-icon")} />
-              {capacity} persons
-            </span>
-            <span>
-              <FaBed size={20} className={cx("middle-content__top-icon")} />
-              {listRooms} rooms
-            </span>
-            <span>
-              <BsHouseCheckFill size={20} className={cx("middle-content__top-icon")} />
-              {area}m<sup>2</sup>
-            </span>
-          </div>
-          <div className={cx("middle-content_bottom")}>
+        {type === 'Room' && (
+          <div className={cx("middle-content")}>
+            <div className={cx("middle-content__top")}>
+              <span>
+                <FaUser size={20} className={cx("middle-content__top-icon")} />
+                {capacity} persons
+              </span>
+              <span>
+                <FaBed size={20} className={cx("middle-content__top-icon")} />
+                {listRooms} rooms
+              </span>
+              <span>
+                <BsHouseCheckFill size={20} className={cx("middle-content__top-icon")} />
+                {area}m<sup>2</sup>
+              </span>
+            </div>
+            <div className={cx("middle-content_bottom")}>
 
+            </div>
           </div>
-        </div>
+        )}
+        
         <Divider className={cx("seperate-line")} />
         <div className={cx("bottom-content")}>
           <div className={cx("bottom-content__left")}>

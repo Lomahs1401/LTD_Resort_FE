@@ -11,8 +11,7 @@ import singleBedroom from '../../img/single-bedroom.jpg'
 import twinBedroom from '../../img/twin-bedroom.jpg'
 import doubleBedroom from '../../img/double-bedroom.jpg'
 import tripleBedroom from '../../img/triple-bedroom.jpg'
-import { BsFillCalendar2CheckFill, BsFillCalendarCheckFill } from 'react-icons/bs'
-import { Link } from 'react-router-dom';
+import { BsFillCalendar2CheckFill } from 'react-icons/bs'
 import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
 import { Form, Divider, Slider, DatePicker, Select, Collapse, Checkbox, Pagination } from 'antd';
@@ -20,6 +19,8 @@ import { FaBed, FaDollarSign, FaUser } from 'react-icons/fa';
 import { BiSearch } from "react-icons/bi"
 import BookingCard from '../../components/BookingCard/BookingCard';
 import dayjs from 'dayjs';
+import Header from '../../layouts/Header/Header';
+import AuthUser from '../../AuthUser';
 const { Panel } = Collapse;
 const cx = classNames.bind(styles);
 
@@ -27,9 +28,9 @@ const FindRoom = () => {
 
   const [form] = Form.useForm();
 
+  const { user } = AuthUser();
+
   const [currentPage, setCurrentPage] = useState(1);
-  // const [checkInDate, setCheckInDate] = useState(dayjs(dayjs().hour()).minute(dayjs().minute()).second(0))
-  // const [checkOutDate, setCheckOutDate] = useState(dayjs(dayjs().hour()).minute(dayjs().minute()).add(1, 'date'))
 
   const onChange = (value) => {
     console.log('onChange: ', value);
@@ -43,16 +44,6 @@ const FindRoom = () => {
     // Can not select days before today and today
     return current && current < dayjs().startOf('day');
   };
-
-  // const handleSelectCheckInDate = (date, dateString) => {
-  //   console.log(date, dateString);
-  //   setCheckInDate(date);
-  // }
-
-  // const handleSelectCheckOutDate = (date, dateString) => {
-  //   console.log(date, dateString);
-  //   setCheckOutDate(date);
-  // }
 
   const handleSubmitFindRoom = (values) => {
     console.log('Success:', values);
@@ -80,54 +71,8 @@ const FindRoom = () => {
   return (
     <div className={cx("wrapper")}>
       <div className={cx("header")}>
+        <Header active='Find Rooms' userInfo={user} />
         <nav className={cx("nav")}>
-          <div className={cx("header-navbar")}>
-            <div className={cx("header-navbar__logo")}>
-              <p className={cx("logo-main")}>LUXURY</p>
-              <p className={cx("logo-title")}>HOTELS</p>
-            </div>
-            <div className={cx("header-navbar__link")}>
-              <ul className={cx("link-container")}>
-                <li className={cx("link-item")}>
-                  <Link to="/" className={cx("navbar-link__active")}>
-                    <span>Home</span>
-                  </Link>
-                </li>
-                <li className={cx("link-item")}>
-                  <Link to="/facilities" className={cx("navbar-link")}>
-                    <span>Facilities</span>
-                  </Link>
-                </li>
-                <li className={cx("link-item")}>
-                  <Link to="/rooms" className={cx("navbar-link")}>
-                    <span>Rooms</span>
-                  </Link>
-                </li>
-                <li className={cx("link-item")}>
-                  <Link to="/news" className={cx("navbar-link")}>
-                    <span>News</span>
-                  </Link>
-                </li>
-                <li className={cx("link-item")}>
-                  <Link to="/contact_us" className={cx("navbar-link")}>
-                    <span>Contact Us</span>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className={cx("header-navbar__auth")}>
-              <Link to="/login">
-                <button className={cx("auth-login")}>
-                  Login
-                </button>
-              </Link>
-              <Link to="/register">
-                <button className={cx("auth-signup")}>
-                  Sign up
-                </button>
-              </Link>
-            </div>
-          </div>
           <div className={cx("header-middle")}>
             <div className={"header-middle__content"}>
               <p className={cx("header-middle__title")}>Make your travel whishlist, we'll do the rest</p>
@@ -137,19 +82,10 @@ const FindRoom = () => {
             </div>
           </div>
         </nav>
-        <div className={cx("header-bottom")}>
-          <Link to="/register">
-
-            <button className={cx("btn-booking")}>
-              <BsFillCalendarCheckFill size={24} />
-              <span className={cx("btn-booking__title")}>BOOK NOW</span>
-            </button>
-          </Link>
-        </div>
         <div className={cx("image-container")}>
           <img
             src={findRooms}
-            alt="Girl sitting at pool"
+            alt="Pool outside"
             className={cx("header-image")}
           />
         </div>
@@ -157,51 +93,57 @@ const FindRoom = () => {
 
       <div className={cx("section-overview__title")}>
         <h1>Fall into travel</h1>
-        <p>Going somewhere to celebrate this season? Whether you're going home or somewhere to roam, we’ve got the travel tools to get you to your destination.</p>
+        <p>Going somewhere to celebrate this season? Whether you're going home or somewhere to roam, we've got the travel tools to get you to your destination.</p>
       </div>
 
       <div className={cx("section-overview")}>
         <div className={cx("section-overview__list-rooms")}>
-          <OverviewCard 
+          <OverviewCard
             image={overviewRoom1}
             bedroomType={'Single Bedroom'}
             roomType={'Superior Room'}
-            price={'700.000'}
+            price={'700.000 VND'}
             ranking={5}
+            type={'Room'}
+            description={'Book room'}
           />
-          <OverviewCard 
+          <OverviewCard
             image={overviewRoom2}
             bedroomType={'Twin Bedroom'}
             roomType={'Superior Room'}
-            price={'600.000'}
+            price={'600.000 VND'}
             ranking={5}
+            description={'Book room'}
           />
-          <OverviewCard 
+          <OverviewCard
             image={overviewRoom3}
             bedroomType={'Double Bedroom'}
             roomType={'Superior Room'}
-            price={'700.000'}
+            price={'700.000 VND'}
             ranking={5}
+            description={'Book room'}
           />
-          <OverviewCard 
+          <OverviewCard
             image={overviewRoom4}
             bedroomType={'Triple Bedroom'}
             roomType={'Superior Room'}
-            price={'700.000'}
+            price={'700.000 VND'}
             ranking={5}
+            description={'Book room'}
           />
-          <OverviewCard 
+          <OverviewCard
             image={overviewRoom5}
             bedroomType={'Quad Bedroom'}
             roomType={'Superior Room'}
-            price={'700.000'}
+            price={'700.000 VND'}
             ranking={5}
+            description={'Book room'}
           />
         </div>
       </div>
 
       <div className={cx("section-find-rooms")}>
-        <h1 style={{textAlign: 'center'}}>Find your room</h1>
+        <h1 style={{ textAlign: 'center' }}>Find your room</h1>
         <Form
           form={form}
           layout='inline'
@@ -211,7 +153,7 @@ const FindRoom = () => {
           onFinishFailed={handleSubmitFindRoomFailed}
           className={cx("find-rooms-container")}
         >
-          <Form.Item 
+          <Form.Item
             name='check_in'
             label={
               <div className={cx("find-rooms-item")}>
@@ -222,11 +164,12 @@ const FindRoom = () => {
             required={false}
             colon={false}
             rules={[
-              { required: true, 
-                message: 'Please select check in date' 
+              {
+                required: true,
+                message: 'Please select check in date'
               }
             ]}
-            style={{marginBottom: 30}}
+            style={{ marginBottom: 30 }}
           >
             <DatePicker
               picker='date'
@@ -234,10 +177,9 @@ const FindRoom = () => {
               placeholder='Select check in date'
               format="YYYY-MM-DD HH:mm"
               disabledDate={disabledDate}
-              // onChange={handleSelectCheckInDate} 
             />
           </Form.Item>
-          <Form.Item 
+          <Form.Item
             name='check_out'
             label={
               <div className={cx("find-rooms-item")}>
@@ -248,23 +190,22 @@ const FindRoom = () => {
             required={false}
             colon={false}
             rules={[
-              { 
-                required: true, 
-                message: 'Please select check out date' 
+              {
+                required: true,
+                message: 'Please select check out date'
               }
             ]}
-            style={{marginBottom: 30}}
+            style={{ marginBottom: 30 }}
           >
-            <DatePicker 
-              picker='date' 
+            <DatePicker
+              picker='date'
               size='large'
               placeholder='Select check out date'
               format="YYYY-MM-DD HH:mm"
               disabledDate={disabledDate}
-              // onChange={handleSelectCheckOutDate} 
             />
           </Form.Item>
-          <Form.Item 
+          <Form.Item
             name='bedrooms'
             label={
               <div className={cx("find-rooms-item")}>
@@ -274,7 +215,7 @@ const FindRoom = () => {
             }
             required={false}
             colon={false}
-            style={{marginBottom: 30}}
+            style={{ marginBottom: 30 }}
           >
             <Select
               allowClear
@@ -305,7 +246,7 @@ const FindRoom = () => {
               ]}
             />
           </Form.Item>
-          <Form.Item 
+          <Form.Item
             name='capicities'
             label={
               <div className={cx("find-rooms-item")}>
@@ -315,7 +256,7 @@ const FindRoom = () => {
             }
             required={false}
             colon={false}
-            style={{marginBottom: 30}}
+            style={{ marginBottom: 30 }}
           >
             <Select
               allowClear
@@ -344,9 +285,6 @@ const FindRoom = () => {
             </button>
           </Form.Item>
         </Form>
-      <div>
-
-        </div>
       </div>
 
       <div className={cx("section-list-type-rooms")}>
@@ -404,7 +342,7 @@ const FindRoom = () => {
             </Collapse>
           </div>
 
-          <Divider className={cx("seperate-line")}/>
+          <Divider className={cx("seperate-line")} />
 
           <div className={cx("filter-by-bedroom-type")}>
             <Collapse
@@ -428,7 +366,7 @@ const FindRoom = () => {
             </Collapse>
           </div>
 
-          <Divider className={cx("seperate-line")}/>
+          <Divider className={cx("seperate-line")} />
 
           <div className={cx("filter-by-room-type")}>
             <Collapse
@@ -451,10 +389,12 @@ const FindRoom = () => {
             </Collapse>
           </div>
 
+          <Divider className={cx("seperate-line")}/>
+
           <button className={cx("btn-filter")}>
             Filter
           </button>
-          
+
         </div>
         <div className={cx("list-rooms-container")}>
           <h2>List Type Rooms</h2>
@@ -467,6 +407,7 @@ const FindRoom = () => {
             roomType={'Superior Room'}
             price={'203.000'}
             ranking={5}
+            type={'Room'}
             capacity={1}
             listRooms={50}
             area={18}
@@ -478,6 +419,7 @@ const FindRoom = () => {
             roomType={'Superior Room'}
             price={'203.000'}
             ranking={5}
+            type={'Room'}
             capacity={2}
             listRooms={50}
             area={20}
@@ -489,6 +431,7 @@ const FindRoom = () => {
             roomType={'Superior Room'}
             price={'280.000'}
             ranking={5}
+            type={'Room'}
             capacity={2}
             listRooms={50}
             area={25}
@@ -500,6 +443,7 @@ const FindRoom = () => {
             roomType={'Superior Room'}
             price={'400.000'}
             ranking={5}
+            type={'Room'}
             capacity={3}
             listRooms={50}
             area={30}
@@ -510,7 +454,7 @@ const FindRoom = () => {
               showSizeChanger
               showQuickJumper
               current={currentPage}
-              defaultCurrent={1} 
+              defaultCurrent={1}
               total={100}
               itemRender={itemRender}
               onChange={handleClickPaginate}

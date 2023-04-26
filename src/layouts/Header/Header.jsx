@@ -2,47 +2,75 @@ import React from 'react'
 import styles from './Header.module.scss'
 import classNames from "classnames/bind"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBed , faMugHot, faGear, faPen} from '@fortawesome/free-solid-svg-icons'
+import { faBed, faMugHot, faGear } from '@fortawesome/free-solid-svg-icons'
 import test from '../../img/testimonial1.png'
 import logo from '../../img/logo.png'
+import { Link } from 'react-router-dom'
+import AuthUser from '../../AuthUser'
 
 const cx = classNames.bind(styles);
 
-const Header = () => {
+const Header = ({active, userInfo}) => {
+
+  const FIND_ROOM = 'Find Rooms';
+  const FIND_SERVICE = 'Find Services';
+  const MANAGE_ACCOUNT = 'Manage Accounts';
+  
+  const { logout } = AuthUser();
+
+  const handleLogout = () => {
+    logout();
+  }
+
   return (
-    <div className={cx("Header")}>
-          <div className={cx("left")}>
-            <div className={cx("button-head")}> 
-              <FontAwesomeIcon icon={faBed} />
-              <span>Find Rooms </span>
-            </div>
-            <div className={cx("button-head")}>
-              <FontAwesomeIcon icon={faMugHot} />
-              <span>Find Services</span> 
-            </div>
-            <div className={cx("button-head")} style={{color: "#8DD3BB"}}>
-              <FontAwesomeIcon icon={faGear} />
-              <span>Manage Accounts</span>
-            </div>
-          </div>
-          <img src={logo} style={{height: "50px"}}/>
-          <div className={cx("right")}>
-            <div className={cx("frame-010")}>
-              <div className={cx("frame-007")}>welcome</div>
-              <div className={cx("Name")}>duc</div>
-              
-            </div>
-            <div className={cx("small_avatar")}>
-              <img
-                className={cx("account__image-small")}
-                src={test}
-              />
-            </div>
-            <div className={cx("Button-Logout")}>
-              <button className={cx("Logout")}>LOG OUT</button>
-            </div>
+    <div className={cx("header")}>
+      <div className={cx("header__left")}>
+        <div className={ active === FIND_ROOM ? cx("link-container__active") : cx("link-container")}>
+          <div className={cx("link-nav")}>
+            <FontAwesomeIcon icon={faBed} />
+            <Link to={'/find-rooms'} className={cx("link-item")}>
+              <span>Find Rooms</span>
+            </Link>
           </div>
         </div>
+        <div className={ active === FIND_SERVICE ? cx("link-container__active") : cx("link-container")}>
+          <div className={cx("link-nav")}>
+            <FontAwesomeIcon icon={faMugHot} />
+            <Link to={'/find-services'} className={cx("link-item")}>
+              <span>Find Services</span>
+            </Link>
+          </div>
+        </div>
+        <div className={ active === MANAGE_ACCOUNT ? cx("link-container__active") : cx("link-container")}>
+          <div className={cx("link-nav")}>
+            <FontAwesomeIcon icon={faGear} />
+            <Link to={'/account_info'} className={cx("link-item")}>
+              <span>Manage Accounts</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+      <div className={cx("header__middle")}>
+        <img src={logo} alt='Logo'/>
+      </div>
+      <div className={cx("header__right")}>
+        <div className={cx("header__right-info")}>
+          <div className={cx("info-container")}>
+            <div className={cx("info-container__welcome")}>WELCOME</div>
+            <div className={cx("info-container__name")}>{userInfo.username}</div>
+          </div>
+          <div className={cx("avatar")}>
+            <img
+              src={test}
+              alt='Avatar'
+            />
+          </div>
+        </div>
+        <div className={cx("btn-logout__container")}>
+          <button className={cx("btn-logout")} onClick={handleLogout}>Log out</button>
+        </div>
+      </div>
+    </div>
   )
 }
 
