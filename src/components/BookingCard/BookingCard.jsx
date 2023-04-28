@@ -9,9 +9,7 @@ const cx = classNames.bind(styles);
 
 const BookingCard = ({
   image,
-  bedroomType = '',
-  roomType = '',
-  service = '',
+  title = '',
   price,
   ranking,
   type,
@@ -25,7 +23,7 @@ const BookingCard = ({
   return (
     <div className={cx("booking-container")}>
       <div className={cx("booking-container__left")}>
-        <img src={image} alt={`${bedroomType} - ${roomType} ${service}`} />
+        <img src={image} alt={`${title}`} />
         <div className={cx("booking-container__left-images")}>
           <span>9 images</span>
         </div>
@@ -33,8 +31,7 @@ const BookingCard = ({
       <div className={cx("booking-container__right")}>
         <div className={cx("top-content")}>
           <div className={cx("top-content__left")}>
-            {type === 'Room' && <h2>{bedroomType} - {roomType}</h2>}
-            {type === 'Service' && <h2>{service}</h2>}
+            <h2>{title}</h2>
             <Rate
               disabled
               tooltips={RATING_DESC}

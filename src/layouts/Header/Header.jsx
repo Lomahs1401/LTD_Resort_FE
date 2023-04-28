@@ -3,14 +3,13 @@ import styles from './Header.module.scss'
 import classNames from "classnames/bind"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBed, faMugHot, faGear } from '@fortawesome/free-solid-svg-icons'
-import test from '../../img/testimonial1.png'
 import logo from '../../img/logo.png'
 import { Link } from 'react-router-dom'
 import AuthUser from '../../AuthUser'
 
 const cx = classNames.bind(styles);
 
-const Header = ({active, userInfo}) => {
+const Header = ({active, userInfo, imageUrl}) => {
 
   const FIND_ROOM = 'Find Rooms';
   const FIND_SERVICE = 'Find Services';
@@ -61,7 +60,7 @@ const Header = ({active, userInfo}) => {
           </div>
           <div className={cx("avatar")}>
             <img
-              src={test}
+              src={imageUrl}
               alt='Avatar'
             />
           </div>
