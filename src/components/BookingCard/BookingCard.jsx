@@ -84,7 +84,7 @@ const BookingCard = ({
             </button>
           </div>
           <div className={cx("bottom-content__right")}>
-            <button>
+            <button style={{padding: '18px 8px'}}>
               <h3>View detail</h3>
             </button>
           </div>          

@@ -11,6 +11,7 @@ import CustomerInfo from './components/Account_info_/Customer_info/Customer_info
 import FindRoom from './pages/FindRoom/FindRoom';
 import FindService from './pages/FindService/FindService';
 import OverviewCard from './components/OverviewCard/OverviewCard';
+import Favourites from './pages/Favourites/Favourites';
 function App() {
   return (
     <div className="App">
@@ -27,7 +28,7 @@ function App() {
           <Route path="/customer-info" element={<CustomerInfo />} />
           <Route path="/find-services" element={<FindService />} />
           <Route path="/headers" element={<OverviewCard />} />
-
+          <Route path='/favourites' element={<Favourites />} />
 
         </Routes>
       </BrowserRouter>
