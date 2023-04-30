@@ -11,6 +11,8 @@ import FindService from './pages/FindService/FindService';
 import Favourites from './pages/Favourites/Favourites';
 import RequireAuth from './utils/RequireAuth';
 import ManageAccount from './pages/ManageAccount/ManageAccount';
+import NotFound from './pages/Error/NotFound/NotFound';
+import Unauthorized from './pages/Error/Unauthorized/Unauthorized';
 function App() {
   return (
     <div className="App">
@@ -31,6 +33,12 @@ function App() {
             <Route path="/find-services" element={<FindService />} />
             <Route path='/favourites' element={<Favourites />} />
           </Route>
+
+          {/* Unauthorized Page */}
+          <Route path='/unauthorized' element={<Unauthorized />} />
+
+          {/* Not found routes */}
+          <Route path='*' element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </div>

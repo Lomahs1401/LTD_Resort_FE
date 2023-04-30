@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./ManageAccount.module.scss";
 import classNames from "classnames/bind";
-import { Steps, theme } from 'antd';
+import { Steps } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPen } from '@fortawesome/free-solid-svg-icons'
 import Footer from '../../layouts/Footer/Footer';

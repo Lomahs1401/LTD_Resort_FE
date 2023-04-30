@@ -7,7 +7,7 @@ const RequireAuth = () => {
     const { getToken } = AuthUser();
     
     return (
-        getToken() ? <Outlet /> : <Navigate to="/login" state={{from: location}} replace />
+        getToken() ? <Outlet /> : <Navigate to="/unauthorized" state={{from: location}} replace />
     )
 }
 
