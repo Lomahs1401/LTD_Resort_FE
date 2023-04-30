@@ -65,9 +65,7 @@ const FindService = () => {
       setImageUrl(url);
       setLoading(true);
     })
-  }, [avatarRef]);
 
-  useEffect(() => {
     http.get('/list-services')
     .then((resolve) => {
       setListServices(resolve.data.list_services);
@@ -78,7 +76,7 @@ const FindService = () => {
       console.log(reject);
       message.error('Opps. Fetch data failed!')
     })
-  }, [http]);
+  }, []);
 
   if (!loading) {
     return (
@@ -227,10 +225,11 @@ const FindService = () => {
             <div className={cx("list-rooms-container__result")}>
               Showing 4 of <span>{listServices.length} services</span>
             </div>
-            {currentPost.map((service, index) => {
+            {currentPost.map((service) => {
               return (
                 <BookingCard
                   key={service.id}
+                  id={service.id}
                   image={golf}
                   title={service.service_name}
                   price={service.price}
