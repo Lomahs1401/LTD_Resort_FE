@@ -18,6 +18,8 @@ const BookingCard = ({
   area = '',
   totalReviews,
 }) => {
+  const priceFormat = price.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
 
   return (
@@ -48,7 +50,7 @@ const BookingCard = ({
           </div>
           <div className={cx("top-content__right")}>
             <p>Price from</p>
-            <h1>{price} VND{type === 'Room' && <sub>/Night</sub>}</h1>
+            <h1>{priceFormat}{type === 'Room' && <sub>/Night</sub>}</h1>
           </div>
         </div>
         {type === 'Room' && (
@@ -81,7 +83,7 @@ const BookingCard = ({
             </button>
           </div>
           <div className={cx("bottom-content__right")}>
-            <button style={{padding: '18px 8px'}}>
+            <button>
               <h3>View detail</h3>
             </button>
           </div>          

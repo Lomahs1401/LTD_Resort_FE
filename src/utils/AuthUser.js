@@ -21,7 +21,7 @@ export default function AuthUser() {
     const [token, setToken] = useState(getToken());
     const [user, setUser] = useState(getUser());
 
-    const saveToken = (user, tokenzz) => {
+    const saveToken = (user, token) => {
         sessionStorage.setItem('access_token', JSON.stringify(token));
         sessionStorage.setItem('user', JSON.stringify(user));
 

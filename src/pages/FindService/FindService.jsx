@@ -7,10 +7,7 @@ import overviewService2 from '../../img/overviewService2.png'
 import overviewService3 from '../../img/overviewService3.png'
 import overviewService4 from '../../img/overviewService4.png'
 import overviewService5 from '../../img/overviewService5.png'
-import spa from '../../img/spaMassage.png'
-import poolsideBar from '../../img/poolsideBar.png'
 import golf from '../../img/golf.png'
-import complexAmusementPark from '../../img/complexAmusementPark.png'
 import Header from '../../layouts/Header/Header';
 import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
@@ -19,9 +16,9 @@ import { FaDollarSign } from 'react-icons/fa';
 import { faBellConcierge } from '@fortawesome/free-solid-svg-icons'
 import BookingCard from '../../components/BookingCard/BookingCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import AuthUser from '../../AuthUser';
+import AuthUser from '../../utils/AuthUser';
 import { ref, getDownloadURL } from "firebase/storage"
-import { storage } from '../../firebase'
+import { storage } from '../../utils/firebase'
 import Loading from '../../components/Loading/Loading';
 const { Panel } = Collapse;
 
@@ -63,33 +60,25 @@ const FindService = () => {
   //     setCurrentPage(page);
   //   }
 
-  //   const itemRender = (_, type, originalElement) => {
-  //     if (type === 'prev') {
-  //       return <a>Previous</a>;
-  //     }
-  //     if (type === 'next') {
-  //       return <a>Next</a>;
-  //     }
-  //     return originalElement;
-  //   };
-
   useEffect(() => {
     getDownloadURL(avatarRef).then(url => {
       setImageUrl(url);
       setLoading(true);
     })
+  }, [avatarRef]);
 
+  useEffect(() => {
     http.get('/list-services')
-      .then((resolve) => {
-        setListServices(resolve.data.list_services);
-        console.log(resolve);
-        console.log('List Services:', resolve.data.list_services.length);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
-  }, [])
+    .then((resolve) => {
+      setListServices(resolve.data.list_services);
+      console.log(resolve);
+      console.log('List Services:', resolve.data.list_services.length);
+    })
+    .catch((reject) => {
+      console.log(reject);
+      message.error('Opps. Fetch data failed!')
+    })
+  }, [http]);
 
   if (!loading) {
     return (
@@ -181,7 +170,7 @@ const FindService = () => {
               >
                 <Panel
                   header='Price'
-                  extra={<FaDollarSign />}
+                  extra={<FaDollarSign size={20} />}
                   key="Price"
                 >
                   <Slider
@@ -251,50 +240,6 @@ const FindService = () => {
                 />
               )
             })}
-            {/* <BookingCard
-              image={spa}
-              title={'SPA - Massage'}
-              price={'203.000'}
-              ranking={5}
-              type={'Service'}
-              capacity={1}
-              listRooms={50}
-              area={18}
-              totalReviews={54}
-            />
-            <BookingCard
-              image={poolsideBar}
-              title={'Poolside Bar'}
-              price={'203.000'}
-              ranking={5}
-              type={'Service'}
-              capacity={2}
-              listRooms={50}
-              area={20}
-              totalReviews={54}
-            />
-            <BookingCard
-              image={golf}
-              title={'Golf'}
-              price={'280.000'}
-              ranking={5}
-              type={'Service'}
-              capacity={2}
-              listRooms={50}
-              area={25}
-              totalReviews={136}
-            />
-            <BookingCard
-              image={complexAmusementPark}
-              title={'Complex Amusement Park'}
-              price={'400.000'}
-              ranking={5}
-              type={'Service'}
-              capacity={3}
-              listRooms={50}
-              area={30}
-              totalReviews={154}
-            /> */}
             <div className={cx("list-room-pagination")}>
               <Pagination
                 showSizeChanger
@@ -303,7 +248,6 @@ const FindService = () => {
                 defaultCurrent={1}
                 pageSize={4}
                 total={listServices.length}
-                // itemRender={itemRender}
                 onChange={handleClickPaginate}
               />
             </div>
