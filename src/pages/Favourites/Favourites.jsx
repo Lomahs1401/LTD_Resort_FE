@@ -12,6 +12,8 @@ import spa from "../../img/spaMassage.png";
 import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from '../../utils/firebase'
 import Loading from '../../components/Loading/Loading';
+import { useSelector } from "react-redux";
+import { favouritesRoomsSelector, favouritesServicesSelector } from "../../redux/selectors";
 
 const cx = classNames.bind(styles);
 
@@ -24,6 +26,9 @@ function Favourites() {
 
   // Create a reference from a Google Cloud Storage URI
   const avatarRef = ref(storage, user.avatar);
+
+  const favouritesRooms = useSelector(favouritesRoomsSelector);
+  const favouritesServices = useSelector(favouritesServicesSelector);
 
   const toggleTab = (index) => {
     setToggleState(index);
@@ -58,81 +63,63 @@ function Favourites() {
               >
                 <div>
                   <h4 className={cx("label-tabs")}>Room</h4>
-                  <div>2 mark</div>
+                  <div>{favouritesRooms.length} mark</div>
                 </div>
               </button>
 
               <Divider className={cx("seperate-line")} type="vertical" />
-  
+
               <button
                 className={
                   toggleState === 2
-                  ? cx("tabs__active")
-                  : cx("tabs")
+                    ? cx("tabs__active")
+                    : cx("tabs")
                 }
                 onClick={() => toggleTab(2)}
               >
                 <div>
                   <h4 className={cx("label-tabs")}>Service</h4>
-                  <div>2 mark</div>
+                  <div>{favouritesServices.length} mark</div>
                 </div>
               </button>
             </div>
-  
+
             <div className={cx("content-tabs")}>
               <div
                 className={
                   toggleState === 1
                     ? cx("active-content")
-                    : cx("content") 
+                    : cx("content")
                 }
               >
-                <BookingCard
-                  image={singleBedroom}
-                  title={"Single Bedroom - Superior Room"}
-                  price={203000}
-                  ranking={5}
-                  type={"Room"}
-                  capacity={1}
-                  listRooms={50}
-                  area={18}
-                  totalReviews={54}
-                />
-                <BookingCard
-                  image={singleBedroom}
-                  title={"Single Bedroom - Superior Room"}
-                  price={203000}
-                  ranking={5}
-                  type={"Room"}
-                  capacity={1}
-                  listRooms={50}
-                  area={18}
-                  totalReviews={54}
-                />
-                <BookingCard
-                  image={singleBedroom}
-                  title={"Single Bedroom - Superior Room"}
-                  price={203000}
-                  ranking={5}
-                  type={"Room"}
-                  capacity={1}
-                  listRooms={50}
-                  area={18}
-                  totalReviews={54}
-                />
-                <BookingCard
-                  image={singleBedroom}
-                  title={"Single Bedroom - Superior Room"}
-                  price={203000}
-                  ranking={5}
-                  type={"Room"}
-                  capacity={1}
-                  listRooms={50}
-                  area={18}
-                  totalReviews={54}
-                />
+                {
+                  favouritesRooms.length > 0 ?
+                    favouritesRooms.map((favouriteRoom, index) => {
+                      return (
+                        <BookingCard
+                          key={index}
+                          id={favouriteRoom.id}
+                          image={singleBedroom}
+                          title={favouriteRoom.title}
+                          price={favouriteRoom.price}
+                          ranking={favouriteRoom.ranking}
+                          type={favouriteRoom.type}
+                          capacity={favouriteRoom.capacity}
+                          listRooms={favouriteRoom.listRooms}
+                          area={favouriteRoom.area}
+                          totalReviews={54}
+                          disableFavouriteCheck={true}
+                        />
+                      )
+                    })
+                    : (
+                      <div>
+                        <h1 style={{textAlign: 'center'}}>There are no favorite rooms in your list yet</h1>
+                      </div>
+                    )
+                }
               </div>
-  
+
               <div
                 className={
                   toggleState === 2
@@ -140,33 +127,34 @@ function Favourites() {
                     : cx("content")
                 }
               >
-                <BookingCard
-                  image={spa}
-                  title={"SPA - Massage"}
-                  price={203000}
-                  ranking={5}
-                  type={"Service"}
-                  capacity={1}
-                  listRooms={50}
-                  area={18}
-                  totalReviews={54}
-                />
-                <BookingCard
-                  image={spa}
-                  title={"SPA - Massage"}
-                  price={203000}
-                  ranking={5}
-                  type={"Service"}
-                  capacity={1}
-                  listRooms={50}
-                  area={18}
-                  totalReviews={54}
-                />
+                {
+                  favouritesServices.length > 0 ?
+                    favouritesServices.map((favouriteService, index) => {
+                      return (
+                        <BookingCard
+                          key={index}
+                          id={favouriteService.id}
+                          image={spa}
+                          title={favouriteService.title}
+                          price={favouriteService.price}
+                          ranking={favouriteService.ranking}
+                          type={favouriteService.type}
+                          totalReviews={54}
+                          disableFavouriteCheck={true}
+                        />
+                      )
+                    })
+                    : (
+                      <div>
+                        <h1 style={{textAlign: 'center'}}>There are no favorite services in your list yet</h1>
+                      </div>
+                    )
+                }
               </div>
             </div>
           </div>
         </div>
-  
+
         <Footer />
       </div>
     );

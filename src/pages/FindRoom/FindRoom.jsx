@@ -75,9 +75,7 @@ const FindRoom = () => {
       setImageUrl(url);
       setLoading(true);
     })
-  }, [avatarRef]);
 
-  useEffect(() => {
     http.get('/list-room-types')
     .then((resolve) => {
       setListRoomTypes(resolve.data.list_room_types);
@@ -88,7 +86,7 @@ const FindRoom = () => {
       console.log(reject);
       message.error('Opps. Fetch data failed!')
     })
-  }, [http])
+  }, []);
 
   if (!loading) {
     return (
@@ -428,10 +426,11 @@ const FindRoom = () => {
             <div className={cx("list-rooms-container__result")}>
               Showing 4 of <span>{listRoomTypes.length} type rooms</span>
             </div>
-            {currentPost.map((roomType, index) => {
+            {currentPost.map((roomType) => {
               return (
                 <BookingCard
                   key={roomType.id}
+                  id={roomType.id}
                   image={twinBedroom}
                   title={roomType.room_type_name}
                   price={roomType.price}

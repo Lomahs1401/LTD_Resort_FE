@@ -92,9 +92,12 @@
 
 .seperate-line {
     border: 1px solid #BFC4C1;
+    margin-top: 24px;
+    margin-bottom: 16px;
 }
 
 .bottom-content {
+    width: 100%;
    
     &__left {
         > button {
