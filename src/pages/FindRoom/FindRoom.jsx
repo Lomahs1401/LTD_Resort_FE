@@ -17,9 +17,9 @@ import { BiSearch } from "react-icons/bi"
 import BookingCard from '../../components/BookingCard/BookingCard';
 import dayjs from 'dayjs';
 import Header from '../../layouts/Header/Header';
-import AuthUser from '../../AuthUser';
+import AuthUser from '../../utils/AuthUser';
 import { ref, getDownloadURL } from "firebase/storage"
-import { storage } from '../../firebase'
+import { storage } from '../../utils/firebase'
 import Loading from '../../components/Loading/Loading';
 
 const { Panel } = Collapse;
@@ -70,33 +70,25 @@ const FindRoom = () => {
     setCurrentPage(page);
   }
 
-  const itemRender = (_, type, originalElement) => {
-    if (type === 'prev') {
-      return <a>Previous</a>;
-    }
-    if (type === 'next') {
-      return <a>Next</a>;
-    }
-    return originalElement;
-  };
-
   useEffect(() => {
     getDownloadURL(avatarRef).then(url => {
       setImageUrl(url);
       setLoading(true);
     })
+  }, [avatarRef]);
 
+  useEffect(() => {
     http.get('/list-room-types')
-      .then((resolve) => {
-        setListRoomTypes(resolve.data.list_room_types);
-        console.log(resolve);
-        console.log('List room types:', resolve.data.list_room_types.length);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
-  }, [])
+    .then((resolve) => {
+      setListRoomTypes(resolve.data.list_room_types);
+      console.log(resolve);
+      console.log('List room types:', resolve.data.list_room_types.length);
+    })
+    .catch((reject) => {
+      console.log(reject);
+      message.error('Opps. Fetch data failed!')
+    })
+  }, [http])
 
   if (!loading) {
     return (
@@ -106,10 +98,7 @@ const FindRoom = () => {
     return (
       <div className={cx("wrapper")}>
         <div className={cx("header")}>
-          {
-            loading &&
-            <Header active='Find Rooms' userInfo={user} imageUrl={imageUrl} />
-          }
+          <Header active='Find Rooms' userInfo={user} imageUrl={imageUrl} />
           <nav className={cx("nav")}>
             <div className={cx("header-middle")}>
               <div className={"header-middle__content"}>
@@ -336,7 +325,7 @@ const FindRoom = () => {
               >
                 <Panel
                   header='Price'
-                  extra={<FaDollarSign />}
+                  extra={<FaDollarSign size={20} />}
                   key="Price"
                 >
                   <Slider
@@ -362,7 +351,7 @@ const FindRoom = () => {
               >
                 <Panel
                   header="Room Area"
-                  extra={<FaBed />}
+                  extra={<FaBed size={20} />}
                   key="RoomArea"
                 >
                   <Slider
@@ -390,7 +379,7 @@ const FindRoom = () => {
               >
                 <Panel
                   header='Bedroom'
-                  extra={<FaBed />}
+                  extra={<FaBed size={20} />}
                   key="BedroomType"
                 >
                   <div className={cx("filter-by-bedroom-type__bottom")}>
@@ -414,7 +403,7 @@ const FindRoom = () => {
               >
                 <Panel
                   header='Room'
-                  extra={<FaBed />}
+                  extra={<FaBed size={20} />}
                   key="RoomType"
                 >
                   <div className={cx("filter-by-room-type__bottom")}>
@@ -463,7 +452,6 @@ const FindRoom = () => {
                 defaultCurrent={1}
                 pageSize={4}
                 total={listRoomTypes.length}
-                // itemRender={itemRender}
                 onChange={handleClickPaginate}
               />
             </div>

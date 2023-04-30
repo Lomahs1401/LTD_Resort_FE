@@ -8,7 +8,7 @@ import gif_cat from '../../img/cat.gif'
 import { Form, Button, Checkbox, Input, Divider, Modal, message } from 'antd'
 import ImageSlider from '../../components/ImageSlider/ImageSlider';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthUser from '../../AuthUser';
+import AuthUser from '../../utils/AuthUser';
 
 const cx = classNames.bind(styles);
 

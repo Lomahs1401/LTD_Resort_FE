@@ -1,9 +1,7 @@
 import React from 'react'
 import styles from './OverviewCard.module.scss'
 import classNames from 'classnames/bind'
-import { Card, Divider, Rate } from 'antd';
-const { Meta } = Card;
-
+import { Divider, Rate } from 'antd';
 const cx = classNames.bind(styles);
 
 const OverviewCard = ({ image, bedroomType = '', roomType = '', service = '', price, ranking, type, description }) => {
