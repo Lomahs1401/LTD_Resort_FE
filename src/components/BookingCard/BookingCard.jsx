@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from './BookingCard.module.scss'
 import classNames from "classnames/bind";
 import { Divider, Rate } from 'antd';
 import { FaBed, FaCoffee, FaUser } from 'react-icons/fa';
 import { BsFillHeartFill, BsHouseCheckFill } from 'react-icons/bs';
-import { useDispatch } from 'react-redux';
-import { addFavouriteRoom, addFavouriteService } from '../../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFavouriteRoom, addFavouriteService, removeFavouriteRoom, removeFavouriteService } from '../../redux/actions';
+import { favouritesRoomsSelector, favouritesServicesSelector } from "../../redux/selectors";
 
 const cx = classNames.bind(styles);
 
@@ -21,6 +22,7 @@ const BookingCard = ({
   area = '',
   totalReviews,
   disableFavouriteCheck,
+  setReloadHeader,
 }) => {
   const priceFormat = price.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
 
@@ -28,27 +30,67 @@ const BookingCard = ({
 
   const dispatch = useDispatch();
 
+  const favouritesRooms = useSelector(favouritesRoomsSelector);
+  const favouritesServices = useSelector(favouritesServicesSelector);
+
+  const [toggleFavourite, setToggleFavourite] = useState(() => {
+    let isToggleFavourite = false;
+    if (type === "Room") {
+      favouritesRooms.some((favouriteRoom) => {
+        if (favouriteRoom.id == id) {
+          isToggleFavourite = true;
+          return true;
+        } else {
+          return false;
+        }
+      })
+    } else if (type === "Service") {
+      favouritesServices.some((favouriteService) => {
+        if (favouriteService.id == id) {
+          isToggleFavourite = true;
+          return true;
+        } else {
+          return false;
+        }
+      })
+    }
+    return isToggleFavourite;
+  });
+
   const handleClickFavourite = () => {
     if (type === "Room") {
-      dispatch(addFavouriteRoom({
-        id: id,
-        title: title,
-        price: price,
-        ranking: ranking,
-        type: type,
-        capacity: capacity,
-        listRooms: listRooms,
-        area: area
-      }));
+      if (!toggleFavourite) {
+        dispatch(addFavouriteRoom({
+          id: id,
+          title: title,
+          price: price,
+          ranking: ranking,
+          type: type,
+          capacity: capacity,
+          listRooms: listRooms,
+          area: area
+        }));
+        setToggleFavourite(true);
+      } else {
+        dispatch(removeFavouriteRoom(id));
+        setToggleFavourite(false);
+      }
     } else if (type === "Service") {
-      dispatch(addFavouriteService({
-        id: id,
-        title: title,
-        price: price,
-        ranking: ranking,
-        type: type,
-      }));
+      if (!toggleFavourite) {
+        dispatch(addFavouriteService({
+          id: id,
+          title: title,
+          price: price,
+          ranking: ranking,
+          type: type,
+        }));
+        setToggleFavourite(true);
+      } else {
+        dispatch(removeFavouriteService(id));
+        setToggleFavourite(false);
+      }
     }
+    setReloadHeader(true);
   }
 
   return (
@@ -109,6 +151,7 @@ const BookingCard = ({
           <div className={cx("bottom-content__left")}>
             <button 
               style={disableFavouriteCheck ? {display: 'none'} : {display: 'inline-block'}}
+              className={toggleFavourite ? cx("btn-toggle") : cx("btn-untoggle")}
               onClick={handleClickFavourite} 
             >
               <BsFillHeartFill size={16}/>

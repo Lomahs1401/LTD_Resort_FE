@@ -34,6 +34,7 @@ const FindService = () => {
 
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [reloadHeader, setReloadHeader] = useState(false);
 
   // Create a reference from a Google Cloud Storage URI
   const avatarRef = ref(storage, user.avatar);
@@ -236,6 +237,7 @@ const FindService = () => {
                   ranking={5}
                   type={'Service'}
                   totalReviews={54}
+                  setReloadHeader={setReloadHeader}
                 />
               )
             })}

@@ -39,7 +39,29 @@ const rootReducer = (state = initState, action) => {
                     action.payload,
                 ]
             }
-
+        case 'favourites/removeFavouriteRoom':
+            const newFavouriteRooms = state.favouritesRooms.filter((favouriteRoom) => {
+                return favouriteRoom.id !== action.payload;
+            });
+            
+            localStorage.setItem('favourites_rooms', JSON.stringify(newFavouriteRooms));
+            
+            return {
+                ...state,
+                favouritesRooms: newFavouriteRooms,
+            };
+        case 'favourites/removeFavouriteService':
+            const newFavouriteServices = state.favouritesServices.filter((favouriteService) => {
+                return favouriteService.id !== action.payload;
+            });
+        
+            localStorage.setItem('favourites_services', JSON.stringify(newFavouriteServices));
+            console.log('New Favourites Services: ', newFavouriteServices)
+        
+            return {
+                ...state,
+                favouritesServices: newFavouriteServices,
+            };
         default:
             return state;
     }
