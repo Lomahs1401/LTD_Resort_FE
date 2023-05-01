@@ -20,6 +20,7 @@ import AuthUser from '../../utils/AuthUser';
 import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from '../../utils/firebase'
 import Loading from '../../components/Loading/Loading';
+import currency from '../../utils/currency';
 const { Panel } = Collapse;
 
 const cx = classNames.bind(styles);
@@ -28,38 +29,76 @@ const FindService = () => {
 
   const { http, user } = AuthUser();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postPerPage, setPostPerPage] = useState(4);
+  // Fetch list services state
   const [listServices, setListServices] = useState([]);
 
+  // Fetch avatar state
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
-  const [reloadHeader, setReloadHeader] = useState(false);
 
   // Create a reference from a Google Cloud Storage URI
   const avatarRef = ref(storage, user.avatar);
 
+  // Fetch price state
+  const [lowestPrice, setLowestPrice] = useState(0);
+  const [highestPrice, setHighestPrice] = useState(0);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postPerPage, setPostPerPage] = useState(4);
   const lastPostIndex = currentPage * postPerPage;
   const firstPostIndex = lastPostIndex - postPerPage;
   const currentPost = listServices.slice(firstPostIndex, lastPostIndex);
+  
+  // reload "Favourites" in header
+  const [reloadHeader, setReloadHeader] = useState(false);
+  
+  // Filter state
+  const [filterPrice, setFilterPrice] = useState(100000);
+  const [filterServiceType, setFilterServiceType] = useState([]);
 
-  const onChange = (value) => {
-    console.log('onChange: ', value);
+  const serviceTypeOptions = listServices.map((service) => {
+    return {
+      label: service.service_name,
+      value: service.service_name,
+    }
+  })
+
+  // --------------------------     Filter Service Type     --------------------------
+
+  const onAfterChangePrice = (value) => {
+    setFilterPrice(value);
   };
 
-  const onAfterChange = (value) => {
-    console.log('onAfterChange: ', value);
-  };
+  const handleCheckServiceType = (checkedValues) => {
+    setFilterServiceType(checkedValues);
+  }
+
+  const handleFilter = () => {
+    const formData = new FormData();
+
+    formData.append('price', filterPrice);
+    formData.append('services', filterServiceType)
+
+    http.post('/filter-room-type', formData)
+    .then((resolve) => {
+      setListServices(resolve.data.list_filter_service)
+      message.success('Filter successfully!')
+    })
+    .catch((reject) => {
+      console.log(reject);
+      message.error('Opps. Fetch data failed!')
+    })
+  }
+
+  // --------------------------     Paginate     --------------------------
 
   const handleClickPaginate = (page) => {
     console.log('Page:', page);
     setCurrentPage(page);
   }
 
-  //   const handleClickPaginate = (page) => {
-  //     console.log('Page:', page);
-  //     setCurrentPage(page);
-  //   }
+  // --------------------------     Fetch API     --------------------------
 
   useEffect(() => {
     getDownloadURL(avatarRef).then(url => {
@@ -68,15 +107,31 @@ const FindService = () => {
     })
 
     http.get('/list-services')
-    .then((resolve) => {
-      setListServices(resolve.data.list_services);
-      console.log(resolve);
-      console.log('List Services:', resolve.data.list_services.length);
-    })
-    .catch((reject) => {
-      console.log(reject);
-      message.error('Opps. Fetch data failed!')
-    })
+      .then((resolve) => {
+        setListServices(resolve.data.list_services);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Fetch data failed!')
+      })
+
+    http.get('/lowest-price-service')
+      .then((resolve) => {
+        setLowestPrice(resolve.data.lowest_price);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Fetch data failed!')
+      })
+
+    http.get('/highest-price-service')
+      .then((resolve) => {
+        setHighestPrice(resolve.data.highest_price);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Fetch data failed!')
+      })
   }, []);
 
   if (!loading) {
@@ -173,15 +228,14 @@ const FindService = () => {
                   key="Price"
                 >
                   <Slider
-                    onChange={onChange}
-                    onAfterChange={onAfterChange}
-                    defaultValue={0}
-                    min={100000}
-                    max={500000}
+                    onAfterChange={onAfterChangePrice}
+                    defaultValue={lowestPrice}
+                    min={lowestPrice}
+                    max={highestPrice}
                   />
                   <div className={cx("filter-by-price__bottom")}>
-                    <p>100.000 VND</p>
-                    <p>500.000 VND</p>
+                    <p>{currency(lowestPrice)}</p>
+                    <p>{currency(highestPrice)}</p>
                   </div>
                 </Panel>
               </Collapse>
@@ -200,23 +254,18 @@ const FindService = () => {
                   extra={<FontAwesomeIcon icon={faBellConcierge} />}
                   key="Service"
                 >
-                  <div className={cx("filter-by-service-type__bottom")}>
-                    <Checkbox className={cx("service-type-item")}>Spa - Massage</Checkbox>
-                    <Checkbox className={cx("service-type-item")}>Pool</Checkbox>
-                    <Checkbox className={cx("service-type-item")}>Fitness</Checkbox>
-                    <Checkbox className={cx("service-type-item")}>Poolside Bar</Checkbox>
-                    <Checkbox className={cx("service-type-item")}>Karaoke</Checkbox>
-                    <Checkbox className={cx("service-type-item")}>Golf</Checkbox>
-                    <Checkbox className={cx("service-type-item")}>Tennis</Checkbox>
-                    <Checkbox className={cx("service-type-item")}>Complex Amusement Park</Checkbox>
-                  </div>
+                  <Checkbox.Group
+                    options={serviceTypeOptions}
+                    className={cx("service-type-item")}
+                    onChange={handleCheckServiceType}
+                  />
                 </Panel>
               </Collapse>
             </div>
 
             <Divider className={cx("seperate-line")} />
 
-            <button className={cx("btn-filter")}>
+            <button className={cx("btn-filter")} onClick={handleFilter}>
               Filter
             </button>
 

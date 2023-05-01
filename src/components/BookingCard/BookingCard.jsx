@@ -7,6 +7,7 @@ import { BsFillHeartFill, BsHouseCheckFill } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavouriteRoom, addFavouriteService, removeFavouriteRoom, removeFavouriteService } from '../../redux/actions';
 import { favouritesRoomsSelector, favouritesServicesSelector } from "../../redux/selectors";
+import currency from '../../utils/currency';
 
 const cx = classNames.bind(styles);
 
@@ -24,8 +25,6 @@ const BookingCard = ({
   disableFavouriteCheck,
   setReloadHeader,
 }) => {
-  const priceFormat = price.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
-
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
 
   const dispatch = useDispatch();
@@ -121,7 +120,7 @@ const BookingCard = ({
           </div>
           <div className={cx("top-content__right")}>
             <p>Price from</p>
-            <h1>{priceFormat}{type === 'Room' && <sub>/Night</sub>}</h1>
+            <h1>{currency(price)}{type === 'Room' && <sub>/Night</sub>}</h1>
           </div>
         </div>
         {type === 'Room' && (
