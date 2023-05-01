@@ -18,6 +18,7 @@ import BookingCard from '../../components/BookingCard/BookingCard';
 import dayjs from 'dayjs';
 import Header from '../../layouts/Header/Header';
 import AuthUser from '../../utils/AuthUser';
+import currency from '../../utils/currency';
 import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from '../../utils/firebase'
 import Loading from '../../components/Loading/Loading';
@@ -30,28 +31,112 @@ const FindRoom = () => {
 
   const { http, user } = AuthUser();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postPerPage, setPostPerPage] = useState(4);
+  // Fetch list room types state
   const [listRoomTypes, setListRoomTypes] = useState([]);
 
+  // Fetch avatar state
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
-  const [reloadHeader, setReloadHeader] = useState(false);
 
   // Create a reference from a Google Cloud Storage URI
   const avatarRef = ref(storage, user.avatar);
 
+  // Fetch price state
+  const [lowestPrice, setLowestPrice] = useState(0);
+  const [highestPrice, setHighestPrice] = useState(0);
+
+  // Fetch room area state
+  const [smallestRoomSize, setSmallestRoomSize] = useState(0);
+  const [biggestRoomSize, setBiggestRoomSize] = useState(0);
+
+  // Fetch bedroom type state
+  const [bedroomTypes, setBedRoomTypes] = useState([]);
+
+  // Fetch room type state
+  const [roomTypes, setRoomTypes] = useState([]);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postPerPage, setPostPerPage] = useState(4);
   const lastPostIndex = currentPage * postPerPage;
   const firstPostIndex = lastPostIndex - postPerPage;
   const currentPost = listRoomTypes.slice(firstPostIndex, lastPostIndex);
 
-  const onChange = (value) => {
-    console.log('onChange: ', value);
+  // reload "Favourites" in header
+  const [reloadHeader, setReloadHeader] = useState(false);
+
+  // Filter state
+  const [filterPrice, setFilterPrice] = useState(0);
+  const [filterRoomSize, setFilterRoomSize] = useState(0);
+  const [filterBedroomType, setFilterBedroomType] = useState([]);
+  const [filterRoomType, setFilterRoomType] = useState([]);
+
+  const bedroomTypeOptions = bedroomTypes.map((bedroomType) => {
+    return {
+      label: bedroomType,
+      value: bedroomType,
+    }
+  })
+
+  const roomTypeOptions = roomTypes.map((roomType) => {
+    return {
+      label: roomType,
+      value: roomType,
+    }
+  })
+
+  // --------------------------     Filter Room Type     --------------------------
+
+  const onAfterChangePrice = (value) => {
+    setFilterPrice(value);
   };
 
-  const onAfterChange = (value) => {
-    console.log('onAfterChange: ', value);
-  };
+  const onAfterChangeRoomSize = (value) => {
+    setFilterRoomSize(value);
+  }
+
+  const handleCheckBedroomType = (checkedValues) => {
+    setFilterBedroomType(checkedValues);
+  }
+
+  const handleCheckRoomType = (checkedValues) => {
+    setFilterRoomType(checkedValues);
+  }
+
+  const handleFilter = () => {
+    const formData = new FormData();
+
+    formData.append('price', filterPrice);
+    formData.append('room_size', filterRoomSize);
+
+    if (filterBedroomType.length != 0) {
+      filterBedroomType.forEach((bedroomType) => {
+        formData.append('bedroom_type[]', bedroomType);
+      })
+    } else {
+        formData.append('bedroom_type[]', []);
+    }
+
+    if (filterRoomType.length != 0) {
+      filterRoomType.forEach((roomType) => {
+        formData.append('room_type[]', roomType);
+      })
+    } else {
+      formData.append('room_type[]', []);
+    }
+
+    http.post('/filter-room-type', formData)
+      .then((resolve) => {
+        setListRoomTypes(resolve.data.list_filter_room_type)
+        message.success('Filter successfully!')
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Something went wrong..')
+      })
+  }
+
+  // --------------------------     Find Room     --------------------------
 
   const disabledDate = (current) => {
     // Can not select days before today and today
@@ -66,10 +151,13 @@ const FindRoom = () => {
     console.log('Failed:', errorInfo);
   };
 
+  // --------------------------     Paginate     --------------------------
+
   const handleClickPaginate = (page) => {
-    console.log('Page:', page);
     setCurrentPage(page);
   }
+
+  // --------------------------     Fetch API     --------------------------
 
   useEffect(() => {
     getDownloadURL(avatarRef).then(url => {
@@ -78,15 +166,67 @@ const FindRoom = () => {
     })
 
     http.get('/list-room-types')
-    .then((resolve) => {
-      setListRoomTypes(resolve.data.list_room_types);
-      console.log(resolve);
-      console.log('List room types:', resolve.data.list_room_types.length);
-    })
-    .catch((reject) => {
-      console.log(reject);
-      message.error('Opps. Fetch data failed!')
-    })
+      .then((resolve) => {
+        setListRoomTypes(resolve.data.list_room_types);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Fetch data failed!')
+      })
+
+    http.get('/lowest-price-room-type')
+      .then((resolve) => {
+        setLowestPrice(resolve.data.lowest_price);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Fetch data failed!')
+      })
+
+    http.get('/highest-price-room-type')
+      .then((resolve) => {
+        setHighestPrice(resolve.data.highest_price);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Fetch data failed!')
+      })
+
+    http.get('/smallest-size-room-type')
+      .then((resolve) => {
+        setSmallestRoomSize(resolve.data.smallest_room_size);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Fetch data failed!')
+      })
+
+    http.get('/biggest-size-room-type')
+      .then((resolve) => {
+        setBiggestRoomSize(resolve.data.biggest_room_size);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Fetch data failed!')
+      })
+
+    http.get('/bedroom-type-names')
+      .then((resolve) => {
+        setBedRoomTypes(resolve.data.bedroom_type_names);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Fetch data failed!')
+      })
+
+    http.get('/room-type-names')
+      .then((resolve) => {
+        setRoomTypes(resolve.data.room_type_names);
+      })
+      .catch((reject) => {
+        console.log(reject);
+        message.error('Opps. Fetch data failed!')
+      })
   }, []);
 
   if (!loading) {
@@ -328,15 +468,14 @@ const FindRoom = () => {
                   key="Price"
                 >
                   <Slider
-                    onChange={onChange}
-                    onAfterChange={onAfterChange}
-                    defaultValue={0}
-                    min={0}
-                    max={5000000}
+                    onAfterChange={onAfterChangePrice}
+                    defaultValue={lowestPrice}
+                    min={lowestPrice}
+                    max={highestPrice}
                   />
                   <div className={cx("filter-by-price__bottom")}>
-                    <p>200.000 VND</p>
-                    <p>5.000.000 VND</p>
+                    <p>{currency(lowestPrice)}</p>
+                    <p>{currency(highestPrice)}</p>
                   </div>
                 </Panel>
               </Collapse>
@@ -354,15 +493,14 @@ const FindRoom = () => {
                   key="RoomArea"
                 >
                   <Slider
-                    onChange={onChange}
-                    onAfterChange={onAfterChange}
-                    defaultValue={18}
-                    min={18}
-                    max={70}
+                    onAfterChange={onAfterChangeRoomSize}
+                    defaultValue={smallestRoomSize}
+                    min={smallestRoomSize}
+                    max={biggestRoomSize}
                   />
                   <div className={cx("filter-by-room-area__bottom")}>
-                    <p>18m<sup>2</sup></p>
-                    <p>70m<sup>2</sup></p>
+                    <p>{smallestRoomSize}m<sup>2</sup></p>
+                    <p>{biggestRoomSize}m<sup>2</sup></p>
                   </div>
                 </Panel>
               </Collapse>
@@ -377,17 +515,15 @@ const FindRoom = () => {
                 defaultActiveKey={["BedroomType"]}
               >
                 <Panel
-                  header='Bedroom'
+                  header='Bedroom Type'
                   extra={<FaBed size={20} />}
                   key="BedroomType"
                 >
-                  <div className={cx("filter-by-bedroom-type__bottom")}>
-                    <Checkbox className={cx("bedroom-type-item")}>Single Bedroom</Checkbox>
-                    <Checkbox className={cx("bedroom-type-item")}>Twin Bedroom</Checkbox>
-                    <Checkbox className={cx("bedroom-type-item")}>Double Bedroom</Checkbox>
-                    <Checkbox className={cx("bedroom-type-item")}>Triple Bedroom</Checkbox>
-                    <Checkbox className={cx("bedroom-type-item")}>Quad Bedroom</Checkbox>
-                  </div>
+                  <Checkbox.Group
+                    options={bedroomTypeOptions}
+                    className={cx("bedroom-type-item")}
+                    onChange={handleCheckBedroomType}
+                  />
                 </Panel>
               </Collapse>
             </div>
@@ -401,23 +537,22 @@ const FindRoom = () => {
                 defaultActiveKey={["RoomType"]}
               >
                 <Panel
-                  header='Room'
+                  header='Room Type'
                   extra={<FaBed size={20} />}
                   key="RoomType"
                 >
-                  <div className={cx("filter-by-room-type__bottom")}>
-                    <Checkbox className={cx("room-type-item")}>Superior Bedroom</Checkbox>
-                    <Checkbox className={cx("room-type-item")}>Deluxe Bedroom</Checkbox>
-                    <Checkbox className={cx("room-type-item")}>Executive Bedroom</Checkbox>
-                    <Checkbox className={cx("room-type-item")}>Suite Bedroom</Checkbox>
-                  </div>
+                  <Checkbox.Group
+                    options={roomTypeOptions}
+                    className={cx("room-type-item")}
+                    onChange={handleCheckRoomType}
+                  />
                 </Panel>
               </Collapse>
             </div>
 
             <Divider className={cx("seperate-line")} />
 
-            <button className={cx("btn-filter")}>
+            <button className={cx("btn-filter")} onClick={handleFilter}>
               Filter
             </button>
 
