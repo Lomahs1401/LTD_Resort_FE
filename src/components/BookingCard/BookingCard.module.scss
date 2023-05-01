@@ -101,13 +101,28 @@
    
     &__left {
         > button {
-            background-color: #FFF;
             border-radius: 5px;
             border: 1px solid #8DD3BB;
             padding: 16px 8px;
             width: 8%;
             transition: 0.3s;
             float: left;
+            
+        }
+
+        .btn-toggle {
+            background-color: #8DD3BB;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #8DD3BB;
+                border: 1px solid rgb(30, 30, 216);
+                opacity: 0.8;
+            }
+        }
+
+        .btn-untoggle {
+            background-color: #FFF;
 
             &:hover {
                 cursor: pointer;
