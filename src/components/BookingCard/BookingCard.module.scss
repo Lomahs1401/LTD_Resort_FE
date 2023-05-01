@@ -1,12 +1,11 @@
 .booking-container {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     margin-block: 2%;
     box-shadow: rgba(149, 157, 165, 0.7) 0px 8px 24px;
     padding-right: 12px;
     border-radius: 10px;
-    gap: 40px;
     
     &__left {
 
@@ -93,19 +92,37 @@
 
 .seperate-line {
     border: 1px solid #BFC4C1;
+    margin-top: 24px;
+    margin-bottom: 16px;
 }
 
 .bottom-content {
+    width: 100%;
    
     &__left {
         > button {
-            background-color: #FFF;
             border-radius: 5px;
             border: 1px solid #8DD3BB;
             padding: 16px 8px;
             width: 8%;
             transition: 0.3s;
             float: left;
+            
+        }
+
+        .btn-toggle {
+            background-color: #8DD3BB;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #8DD3BB;
+                border: 1px solid rgb(30, 30, 216);
+                opacity: 0.8;
+            }
+        }
+
+        .btn-untoggle {
+            background-color: #FFF;
 
             &:hover {
                 cursor: pointer;

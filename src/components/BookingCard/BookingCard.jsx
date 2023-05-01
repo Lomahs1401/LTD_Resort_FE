@@ -1,17 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from './BookingCard.module.scss'
 import classNames from "classnames/bind";
 import { Divider, Rate } from 'antd';
 import { FaBed, FaCoffee, FaUser } from 'react-icons/fa';
 import { BsFillHeartFill, BsHouseCheckFill } from 'react-icons/bs';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFavouriteRoom, addFavouriteService, removeFavouriteRoom, removeFavouriteService } from '../../redux/actions';
+import { favouritesRoomsSelector, favouritesServicesSelector } from "../../redux/selectors";
 
 const cx = classNames.bind(styles);
 
 const BookingCard = ({
+  id,
   image,
-  bedroomType = '',
-  roomType = '',
-  service = '',
+  title = '',
   price,
   ranking,
   type,
@@ -19,13 +21,82 @@ const BookingCard = ({
   listRooms = '',
   area = '',
   totalReviews,
+  disableFavouriteCheck,
+  setReloadHeader,
 }) => {
+  const priceFormat = price.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
+
+  const dispatch = useDispatch();
+
+  const favouritesRooms = useSelector(favouritesRoomsSelector);
+  const favouritesServices = useSelector(favouritesServicesSelector);
+
+  const [toggleFavourite, setToggleFavourite] = useState(() => {
+    let isToggleFavourite = false;
+    if (type === "Room") {
+      favouritesRooms.some((favouriteRoom) => {
+        if (favouriteRoom.id == id) {
+          isToggleFavourite = true;
+          return true;
+        } else {
+          return false;
+        }
+      })
+    } else if (type === "Service") {
+      favouritesServices.some((favouriteService) => {
+        if (favouriteService.id == id) {
+          isToggleFavourite = true;
+          return true;
+        } else {
+          return false;
+        }
+      })
+    }
+    return isToggleFavourite;
+  });
+
+  const handleClickFavourite = () => {
+    if (type === "Room") {
+      if (!toggleFavourite) {
+        dispatch(addFavouriteRoom({
+          id: id,
+          title: title,
+          price: price,
+          ranking: ranking,
+          type: type,
+          capacity: capacity,
+          listRooms: listRooms,
+          area: area
+        }));
+        setToggleFavourite(true);
+      } else {
+        dispatch(removeFavouriteRoom(id));
+        setToggleFavourite(false);
+      }
+    } else if (type === "Service") {
+      if (!toggleFavourite) {
+        dispatch(addFavouriteService({
+          id: id,
+          title: title,
+          price: price,
+          ranking: ranking,
+          type: type,
+        }));
+        setToggleFavourite(true);
+      } else {
+        dispatch(removeFavouriteService(id));
+        setToggleFavourite(false);
+      }
+    }
+    setReloadHeader(true);
+  }
 
   return (
     <div className={cx("booking-container")}>
       <div className={cx("booking-container__left")}>
-        <img src={image} alt={`${bedroomType} - ${roomType} ${service}`} />
+        <img src={image} alt={`${title}`} />
         <div className={cx("booking-container__left-images")}>
           <span>9 images</span>
         </div>
@@ -33,8 +104,7 @@ const BookingCard = ({
       <div className={cx("booking-container__right")}>
         <div className={cx("top-content")}>
           <div className={cx("top-content__left")}>
-            {type === 'Room' && <h2>{bedroomType} - {roomType}</h2>}
-            {type === 'Service' && <h2>{service}</h2>}
+            <h2>{title}</h2>
             <Rate
               disabled
               tooltips={RATING_DESC}
@@ -51,7 +121,7 @@ const BookingCard = ({
           </div>
           <div className={cx("top-content__right")}>
             <p>Price from</p>
-            <h1>{price} VND{type === 'Room' && <sub>/Night</sub>}</h1>
+            <h1>{priceFormat}{type === 'Room' && <sub>/Night</sub>}</h1>
           </div>
         </div>
         {type === 'Room' && (
@@ -79,11 +149,18 @@ const BookingCard = ({
         <Divider className={cx("seperate-line")} />
         <div className={cx("bottom-content")}>
           <div className={cx("bottom-content__left")}>
-            <button>
+            <button 
+              style={disableFavouriteCheck ? {display: 'none'} : {display: 'inline-block'}}
+              className={toggleFavourite ? cx("btn-toggle") : cx("btn-untoggle")}
+              onClick={handleClickFavourite} 
+            >
               <BsFillHeartFill size={16}/>
             </button>
           </div>
-          <div className={cx("bottom-content__right")}>
+          <div 
+            className={cx("bottom-content__right")} 
+            style={disableFavouriteCheck && {width: '100%', marginLeft: 0}}
+          >
             <button>
               <h3>View detail</h3>
             </button>

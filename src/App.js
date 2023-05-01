@@ -6,29 +6,39 @@ import Register from './pages/Register/Register';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import Facilities from './pages/Facilities/Facilities';
 import Room from './pages/Room/Room';
-import AccountInfo from './pages/Account_home/Account_home';
-import CustomerInfo from './components/Account_info_/Customer_info/Customer_info';
 import FindRoom from './pages/FindRoom/FindRoom';
 import FindService from './pages/FindService/FindService';
-import OverviewCard from './components/OverviewCard/OverviewCard';
+import Favourites from './pages/Favourites/Favourites';
+import RequireAuth from './utils/RequireAuth';
+import ManageAccount from './pages/ManageAccount/ManageAccount';
+import NotFound from './pages/Error/NotFound/NotFound';
+import Unauthorized from './pages/Error/Unauthorized/Unauthorized';
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/forgot_password' element={<ForgotPassword />} />
+          {/* public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/facilities" element={<Facilities />} />
           <Route path="/rooms" element={<Room />} />
-          <Route path="/find-rooms" element={<FindRoom />} />
-          <Route path="/account_info" element={<AccountInfo />} />
-          <Route path="/customer-info" element={<CustomerInfo />} />
-          <Route path="/find-services" element={<FindService />} />
-          <Route path="/headers" element={<OverviewCard />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
 
+          {/* protected routes */}
+          <Route element={<RequireAuth />}>
+            <Route path='/forgot-password' element={<ForgotPassword />} />
+            <Route path="/find-rooms" element={<FindRoom />} />
+            <Route path="/manage-account" element={<ManageAccount />} />
+            <Route path="/find-services" element={<FindService />} />
+            <Route path='/favourites' element={<Favourites />} />
+          </Route>
 
+          {/* Unauthorized Page */}
+          <Route path='/unauthorized' element={<Unauthorized />} />
+
+          {/* Not found routes */}
+          <Route path='*' element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </div>
