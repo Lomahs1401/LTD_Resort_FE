@@ -195,6 +195,8 @@ export const RoomTypeDetail = () => {
             </div>
           </div>
         </div>
+        <Divider style={{ background: "#112211" }} />
+
         <div className={cx("amenities")}>
           <h2>Amenities</h2>
           <div className={cx("amenities-attributes")}>
@@ -246,6 +248,7 @@ export const RoomTypeDetail = () => {
             </div>
           </div>
         </div>
+        <Divider style={{ background: "#112211" }} />
         <div className={cx("review")}>
           <div>
             <h2>Review</h2>
