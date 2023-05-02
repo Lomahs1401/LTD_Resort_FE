@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styles from './Header.module.scss'
 import classNames from "classnames/bind"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

@@ -45,13 +45,13 @@ const FindService = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [postPerPage, setPostPerPage] = useState(4);
-  const lastPostIndex = currentPage * postPerPage;
-  const firstPostIndex = lastPostIndex - postPerPage;
+  const POST_PER_PAGE = 4;
+  const lastPostIndex = currentPage * POST_PER_PAGE;
+  const firstPostIndex = lastPostIndex - POST_PER_PAGE;
   const currentPost = listServices.slice(firstPostIndex, lastPostIndex);
   
   // reload "Favourites" in header
-  const [reloadHeader, setReloadHeader] = useState(false);
+  const [, setReloadHeader] = useState(false);
   
   // Filter state
   const [filterPrice, setFilterPrice] = useState(100000);
@@ -78,11 +78,19 @@ const FindService = () => {
     const formData = new FormData();
 
     formData.append('price', filterPrice);
-    formData.append('services', filterServiceType)
 
-    http.post('/filter-room-type', formData)
+    if (filterServiceType.length !== 0) {
+      filterServiceType.forEach((serviceType) => {
+        formData.append('services[]', serviceType)
+      })
+    } else {
+      formData.append('services[]', [])
+    }
+
+    http.post('/filter-service', formData)
     .then((resolve) => {
-      setListServices(resolve.data.list_filter_service)
+      setListServices(resolve.data.list_filter_services)
+      setCurrentPage(1);
       message.success('Filter successfully!')
     })
     .catch((reject) => {
@@ -101,12 +109,16 @@ const FindService = () => {
   // --------------------------     Fetch API     --------------------------
 
   useEffect(() => {
-    getDownloadURL(avatarRef).then(url => {
-      setImageUrl(url);
-      setLoading(true);
-    })
 
-    http.get('/list-services')
+    const fetchAvatar = () => {
+      getDownloadURL(avatarRef).then(url => {
+        setImageUrl(url);
+        setLoading(true);
+      })
+    }
+
+    const fetchData = () => {
+      http.get('/list-services')
       .then((resolve) => {
         setListServices(resolve.data.list_services);
       })
@@ -115,23 +127,29 @@ const FindService = () => {
         message.error('Opps. Fetch data failed!')
       })
 
-    http.get('/lowest-price-service')
-      .then((resolve) => {
-        setLowestPrice(resolve.data.lowest_price);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
+      http.get('/lowest-price-service')
+        .then((resolve) => {
+          setLowestPrice(resolve.data.lowest_price);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
 
-    http.get('/highest-price-service')
-      .then((resolve) => {
-        setHighestPrice(resolve.data.highest_price);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
+      http.get('/highest-price-service')
+        .then((resolve) => {
+          setHighestPrice(resolve.data.highest_price);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+    }
+
+    fetchAvatar();
+    fetchData();
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!loading) {
@@ -273,7 +291,12 @@ const FindService = () => {
           <div className={cx("list-rooms-container")}>
             <h2>List Services</h2>
             <div className={cx("list-rooms-container__result")}>
-              Showing 4 of <span>{listServices.length} services</span>
+              {
+                listServices.length < POST_PER_PAGE 
+                  ? `Showing ${listServices.length} of `
+                  : `Showing ${firstPostIndex + currentPost.length} of `
+              }
+              <span>{listServices.length} services</span>
             </div>
             {currentPost.map((service) => {
               return (
@@ -292,11 +315,10 @@ const FindService = () => {
             })}
             <div className={cx("list-room-pagination")}>
               <Pagination
-                showSizeChanger
                 showQuickJumper
                 current={currentPage}
-                defaultCurrent={1}
-                pageSize={4}
+                defaultCurrent={currentPage}
+                pageSize={POST_PER_PAGE}
                 total={listServices.length}
                 onChange={handleClickPaginate}
               />

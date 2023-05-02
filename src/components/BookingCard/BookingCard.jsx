@@ -36,7 +36,7 @@ const BookingCard = ({
     let isToggleFavourite = false;
     if (type === "Room") {
       favouritesRooms.some((favouriteRoom) => {
-        if (favouriteRoom.id == id) {
+        if (favouriteRoom.id === id) {
           isToggleFavourite = true;
           return true;
         } else {
@@ -45,7 +45,7 @@ const BookingCard = ({
       })
     } else if (type === "Service") {
       favouritesServices.some((favouriteService) => {
-        if (favouriteService.id == id) {
+        if (favouriteService.id === id) {
           isToggleFavourite = true;
           return true;
         } else {
