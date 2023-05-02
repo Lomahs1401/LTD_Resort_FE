@@ -3,20 +3,12 @@
   flex-direction: row;
   align-items: center;
 }
-h2 {
-  margin: 0;
-  margin-bottom: 15px;
-}
-h3 {
-  margin: 0;
-}
-h4 {
-  margin: 0;
-}
-
 .left {
   width: 80%;
   font-size: larger;
+  h2 {
+    margin: 0;
+  }
 }
 .achievement {
   display: flex;
@@ -68,7 +60,7 @@ h4 {
       border-radius: 5px;
       border: none;
 
-      padding-inline: 12%;
+      width: 20%;
       transition: 0.3s;
       height: 50px;
 
@@ -155,10 +147,15 @@ h4 {
     justify-content: space-between;
     padding: 10px;
     border-radius: 15%;
+    h3 {
+      margin: 0;
+    }
+    h4 {
+      margin: 0;
+    }
   }
 }
 .checking {
-  border-bottom: 1px solid #222222;
   .time {
     display: flex;
     flex-direction: row;
@@ -171,9 +168,15 @@ h4 {
     justify-content: space-between;
     font-size: 180%;
   }
+  h1 {
+    margin: 0;
+  }
 }
 .amenities {
-  border-bottom: 1px solid #222222;
+  h2 {
+    margin: 0;
+    margin-bottom: 15px;
+  }
 }
 .amenities-attributes {
   display: flex;
@@ -208,6 +211,9 @@ h4 {
       background-color: #8dd3bb;
       opacity: 0.8;
     }
+  }
+  h2 {
+    margin: 0;
   }
 }
 .score {
@@ -244,15 +250,10 @@ h4 {
 .comment {
   margin-inline: 20px;
 }
-.pagination{
-      display: flex;
-    justify-content: space-around;
+.pagination {
+  display: flex;
+  justify-content: space-around;
 }
-
-
-
-
-
 
 .preview:hover {
   cursor: pointer;
