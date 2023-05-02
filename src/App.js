@@ -9,6 +9,8 @@ import Room from './pages/Room/Room';
 import FindRoom from './pages/FindRoom/FindRoom';
 import FindService from './pages/FindService/FindService';
 import Favourites from './pages/Favourites/Favourites';
+import RoomTypeDetail  from './pages/RoomTypeDetail/RoomTypeDetail';
+import Comment from './components/Comment/Comment';
 import RequireAuth from './utils/RequireAuth';
 import ManageAccount from './pages/ManageAccount/ManageAccount';
 import NotFound from './pages/Error/NotFound/NotFound';
@@ -24,6 +26,7 @@ function App() {
           <Route path="/rooms" element={<Room />} />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
+          <Route path='/comment' element={<Comment />} />
 
           {/* protected routes */}
           <Route element={<RequireAuth />}>
@@ -32,6 +35,7 @@ function App() {
             <Route path="/manage-account" element={<ManageAccount />} />
             <Route path="/find-services" element={<FindService />} />
             <Route path='/favourites' element={<Favourites />} />
+            <Route path='/roomtypedetail' element={<RoomTypeDetail />} />
           </Route>
 
           {/* Unauthorized Page */}
