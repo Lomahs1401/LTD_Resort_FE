@@ -67,7 +67,7 @@ h4 {
       background-color: #8dd3bb;
       border-radius: 5px;
       border: none;
-      
+
       padding-inline: 12%;
       transition: 0.3s;
       height: 50px;
@@ -118,7 +118,7 @@ h4 {
   gap: 20px;
   display: flex;
   flex-direction: column;
-  h1{
+  h1 {
     margin: 0;
   }
 }
@@ -192,17 +192,33 @@ h4 {
   }
 }
 .review {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  button {
+    background-color: #8dd3bb;
+    border-radius: 5px;
+    border: none;
+
+    transition: 0.3s;
+    height: 50px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: #8dd3bb;
+      opacity: 0.8;
+    }
+  }
 }
 .score {
   display: flex;
+  gap: 10px;
   h3 {
     font-size: xx-large;
-    width: 4%;
   }
 }
 .summay {
 }
-
 
 .preview {
   position: fixed;
@@ -221,13 +237,23 @@ h4 {
   max-height: 80vh;
   transform-origin: center center;
 }
-.use{
+.use {
   display: flex;
   gap: 20px;
 }
-.comment{
+.comment {
   margin-inline: 20px;
 }
+.pagination{
+      display: flex;
+    justify-content: space-around;
+}
+
+
+
+
+
+
 .preview:hover {
   cursor: pointer;
 }

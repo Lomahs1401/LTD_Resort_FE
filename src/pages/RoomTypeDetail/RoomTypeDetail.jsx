@@ -87,10 +87,9 @@ export const RoomTypeDetail = () => {
               18 m2
             </div>
           </div>
-          
         </div>
         <Divider style={{ background: "#112211" }} />
-        <div  className={cx("use")}>
+        <div className={cx("use")}>
           <div className={cx("image")}>
             <div>
               <img id="mainImage" src={img1} />
@@ -121,7 +120,6 @@ export const RoomTypeDetail = () => {
               />
             </div>
           </div>
-
 
           <div className={cx("overview")}>
             <h1>overview</h1>
@@ -163,22 +161,22 @@ export const RoomTypeDetail = () => {
               </div>
             </div>
             <div className={cx("right")}>
-            Price from
-            <h3 style={{ color: "#FF8682" }}>203.000 VND/Night</h3>
-            <div className={cx("button")}>
-              <div className={cx("button__left")}>
-                <button>
-                  <BsFillHeartFill />
-                </button>
-                <button>
-                  <BsFillShareFill />
-                </button>
-              </div>
-              <div className={cx("button__right")}>
-                <button>book now</button>
+              Price from
+              <h3 style={{ color: "#FF8682" }}>203.000 VND/Night</h3>
+              <div className={cx("button")}>
+                <div className={cx("button__left")}>
+                  <button>
+                    <BsFillHeartFill />
+                  </button>
+                  <button>
+                    <BsFillShareFill />
+                  </button>
+                </div>
+                <div className={cx("button__right")}>
+                  <button>book now</button>
+                </div>
               </div>
             </div>
-          </div>
           </div>
         </div>
 
@@ -249,14 +247,17 @@ export const RoomTypeDetail = () => {
           </div>
         </div>
         <div className={cx("review")}>
-          <h2>Review</h2>
-          <div className={cx("score")}>
-            <h3>4.3</h3>
-            <div className={cx("summary")}>
-              <h4>Very good</h4>
-              371 verified reviews
+          <div>
+            <h2>Review</h2>
+            <div className={cx("score")}>
+              <h3>4.3</h3>
+              <div className={cx("summary")}>
+                <h4>Very good</h4>
+                371 verified reviews
+              </div>
             </div>
           </div>
+          <button>Give your review</button>
         </div>
         <div className={cx("comment")}>
           <Comment />
