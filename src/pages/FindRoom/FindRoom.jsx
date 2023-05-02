@@ -57,13 +57,13 @@ const FindRoom = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [postPerPage, setPostPerPage] = useState(4);
-  const lastPostIndex = currentPage * postPerPage;
-  const firstPostIndex = lastPostIndex - postPerPage;
+  const POST_PER_PAGE = 4;
+  const lastPostIndex = currentPage * POST_PER_PAGE;
+  const firstPostIndex = lastPostIndex - POST_PER_PAGE;
   const currentPost = listRoomTypes.slice(firstPostIndex, lastPostIndex);
 
   // reload "Favourites" in header
-  const [reloadHeader, setReloadHeader] = useState(false);
+  const [, setReloadHeader] = useState(false);
 
   // Filter state
   const [filterPrice, setFilterPrice] = useState(0);
@@ -109,7 +109,7 @@ const FindRoom = () => {
     formData.append('price', filterPrice);
     formData.append('room_size', filterRoomSize);
 
-    if (filterBedroomType.length != 0) {
+    if (filterBedroomType.length !== 0) {
       filterBedroomType.forEach((bedroomType) => {
         formData.append('bedroom_type[]', bedroomType);
       })
@@ -117,7 +117,7 @@ const FindRoom = () => {
         formData.append('bedroom_type[]', []);
     }
 
-    if (filterRoomType.length != 0) {
+    if (filterRoomType.length !== 0) {
       filterRoomType.forEach((roomType) => {
         formData.append('room_type[]', roomType);
       })
@@ -128,6 +128,7 @@ const FindRoom = () => {
     http.post('/filter-room-type', formData)
       .then((resolve) => {
         setListRoomTypes(resolve.data.list_filter_room_type)
+        setCurrentPage(1);
         message.success('Filter successfully!')
       })
       .catch((reject) => {
@@ -160,73 +161,82 @@ const FindRoom = () => {
   // --------------------------     Fetch API     --------------------------
 
   useEffect(() => {
-    getDownloadURL(avatarRef).then(url => {
-      setImageUrl(url);
-      setLoading(true);
-    })
+    const fetchAvatar = () => {
+      getDownloadURL(avatarRef).then(url => {
+        setImageUrl(url);
+        setLoading(true);
+      })
+    }
 
-    http.get('/list-room-types')
-      .then((resolve) => {
-        setListRoomTypes(resolve.data.list_room_types);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
+    const fetchData = () => {
+      http.get('/list-room-types')
+        .then((resolve) => {
+          setListRoomTypes(resolve.data.list_room_types);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+  
+      http.get('/lowest-price-room-type')
+        .then((resolve) => {
+          setLowestPrice(resolve.data.lowest_price);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+  
+      http.get('/highest-price-room-type')
+        .then((resolve) => {
+          setHighestPrice(resolve.data.highest_price);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+  
+      http.get('/smallest-size-room-type')
+        .then((resolve) => {
+          setSmallestRoomSize(resolve.data.smallest_room_size);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+  
+      http.get('/biggest-size-room-type')
+        .then((resolve) => {
+          setBiggestRoomSize(resolve.data.biggest_room_size);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+  
+      http.get('/bedroom-type-names')
+        .then((resolve) => {
+          setBedRoomTypes(resolve.data.bedroom_type_names);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+  
+      http.get('/room-type-names')
+        .then((resolve) => {
+          setRoomTypes(resolve.data.room_type_names);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+    }
 
-    http.get('/lowest-price-room-type')
-      .then((resolve) => {
-        setLowestPrice(resolve.data.lowest_price);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
+    fetchAvatar();
+    fetchData();
 
-    http.get('/highest-price-room-type')
-      .then((resolve) => {
-        setHighestPrice(resolve.data.highest_price);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
-
-    http.get('/smallest-size-room-type')
-      .then((resolve) => {
-        setSmallestRoomSize(resolve.data.smallest_room_size);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
-
-    http.get('/biggest-size-room-type')
-      .then((resolve) => {
-        setBiggestRoomSize(resolve.data.biggest_room_size);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
-
-    http.get('/bedroom-type-names')
-      .then((resolve) => {
-        setBedRoomTypes(resolve.data.bedroom_type_names);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
-
-    http.get('/room-type-names')
-      .then((resolve) => {
-        setRoomTypes(resolve.data.room_type_names);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!loading) {
@@ -560,7 +570,12 @@ const FindRoom = () => {
           <div className={cx("list-rooms-container")}>
             <h2>List Type Rooms</h2>
             <div className={cx("list-rooms-container__result")}>
-              Showing 4 of <span>{listRoomTypes.length} type rooms</span>
+              {
+                listRoomTypes.length < POST_PER_PAGE 
+                  ? `Showing ${listRoomTypes.length} of `
+                  : `Showing ${firstPostIndex + currentPost.length} of `
+              }
+              <span>{listRoomTypes.length} type rooms</span>
             </div>
             {currentPost.map((roomType) => {
               return (
@@ -582,11 +597,10 @@ const FindRoom = () => {
             })}
             <div className={cx("list-room-pagination")}>
               <Pagination
-                showSizeChanger
                 showQuickJumper
                 current={currentPage}
-                defaultCurrent={1}
-                pageSize={4}
+                defaultCurrent={currentPage}
+                pageSize={POST_PER_PAGE}
                 total={listRoomTypes.length}
                 onChange={handleClickPaginate}
               />

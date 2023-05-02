@@ -298,7 +298,29 @@
 }
 
 .list-room-pagination {
-    margin-top: 20px;
     display: flex;
     margin: 0 auto;
+    margin-top: 40px;
+    
+    > ul {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        
+        > * {
+            border-color: #8DD3BB !important;
+            width: 40px;
+            height: 40px !important;
+
+            > a {
+                font-size: 20px;
+                line-height: 40px;  
+            }
+        }
+
+        > li:last-child {
+            width: 150px;
+        }
+    }
 }
