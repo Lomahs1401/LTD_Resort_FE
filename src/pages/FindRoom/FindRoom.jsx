@@ -7,7 +7,6 @@ import overviewRoom2 from '../../img/overviewRoom2.png'
 import overviewRoom3 from '../../img/overviewRoom3.png'
 import overviewRoom4 from '../../img/overviewRoom4.png'
 import overviewRoom5 from '../../img/overviewRoom5.png'
-import twinBedroom from '../../img/twin-bedroom.jpg'
 import { BsFillCalendar2CheckFill } from 'react-icons/bs'
 import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
@@ -85,6 +84,21 @@ const FindRoom = () => {
     }
   })
 
+  // --------------------------     Find Room     --------------------------
+
+  const disabledDate = (current) => {
+    // Can not select days before today and today
+    return current && current < dayjs().startOf('day');
+  };
+
+  const handleSubmitFindRoom = (values) => {
+    console.log('Success:', values);
+  };
+
+  const handleSubmitFindRoomFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+
   // --------------------------     Filter Room Type     --------------------------
 
   const onAfterChangePrice = (value) => {
@@ -125,32 +139,34 @@ const FindRoom = () => {
       formData.append('room_type[]', []);
     }
 
-    http.post('/filter-room-type', formData)
-      .then((resolve) => {
-        setListRoomTypes(resolve.data.list_filter_room_type)
-        setCurrentPage(1);
-        message.success('Filter successfully!')
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Something went wrong..')
-      })
+    if (
+      (filterPrice === 0 || filterPrice === lowestPrice) && 
+      (filterRoomSize === 0 || filterRoomSize === smallestRoomSize) &&
+      (filterBedroomType.length === 0) && (filterRoomType.length === 0)
+    ) {
+      http.get('/list-room-types')
+        .then((resolve) => {
+          setListRoomTypes(resolve.data.list_room_types);
+          setCurrentPage(1);
+          message.success('Filter successfully!')
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Something went wrong..')
+        })
+    } else {
+      http.post('/filter-room-type', formData)
+        .then((resolve) => {
+          setListRoomTypes(resolve.data.list_filter_room_type)
+          setCurrentPage(1);
+          message.success('Filter successfully!')
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Something went wrong..')
+        })
+    }
   }
-
-  // --------------------------     Find Room     --------------------------
-
-  const disabledDate = (current) => {
-    // Can not select days before today and today
-    return current && current < dayjs().startOf('day');
-  };
-
-  const handleSubmitFindRoom = (values) => {
-    console.log('Success:', values);
-  };
-
-  const handleSubmitFindRoomFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-  };
 
   // --------------------------     Paginate     --------------------------
 
@@ -164,7 +180,6 @@ const FindRoom = () => {
     const fetchAvatar = () => {
       getDownloadURL(avatarRef).then(url => {
         setImageUrl(url);
-        setLoading(true);
       })
     }
 
@@ -235,6 +250,8 @@ const FindRoom = () => {
 
     fetchAvatar();
     fetchData();
+    
+    setLoading(true);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -582,7 +599,7 @@ const FindRoom = () => {
                 <BookingCard
                   key={roomType.id}
                   id={roomType.id}
-                  image={twinBedroom}
+                  image={roomType.image}
                   title={roomType.room_type_name}
                   price={roomType.price}
                   ranking={5}

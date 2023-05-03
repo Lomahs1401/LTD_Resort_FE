@@ -29,11 +29,14 @@ import img7 from "../../img/overviewService2.png";
 import img8 from "../../img/overviewService3.png";
 import img9 from "../../img/overviewService4.png";
 import img10 from "../../img/overviewService5.png";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
 export const RoomTypeDetail = () => {
-  const { user } = AuthUser();
+  const { roomTypeId } = useParams();
+  const { http, user } = AuthUser();
 
   function showImage(image) {
     // document.getElementById('mainImage').src = image;
@@ -44,6 +47,7 @@ export const RoomTypeDetail = () => {
 
     // console.log("showImage called with", image, number);
   }
+
   function showPopup(imageSrc) {
     // Tạo một phần tử <div> mới để chứa cửa sổ popup
     const popupDiv = document.createElement("div");
@@ -59,6 +63,18 @@ export const RoomTypeDetail = () => {
     // Thêm phần tử <div> popup vào thân của trang web
     document.body.appendChild(popupDiv);
   }
+
+  const [roomTypeDetail, setRoomTypeDetail] = useState({});
+
+  useEffect(() => {
+    http.get(`/find-rooms/${roomTypeId}`)
+      .then((resolve) => {
+        console.log(resolve);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      })
+  }, [])
 
   return (
     <div>

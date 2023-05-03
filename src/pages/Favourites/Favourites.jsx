@@ -7,8 +7,6 @@ import AuthUser from "../../utils/AuthUser";
 import { useState } from "react";
 import { Divider } from 'antd'
 import BookingCard from "../../components/BookingCard/BookingCard";
-import singleBedroom from "../../img/single-bedroom.jpg";
-import spa from "../../img/spaMassage.png";
 import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from '../../utils/firebase'
 import Loading from '../../components/Loading/Loading';
@@ -22,7 +20,7 @@ function Favourites() {
 
   const [toggleState, setToggleState] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
 
   // Create a reference from a Google Cloud Storage URI
   const avatarRef = ref(storage, user.avatar);
@@ -36,10 +34,10 @@ function Favourites() {
 
   useEffect(() => {
     getDownloadURL(avatarRef).then(url => {
-      setImageUrl(url);
+      setAvatarUrl(url);
       setLoading(true);
     })
-  }, [avatarRef])
+  }, [])
 
   if (!loading) {
     return (
@@ -48,7 +46,7 @@ function Favourites() {
   } else {
     return (
       <div>
-        <Header userInfo={user} imageUrl={imageUrl} />
+        <Header userInfo={user} imageUrl={avatarUrl} />
         <div className={cx("body")}>
           <h1>List Favourites</h1>
           <div className={cx("container")}>
@@ -99,7 +97,7 @@ function Favourites() {
                         <BookingCard
                           key={index}
                           id={favouriteRoom.id}
-                          image={singleBedroom}
+                          image={favouriteRoom.image}
                           title={favouriteRoom.title}
                           price={favouriteRoom.price}
                           ranking={favouriteRoom.ranking}
@@ -134,7 +132,7 @@ function Favourites() {
                         <BookingCard
                           key={index}
                           id={favouriteService.id}
-                          image={spa}
+                          image={favouriteService.image}
                           title={favouriteService.title}
                           price={favouriteService.price}
                           ranking={favouriteService.ranking}
