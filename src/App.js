@@ -15,10 +15,13 @@ import RequireAuth from './utils/RequireAuth';
 import ManageAccount from './pages/ManageAccount/ManageAccount';
 import NotFound from './pages/Error/NotFound/NotFound';
 import Unauthorized from './pages/Error/Unauthorized/Unauthorized';
+import ScrollToTop from './utils/ScrollToTop';
+
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           {/* public routes */}
           <Route path="/" element={<Home />} />
@@ -32,10 +35,10 @@ function App() {
           <Route element={<RequireAuth />}>
             <Route path='/forgot-password' element={<ForgotPassword />} />
             <Route path="/find-rooms" element={<FindRoom />} />
+            <Route path="/find-rooms/:roomTypeId" element={<RoomTypeDetail />} />
             <Route path="/manage-account" element={<ManageAccount />} />
             <Route path="/find-services" element={<FindService />} />
             <Route path='/favourites' element={<Favourites />} />
-            <Route path='/roomtypedetail' element={<RoomTypeDetail />} />
           </Route>
 
           {/* Unauthorized Page */}

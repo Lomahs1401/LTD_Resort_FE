@@ -9,6 +9,7 @@ import ImageSlider from '../../components/ImageSlider/ImageSlider'
 import { Form, Button, Input, Divider, message, Modal } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthUser from '../../utils/AuthUser';
+import Swal from 'sweetalert2'
 
 const cx = classNames.bind(styles);
 
@@ -49,24 +50,30 @@ const Register = () => {
   const [form] = Form.useForm();
   
   const onFinish = (values) => {
-    console.log('Success:', values);
-
     const ENABLED_ACCOUNT = 1;
     const ROLE_CUSTOMER_ID = 3;
+    const DEFAULT_USER_AVATAR = 'gs://ltd-resort.appspot.com/avatars/default-user-icon.jpg';
 
     const formData = new FormData();
+    
     formData.append('username', values.username);
     formData.append('email', values.email);
     formData.append('password', values.password);
     formData.append('confirm_password', values.confirmPassword);
+    formData.append('avatar', DEFAULT_USER_AVATAR)
     formData.append('enabled', ENABLED_ACCOUNT);
     formData.append('role_id', ROLE_CUSTOMER_ID);
 
     http.post('/auth/register', formData)
       .then((resolve) => {
         console.log(resolve);
-        message.success('Create account successful!');
-        navigate('/login');
+        Swal.fire(
+          'Created!',
+          'You have successfully registered an account',
+          'success'
+        ).then(() => {
+          navigate('/login');
+        })
       })
       .catch((reject) => {
         console.log(reject);

@@ -7,7 +7,6 @@ import overviewService2 from '../../img/overviewService2.png'
 import overviewService3 from '../../img/overviewService3.png'
 import overviewService4 from '../../img/overviewService4.png'
 import overviewService5 from '../../img/overviewService5.png'
-import golf from '../../img/golf.png'
 import Header from '../../layouts/Header/Header';
 import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
@@ -43,6 +42,9 @@ const FindService = () => {
   const [lowestPrice, setLowestPrice] = useState(0);
   const [highestPrice, setHighestPrice] = useState(0);
 
+  // Fetch service type state
+  const [serviceTypes, setServiceTypes] = useState([]);
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const POST_PER_PAGE = 4;
@@ -57,10 +59,10 @@ const FindService = () => {
   const [filterPrice, setFilterPrice] = useState(100000);
   const [filterServiceType, setFilterServiceType] = useState([]);
 
-  const serviceTypeOptions = listServices.map((service) => {
+  const serviceTypeOptions = serviceTypes.map((serviceType) => {
     return {
-      label: service.service_name,
-      value: service.service_name,
+      label: serviceType.service_name,
+      value: serviceType.service_name,
     }
   })
 
@@ -87,16 +89,32 @@ const FindService = () => {
       formData.append('services[]', [])
     }
 
-    http.post('/filter-service', formData)
-    .then((resolve) => {
-      setListServices(resolve.data.list_filter_services)
-      setCurrentPage(1);
-      message.success('Filter successfully!')
-    })
-    .catch((reject) => {
-      console.log(reject);
-      message.error('Opps. Fetch data failed!')
-    })
+    if (
+      (filterPrice === 0 || filterPrice === lowestPrice) &&
+      (filterServiceType.length === 0)
+    ) {
+      http.get('/list-services')
+        .then((resolve) => {
+          setListServices(resolve.data.list_services);
+          setCurrentPage(1);
+          message.success('Filter successfully!')
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+    } else {
+      http.post('/filter-service', formData)
+        .then((resolve) => {
+          setListServices(resolve.data.list_filter_services)
+          setCurrentPage(1);
+          message.success('Filter successfully!')
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+    }
   }
 
   // --------------------------     Paginate     --------------------------
@@ -139,6 +157,15 @@ const FindService = () => {
       http.get('/highest-price-service')
         .then((resolve) => {
           setHighestPrice(resolve.data.highest_price);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Opps. Fetch data failed!')
+        })
+
+      http.get('/list-service-names')
+        .then((resolve) => {
+          setServiceTypes(resolve.data.list_service_names);
         })
         .catch((reject) => {
           console.log(reject);
@@ -303,7 +330,7 @@ const FindService = () => {
                 <BookingCard
                   key={service.id}
                   id={service.id}
-                  image={golf}
+                  image={service.image}
                   title={service.service_name}
                   price={service.price}
                   ranking={5}

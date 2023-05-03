@@ -50,9 +50,8 @@ const Login = () => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    console.log('Success:', values);
-
     const formData = new FormData();
+    
     formData.append('email', values.email);
     formData.append('password', values.password);
 
