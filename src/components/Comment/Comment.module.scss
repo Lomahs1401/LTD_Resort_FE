@@ -1,0 +1,27 @@
+.comment {
+  display: flex;
+  padding-block: 10px;
+  margin-left: 10px;
+  gap: 10px;
+}
+
+.avatar {
+}
+.score{
+    display: flex;
+    flex-direction: row;
+}
+.thecomment{
+    font-size: smaller;
+    font-weight: 400;
+}
+.report{
+    width: 30px;
+    height: 30px;
+    background: white;
+    border: white;
+}
+.pagination{
+    display: flex;
+    justify-content: space-around;
+}

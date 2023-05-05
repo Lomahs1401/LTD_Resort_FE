@@ -1,0 +1,276 @@
+.room-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.left {
+  width: 80%;
+  font-size: larger;
+  h2 {
+    margin: 0;
+  }
+}
+.achievement {
+  display: flex;
+  flex-direction: row;
+  gap: 15%;
+}
+.space {
+  gap: 15px;
+  display: flex;
+  align-items: center;
+}
+.right {
+  h3 {
+    font-size: xx-large;
+  }
+}
+.button {
+  display: flex;
+  padding-top: 5px;
+  &__left {
+    gap: 5px;
+    display: flex;
+    > button {
+      background-color: #fff;
+      border-radius: 5px;
+      border: 1px solid #8dd3bb;
+      padding: 16px 8px;
+      width: 50px;
+      height: 50px;
+      transition: 0.3s;
+      float: left;
+
+      &:hover {
+        cursor: pointer;
+        background-color: #fff;
+        border: 1px solid rgb(30, 30, 216);
+        opacity: 0.8;
+      }
+    }
+  }
+
+  &__right {
+    float: left;
+    width: 90%;
+    margin-left: 12px;
+
+    > button {
+      background-color: #8dd3bb;
+      border-radius: 5px;
+      border: none;
+
+      width: 20%;
+      transition: 0.3s;
+      height: 50px;
+
+      &:hover {
+        cursor: pointer;
+        background-color: #8dd3bb;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+.image {
+  display: flex;
+  gap: 10px;
+  width: 50%;
+  img {
+    height: 700px;
+    width: 700px;
+  }
+}
+.holder {
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+  img {
+    height: 50px;
+    width: 50px;
+    border: 1px solid #8dd3bb;
+    border-radius: 10%;
+    padding: 5px;
+    &:hover {
+      cursor: pointer;
+      background-color: #8dd3bb;
+      opacity: 0.8;
+    }
+  }
+}
+.room-content {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 30px;
+}
+.overview {
+  font-size: larger;
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  h1 {
+    margin: 0;
+  }
+}
+
+.strength {
+  display: flex;
+  flex-direction: row;
+  gap: 1%;
+}
+.box {
+  border: 1px solid #8dd3bb;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 15%;
+  h3 {
+    margin: 0;
+  }
+  h4 {
+    margin: 0;
+  }
+  &__special {
+    border: 1px solid #8dd3bb;
+    background-color: #8dd3bb;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 15%;
+    h3 {
+      margin: 0;
+    }
+    h4 {
+      margin: 0;
+    }
+  }
+}
+.checking {
+  .time {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 75%;
+  }
+  .checkingtime {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 180%;
+  }
+  h1 {
+    margin: 0;
+  }
+}
+.amenities {
+  h2 {
+    margin: 0;
+    margin-bottom: 15px;
+  }
+}
+.amenities-attributes {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  align-items: center;
+  &__icons {
+    display: flex;
+    flex-direction: column;
+    &-one {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 20px;
+    }
+  }
+}
+.review {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  button {
+    background-color: #8dd3bb;
+    border-radius: 5px;
+    border: none;
+
+    transition: 0.3s;
+    height: 50px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: #8dd3bb;
+      opacity: 0.8;
+    }
+  }
+  h2 {
+    margin: 0;
+  }
+}
+.score {
+  display: flex;
+  gap: 10px;
+  h3 {
+    font-size: xx-large;
+  }
+}
+.summay {
+}
+
+.preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.preview img {
+  max-width: 80vw;
+  max-height: 80vh;
+  transform-origin: center center;
+}
+.use {
+  display: flex;
+  gap: 20px;
+}
+.comment {
+  margin-inline: 20px;
+}
+.pagination {
+  display: flex;
+  justify-content: space-around;
+}
+
+.preview:hover {
+  cursor: pointer;
+}
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup img {
+  max-height: 90%;
+  max-width: 90%;
+}

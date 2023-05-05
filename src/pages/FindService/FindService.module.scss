@@ -33,8 +33,6 @@
     position: relative;
 }
 
-
-
 .nav {
     position: absolute;
     display: flex;
@@ -69,7 +67,7 @@
         letter-spacing: 2px;
         margin-bottom: 4px;
         margin-left: 7%;
-        max-width: 25%;
+        max-width: 24%;
     }
 
     &__desc {
@@ -195,8 +193,17 @@
 }
 
 .service-type-item {
-    margin-left: 0px !important;
-    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    > label {
+        margin-left: 0px !important;
+
+        > span {
+            margin-right: 4px;
+        }
+    }
 }
 
 .seperate-line {
@@ -248,7 +255,29 @@
 }
 
 .list-room-pagination {
-    margin-top: 20px;
     display: flex;
     margin: 0 auto;
+    margin-top: 40px;
+
+    > ul {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+
+        > * {
+            border-color: #8DD3BB !important;
+            width: 40px;
+            height: 40px !important;
+
+            > a {
+                font-size: 20px;
+                line-height: 40px;  
+            }
+        }
+
+        > li:last-child {
+            width: 150px;
+        }
+    }
 }

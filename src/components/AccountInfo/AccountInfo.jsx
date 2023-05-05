@@ -3,8 +3,6 @@ import styles from './AccountInfo.module.scss'
 import classNames from 'classnames/bind'
 import { EditOutlined } from '@ant-design/icons';
 import diamond from '../../img/rankDiamond.png'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGem } from '@fortawesome/free-solid-svg-icons'
 import { Divider } from 'antd';
 import { FaCheckCircle } from 'react-icons/fa';
 
