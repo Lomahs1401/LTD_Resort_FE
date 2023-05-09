@@ -1,7 +1,17 @@
 import { message } from "antd"
+import { toast } from "react-toastify"
 
 export const addFavouriteRoom = (data) => {
-    message.success('Add to list favourites room successfully!');
+    toast.success('Add to list favourites room successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    })
     
     return {
         type: 'favourites/addFavouriteRoom',
@@ -10,7 +20,16 @@ export const addFavouriteRoom = (data) => {
 }
 
 export const addFavouriteService = (data) => {
-    message.success('Add to list favourites service successfully!');
+    toast.success('Add to list favourites service successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    })
     
     return {
         type: 'favourites/addFavouriteService',
@@ -19,7 +38,16 @@ export const addFavouriteService = (data) => {
 }
 
 export const removeFavouriteRoom = (data) => {
-    message.success('Remove favorite room from favorite list successfully!');
+    toast.success('Remove favorite room from favorite list successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    })
 
     return {
         type: 'favourites/removeFavouriteRoom',
@@ -28,10 +56,33 @@ export const removeFavouriteRoom = (data) => {
 }
 
 export const removeFavouriteService = (data) => {
-    message.success('Remove favorite service from favorite list successfully!');
+    toast.success('Remove favorite service from favorite list successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    })
 
     return {
         type: 'favourites/removeFavouriteService',
         payload: data,
+    }
+}
+
+export const addAvatar = (data) => {
+    return {
+        type: 'avatar/addAvatar',
+        payload: data
+    }
+}
+
+export const removeAvatar = (data) => {
+    return {
+        type: 'avatar/removeAvatar',
+        payload: data
     }
 }

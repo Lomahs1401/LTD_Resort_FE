@@ -5,7 +5,7 @@ import Header from "../../layouts/Header/Header";
 import Footer from "../../layouts/Footer/Footer";
 import Comment from "../../components/Comment/Comment";
 import AuthUser from "../../utils/AuthUser";
-import { Rate, Divider, Pagination } from "antd";
+import { Rate, Divider, Pagination, message } from "antd";
 import { BsFillHeartFill, BsFillShareFill, BsWifi } from "react-icons/bs";
 import {
   IoSparkles,
@@ -31,6 +31,11 @@ import img9 from "../../img/overviewService4.png";
 import img10 from "../../img/overviewService5.png";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { ref, getDownloadURL } from "firebase/storage"
+import { storage } from '../../utils/firebase'
+import { useDispatch, useSelector } from "react-redux";
+import { avatarSelector } from "../../redux/selectors";
+import { addAvatar } from "../../redux/actions";
 
 const cx = classNames.bind(styles);
 
@@ -64,22 +69,58 @@ export const RoomTypeDetail = () => {
     document.body.appendChild(popupDiv);
   }
 
+  // Fetch list room types state
+  const [listRoomTypes, setListRoomTypes] = useState([]);
+
+  // Fetch avatar state
+  const [loading, setLoading] = useState(false);
+  // const [imageUrl, setImageUrl] = useState('');
+
+  // Create a reference from a Google Cloud Storage URI
+  const dispatch = useDispatch();
+  const avatar = useSelector(avatarSelector);
+  const avatarRef = ref(storage, user.avatar);
+
   const [roomTypeDetail, setRoomTypeDetail] = useState({});
 
+  // useEffect(() => {
+  //   const fetchAvatar = () => {
+  //     getDownloadURL(avatarRef).then(url => {
+  //       dispatch(addAvatar(url));
+  //     })
+  //   }
+
+  //   fetchAvatar();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // })
+
   useEffect(() => {
-    http.get(`/find-rooms/${roomTypeId}`)
-      .then((resolve) => {
-        console.log(resolve);
-      })
-      .catch((reject) => {
-        console.log(reject);
-      })
+    // const fetchAvatar = () => {
+    //   getDownloadURL(avatarRef).then(url => {
+    //     setImageUrl(url);
+    //   })
+    // }
+
+    const fetchData = () => {
+      http.get(`/find-rooms/${roomTypeId}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setRoomTypeDetail(resolve.data);
+        })
+        .catch((reject) => {
+          console.log(reject);
+          message.error('Oops. Fetch data failed..')
+        })
+    }
+
+    // fetchAvatar();
+    fetchData();
+
   }, [])
 
   return (
     <div>
-      <Header userInfo={user} />
-
+      <Header active='Find Rooms' userInfo={user} imageUrl={avatar} />
       <div className={cx("room-content")}>
         <div className={cx("room-info")}>
           <div className={cx("left")}>
