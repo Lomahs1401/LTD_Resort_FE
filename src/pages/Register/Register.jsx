@@ -6,10 +6,11 @@ import facebookIcon from '../../img/facebook.png'
 import googleIcon from '../../img/google.png'
 import gif_cat from '../../img/cat.gif'
 import ImageSlider from '../../components/ImageSlider/ImageSlider'
-import { Form, Button, Input, Divider, message, Modal } from 'antd'
+import { Form, Button, Input, Divider, Modal } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthUser from '../../utils/AuthUser';
 import Swal from 'sweetalert2'
+import { toast } from 'react-toastify'
 
 const cx = classNames.bind(styles);
 
@@ -77,13 +78,31 @@ const Register = () => {
       })
       .catch((reject) => {
         console.log(reject);
-        message.error('Oops. Try again..');
+        toast.error('Oops. Try again', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        })
       })
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed: ', errorInfo);
-    message.error('Please input all fields!');
+    toast.error('Please input all fields!', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    })
   };
 
   return (
@@ -127,6 +146,7 @@ const Register = () => {
                 >
                   <Input
                     placeholder='John Doe'
+                    autoComplete='username'
                   />
                 </Form.Item>
                 <Form.Item
@@ -161,6 +181,7 @@ const Register = () => {
                 >
                   <Input.Password
                     placeholder='******'
+                    autoComplete='new-password'
                   />
                 </Form.Item>
                 <Form.Item
@@ -185,6 +206,7 @@ const Register = () => {
                 >
                   <Input.Password 
                     placeholder='******'
+                    autoComplete='new-password'
                   />
                 </Form.Item>
                 <Form.Item wrapperCol={{ span: 24 }}>

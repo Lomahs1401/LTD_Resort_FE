@@ -5,10 +5,11 @@ import logo from '../../img/logo.png'
 import facebookIcon from '../../img/facebook.png'
 import googleIcon from '../../img/google.png'
 import gif_cat from '../../img/cat.gif'
-import { Form, Button, Checkbox, Input, Divider, Modal, message } from 'antd'
+import { Form, Button, Checkbox, Input, Divider, Modal } from 'antd'
 import ImageSlider from '../../components/ImageSlider/ImageSlider';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthUser from '../../utils/AuthUser';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -48,6 +49,9 @@ const Login = () => {
 
   const { http, setToken } = AuthUser();  
   const [form] = Form.useForm();
+  const ROLE_ADMIN = "ROLE_ADMIN";
+  const ROLE_EMPLOYEE = "ROLE_EMPLOYEE";
+  const ROLE_CUSTOMER = "ROLE_CUSTOMER";
 
   const onFinish = (values) => {
     const formData = new FormData();
@@ -58,19 +62,53 @@ const Login = () => {
     http.post('/auth/login', formData)
       .then((resolve) => {
         console.log(resolve);
-        setToken(resolve.data.user, resolve.data.access_token);
-        navigate('/find-rooms');
-        message.success(`Welcome back ${resolve.data.user.username}`);
+        const user = resolve.data.user;
+        setToken(user, resolve.data.access_token, user.role_name);
+        if (user.role_name === ROLE_ADMIN) {
+          navigate('/admin')
+        } else if (user.role_name === ROLE_EMPLOYEE) {
+          navigate('/employee');
+        } else if (user.role_name === ROLE_CUSTOMER) {
+          navigate('/find-rooms');
+        }
+        toast.success(`Welcome back ${resolve.data.user.username}`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        })
       })
       .catch((reject) => {
         console.log(reject);
-        message.error('Email or password is incorrect..');
+        toast.error('Email or password is incorrect..', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        })
       })
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
-    message.error('Please input all fields');
+    toast.error('Please input all fields', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    })
   };
 
   return (
@@ -120,6 +158,7 @@ const Login = () => {
                 >
                   <Input
                     placeholder='john.doe@gmail.com'
+                    autoComplete='email'
                   />
                 </Form.Item>
                 <Form.Item
@@ -135,6 +174,7 @@ const Login = () => {
                 >
                   <Input.Password
                     placeholder='******'
+                    autoComplete='current-password'
                   />
                 </Form.Item>
                 <Form.Item

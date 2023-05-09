@@ -10,16 +10,17 @@ import overviewService5 from '../../img/overviewService5.png'
 import Header from '../../layouts/Header/Header';
 import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
-import { Divider, Slider, Collapse, Checkbox, Pagination, message } from 'antd';
+import { Divider, Slider, Collapse, Checkbox, Pagination } from 'antd';
 import { FaDollarSign } from 'react-icons/fa';
 import { faBellConcierge } from '@fortawesome/free-solid-svg-icons'
 import BookingCard from '../../components/BookingCard/BookingCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AuthUser from '../../utils/AuthUser';
-import { ref, getDownloadURL } from "firebase/storage"
-import { storage } from '../../utils/firebase'
 import Loading from '../../components/Loading/Loading';
 import currency from '../../utils/currency';
+import { useSelector } from 'react-redux';
+import { avatarSelector } from '../../redux/selectors';
+import { toast } from 'react-toastify';
 const { Panel } = Collapse;
 
 const cx = classNames.bind(styles);
@@ -33,10 +34,10 @@ const FindService = () => {
 
   // Fetch avatar state
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
 
   // Create a reference from a Google Cloud Storage URI
-  const avatarRef = ref(storage, user.avatar);
+  const avatar = useSelector(avatarSelector);
+  // const avatarRef = ref(storage, user.avatar);
 
   // Fetch price state
   const [lowestPrice, setLowestPrice] = useState(0);
@@ -97,22 +98,58 @@ const FindService = () => {
         .then((resolve) => {
           setListServices(resolve.data.list_services);
           setCurrentPage(1);
-          message.success('Filter successfully!')
+          toast.success('Filter successfully!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          })
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
+          toast.error('Opps. Something went wrong..', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          })
         })
     } else {
       http.post('/filter-service', formData)
         .then((resolve) => {
           setListServices(resolve.data.list_filter_services)
           setCurrentPage(1);
-          message.success('Filter successfully!')
+          toast.success('Filter successfully!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          })
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
+          toast.error('Opps. Something went wrong..', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          })
         })
     }
   }
@@ -127,23 +164,14 @@ const FindService = () => {
   // --------------------------     Fetch API     --------------------------
 
   useEffect(() => {
-
-    const fetchAvatar = () => {
-      getDownloadURL(avatarRef).then(url => {
-        setImageUrl(url);
-        setLoading(true);
-      })
-    }
-
     const fetchData = () => {
       http.get('/list-services')
-      .then((resolve) => {
-        setListServices(resolve.data.list_services);
-      })
-      .catch((reject) => {
-        console.log(reject);
-        message.error('Opps. Fetch data failed!')
-      })
+        .then((resolve) => {
+          setListServices(resolve.data.list_services);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
 
       http.get('/lowest-price-service')
         .then((resolve) => {
@@ -151,7 +179,6 @@ const FindService = () => {
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
         })
 
       http.get('/highest-price-service')
@@ -160,7 +187,6 @@ const FindService = () => {
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
         })
 
       http.get('/list-service-names')
@@ -169,13 +195,11 @@ const FindService = () => {
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
         })
     }
-
-    fetchAvatar();
+      
     fetchData();
-    
+    setLoading(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -186,7 +210,7 @@ const FindService = () => {
   } else {
     return (
       <div className={cx("wrapper")}>
-        <Header active='Find Services' userInfo={user} imageUrl={imageUrl} />
+        <Header active='Find Services' userInfo={user} imageUrl={avatar} />
         <div className={cx("header")}>
           <nav className={cx("nav")}>
             <div className={cx("header-middle")}>

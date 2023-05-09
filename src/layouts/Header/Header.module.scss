@@ -47,10 +47,19 @@
         }
 
         &-avatar {
+
+            .avatar {
+                display: inline-block;
+                width: 49px;
+                height: 49px;
+                position: relative;
+            }
+
             img {
                 width: 45px;
                 height: 45px;
-                position: relative;
+                position: absolute;
+                top: 0;
                 border-radius: 50%;
                 object-fit: cover;
                 border: 2px solid #FF8682;
