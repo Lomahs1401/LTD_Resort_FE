@@ -232,6 +232,7 @@ const FindRoom = () => {
     const fetchData = () => {
       http.get('/auth/room-types')
         .then((resolve) => {
+          console.log(resolve);
           setListRoomTypes(resolve.data.list_room_types);
         })
         .catch((reject) => {
