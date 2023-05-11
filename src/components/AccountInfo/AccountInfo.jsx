@@ -36,7 +36,6 @@ const AccountInfo = () => {
   const RANKING_PLATINUM = "Platinum";
   const RANKING_DIAMOND = "Diamond";
 
-
   // Fetch acustomer info state
   const [customerInfo, setCustomerInfo] = useState();
   const [customerRanking, setCustomerRanking] = useState();
@@ -67,9 +66,7 @@ const AccountInfo = () => {
 
   // Successful case
   const onFinish = (values) => {
-    console.log(values);
     const { fullName, gender, birthDate, email, ID_Card, address, phone } = values;
-    console.log(FormattedDate(birthDate));
     const formData = new FormData();
 
     formData.append('account_id', user.id);
@@ -82,8 +79,7 @@ const AccountInfo = () => {
     formData.append('phone', phone);
 
     http.patch(`/customer/${user.id}`, formData)
-      .then((resolve) => {
-        console.log(resolve);
+      .then(() => {
         Swal.fire(
           'Update!',
           'You have successfully update your profile',
@@ -151,7 +147,6 @@ const AccountInfo = () => {
     const fetchData = () => {
       http.get(`/customer/account/${user.id}`)
         .then((resolve) => {
-          console.log(resolve.data.customer);
           setCustomerInfo(resolve.data.customer);
         })
         .catch((reject) => {

@@ -3,7 +3,7 @@ import "dayjs/locale/en";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 // Định dạng ngày tháng
-const DATE_FORMAT = "YYYY-DD-MM";
+const DATE_FORMAT = "YYYY-MM-DD";
 
 dayjs.extend(customParseFormat);
 dayjs.locale("en");

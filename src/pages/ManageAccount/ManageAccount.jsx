@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./ManageAccount.module.scss";
 import classNames from "classnames/bind";
 import { Steps } from 'antd';
@@ -12,8 +12,16 @@ import AccountInfo from "../../components/AccountInfo/AccountInfo";
 import AccountHistory from "../../components/AccountHistory/AccountHistory";
 import AccountBooking from "../../components/AccountBooking/AccountBooking";
 import { FaBookmark, FaHistory, FaUser } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { avatarSelector } from "../../redux/selectors";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
+import { storage } from '../../utils/firebase'
+import { v4 } from "uuid";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import ConfirmationToast from "../../components/ConfirmationToast/ConfirmationToast";
+import { addAvatar } from "../../redux/actions";
 
 const cx = classNames.bind(styles);
 
@@ -37,7 +45,7 @@ const ManageAccount = () => {
     },
   ]
 
-  const { user } = AuthUser();
+  const { http, user } = AuthUser();
   const [current, setCurrent] = useState(0);
 
   // Create a reference from a Google Cloud Storage URI
@@ -46,6 +54,67 @@ const ManageAccount = () => {
   const onChange = (value) => {
     setCurrent(value);
   };
+
+  const handleChangeAvatar = () => {
+    document.getElementById('fileInput').click();
+  }
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [imageUpload, setImageUpload] = useState(null);
+
+  const handleImageChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      if (selectedFile !== imageUpload) {
+        toast.info(
+          <ConfirmationToast 
+            message="Do you want to save avatar?"
+            onConfirm={() => uploadImage(selectedFile)} 
+            onCancel={() => setImageUpload(null)} 
+          />, {
+          position: "top-center",
+          closeOnClick: true,
+          draggable: false,
+          progress: 1,
+          theme: "colored",
+          style: {cursor: 'default'},
+        })
+      }
+    }
+  }
+
+  const uploadImage = (file) => {
+    // Gửi đường dẫn ảnh đến Laravel để lưu vào database
+    // (Sử dụng API hoặc các phương thức khác để thực hiện tác vụ này)
+
+    const avatarRef = ref(storage, `avatars/${file.name + v4()}`);
+    uploadBytes(avatarRef, file).then(() => {
+      getDownloadURL(avatarRef).then((url) => {
+        // Upload ảnh lên Firebase Storage
+        const formData = new FormData();
+
+        formData.append('avatar_url', url);
+
+        http.patch(`auth/accounts/${user.id}`, formData)
+          .then((resolve) => {
+            console.log(resolve);
+            Swal.fire(
+              'Update!',
+              'You have successfully update your avatar',
+              'success'
+              ).then(() => {
+                dispatch(addAvatar(url));
+                navigate(0);
+              })
+            })
+          .catch((reject) => {
+            console.log(reject);
+          })
+      })
+    })
+  }
 
   return (
     <div>
@@ -64,7 +133,16 @@ const ManageAccount = () => {
                 src={avatar}
                 alt="User Avatar"
               />
-              <button className={cx("btn-edit")}>
+              <button 
+                className={cx("btn-edit")}
+                onClick={handleChangeAvatar}  
+              >
+                <input 
+                  type="file" 
+                  id="fileInput" 
+                  style={{display: 'none'}} 
+                  onChange={handleImageChange}
+                />
                 <FontAwesomeIcon icon={faPen} />
               </button>
             </div>
