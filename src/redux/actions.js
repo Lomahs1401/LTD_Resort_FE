@@ -1,4 +1,3 @@
-import { message } from "antd"
 import { toast } from "react-toastify"
 
 export const addFavouriteRoom = (data) => {
