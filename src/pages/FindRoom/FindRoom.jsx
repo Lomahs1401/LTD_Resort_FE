@@ -149,7 +149,7 @@ const FindRoom = () => {
       (filterRoomSize === 0 || filterRoomSize === smallestRoomSize) &&
       (filterBedroomType.length === 0) && (filterRoomType.length === 0)
     ) {
-      http.get('/list-room-types')
+      http.get('/auth/room-types')
         .then((resolve) => {
           setListRoomTypes(resolve.data.list_room_types);
           setCurrentPage(1);
@@ -178,7 +178,7 @@ const FindRoom = () => {
           })
         })
     } else {
-      http.post('/filter-room-type', formData)
+      http.post('/auth/room-types/filter', formData)
         .then((resolve) => {
           setListRoomTypes(resolve.data.list_filter_room_type)
           setCurrentPage(1);
@@ -230,7 +230,7 @@ const FindRoom = () => {
 
   useEffect(() => {
     const fetchData = () => {
-      http.get('/list-room-types')
+      http.get('/auth/room-types')
         .then((resolve) => {
           setListRoomTypes(resolve.data.list_room_types);
         })
@@ -238,7 +238,7 @@ const FindRoom = () => {
           console.log(reject);
         })
   
-      http.get('/lowest-price-room-type')
+      http.get('/auth/room-types/lowest-price')
         .then((resolve) => {
           setLowestPrice(resolve.data.lowest_price);
         })
@@ -246,7 +246,7 @@ const FindRoom = () => {
           console.log(reject);
         })
   
-      http.get('/highest-price-room-type')
+      http.get('/auth/room-types/highest-price')
         .then((resolve) => {
           setHighestPrice(resolve.data.highest_price);
         })
@@ -254,7 +254,7 @@ const FindRoom = () => {
           console.log(reject);
         })
   
-      http.get('/smallest-size-room-type')
+      http.get('/auth/room-types/smallest-size')
         .then((resolve) => {
           setSmallestRoomSize(resolve.data.smallest_room_size);
         })
@@ -262,7 +262,7 @@ const FindRoom = () => {
           console.log(reject);
         })
   
-      http.get('/biggest-size-room-type')
+      http.get('/auth/room-types/biggest-size')
         .then((resolve) => {
           setBiggestRoomSize(resolve.data.biggest_room_size);
         })
@@ -270,7 +270,7 @@ const FindRoom = () => {
           console.log(reject);
         })
   
-      http.get('/bedroom-type-names')
+      http.get('/auth/room-types/bedroom-names')
         .then((resolve) => {
           setBedRoomTypes(resolve.data.bedroom_type_names);
         })
@@ -278,7 +278,7 @@ const FindRoom = () => {
           console.log(reject);
         })
   
-      http.get('/room-type-names')
+      http.get('/auth/room-types/room-names')
         .then((resolve) => {
           setRoomTypes(resolve.data.room_type_names);
         })

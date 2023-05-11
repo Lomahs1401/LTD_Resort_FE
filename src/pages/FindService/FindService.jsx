@@ -94,7 +94,7 @@ const FindService = () => {
       (filterPrice === 0 || filterPrice === lowestPrice) &&
       (filterServiceType.length === 0)
     ) {
-      http.get('/list-services')
+      http.get('/auth/services')
         .then((resolve) => {
           setListServices(resolve.data.list_services);
           setCurrentPage(1);
@@ -123,7 +123,7 @@ const FindService = () => {
           })
         })
     } else {
-      http.post('/filter-service', formData)
+      http.post('/auth/services/filter', formData)
         .then((resolve) => {
           setListServices(resolve.data.list_filter_services)
           setCurrentPage(1);
@@ -165,7 +165,7 @@ const FindService = () => {
 
   useEffect(() => {
     const fetchData = () => {
-      http.get('/list-services')
+      http.get('/auth/services')
         .then((resolve) => {
           setListServices(resolve.data.list_services);
         })
@@ -173,7 +173,7 @@ const FindService = () => {
           console.log(reject);
         })
 
-      http.get('/lowest-price-service')
+      http.get('/auth/services/lowest-price')
         .then((resolve) => {
           setLowestPrice(resolve.data.lowest_price);
         })
@@ -181,7 +181,7 @@ const FindService = () => {
           console.log(reject);
         })
 
-      http.get('/highest-price-service')
+      http.get('/auth/services/highest-price')
         .then((resolve) => {
           setHighestPrice(resolve.data.highest_price);
         })
@@ -189,7 +189,7 @@ const FindService = () => {
           console.log(reject);
         })
 
-      http.get('/list-service-names')
+      http.get('/auth/services/names')
         .then((resolve) => {
           setServiceTypes(resolve.data.list_service_names);
         })

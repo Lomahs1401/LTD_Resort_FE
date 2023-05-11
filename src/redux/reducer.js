@@ -5,7 +5,9 @@ const initState = {
     favouritesServices: localStorage.getItem('favourites_services') == null 
         ? [] 
         : JSON.parse(localStorage.getItem('favourites_services')),
-    avatar: '',
+    avatar: localStorage.getItem('avatar') == null 
+        ? '' 
+        : JSON.parse(localStorage.getItem('avatar')),
 }
 
 const rootReducer = (state = initState, action) => {
@@ -55,13 +57,21 @@ const rootReducer = (state = initState, action) => {
             });
         
             localStorage.setItem('favourites_services', JSON.stringify(newFavouriteServices));
-            console.log('New Favourites Services: ', newFavouriteServices)
         
             return {
                 ...state,
                 favouritesServices: newFavouriteServices,
             };
         case 'avatar/addAvatar':
+            localStorage.setItem('avatar', JSON.stringify(action.payload));
+
+            return {
+                ...state,
+                avatar: action.payload,
+            }
+        case 'avatar/removeAvatar':
+            localStorage.setItem('avatar', JSON.stringify(''));
+
             return {
                 ...state,
                 avatar: action.payload,
