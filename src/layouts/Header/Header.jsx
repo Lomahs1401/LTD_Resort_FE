@@ -8,6 +8,10 @@ import { Link } from 'react-router-dom'
 import AuthUser from '../../utils/AuthUser'
 import { useSelector } from 'react-redux'
 import { favouritesRoomsSelector, favouritesServicesSelector } from "../../redux/selectors";
+import { Divider, Popover } from 'antd'
+import { FiLogOut } from 'react-icons/fi'
+import { RiLockPasswordLine } from 'react-icons/ri'
+import { MdFavorite } from 'react-icons/md'
 
 const cx = classNames.bind(styles);
 
@@ -26,6 +30,36 @@ const Header = ({active, userInfo, imageUrl}) => {
   const handleLogout = () => {
     logout();
   }
+
+  const title = (
+    <div className={cx("title-wrapper")}>
+      <h3>{userInfo.username}</h3>
+      <Divider className={cx("seperate-line")} />
+    </div>
+  )
+
+  const content = (
+    <div className={cx("content-wrapper")}>
+      <div className={cx("content-wrapper__link")}>
+        <Link to="/favourites" className={cx("content-wrapper__link-item")}>
+          <MdFavorite />
+          <p>Favourites</p>
+          <div className={cx("favourites-couter")} style={totalFavouritesItem > 0 ? {display: 'block'} : {display: 'none'}}>
+            <span>{totalFavouritesItem}</span>
+          </div>
+        </Link>
+        <Link to="/update-password" className={cx("content-wrapper__link-item")}>
+          <RiLockPasswordLine/>
+          <p>Update Password</p>
+        </Link>
+      </div>
+      <Divider className={cx("seperate-line")} />
+      <button className={cx("content-wrapper__logout")} onClick={handleLogout}>
+        <FiLogOut size={16} />
+        <p>Logout</p>
+      </button>
+    </div>
+  );
 
   return (
     <div className={cx("header")}>
@@ -67,25 +101,13 @@ const Header = ({active, userInfo, imageUrl}) => {
         </div>
         <div className={cx("header__right-avatar")}>
           <div className={cx("avatar")}>
-            <img
-              src={imageUrl}
-              alt='Avatar'
-            />
+            <Popover content={content} title={title} trigger='click'>
+              <img
+                src={imageUrl}
+                alt='Avatar'
+              />
+            </Popover>
           </div>
-        </div>
-        <div className={cx("header__right-favourites")}>
-          <div className={cx("favourites-container")}>
-            <FontAwesomeIcon icon={faHeart} />
-            <Link to={'/favourites'} className={cx("favourites-link")}>
-              <span>Favourites</span>
-            </Link>
-            <div className={cx("favourites-couter")} style={totalFavouritesItem > 0 ? {display: 'block'} : {display: 'none'}}>
-              <span>{totalFavouritesItem}</span>
-            </div>
-          </div>
-        </div>
-        <div className={cx("btn-logout__container")}>
-          <button className={cx("btn-logout")} onClick={handleLogout}>Log out</button>
         </div>
       </div>
     </div>

@@ -26,13 +26,12 @@ const BookingCard = ({
   area = '',
   totalReviews,
   disableFavouriteCheck,
-  setReloadHeader,
+  setReloadFavouriteItem,
 }) => {
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
 
   const dispatch = useDispatch();
 
-  
   // Fetch image state
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
@@ -102,7 +101,7 @@ const BookingCard = ({
         setToggleFavourite(false);
       }
     }
-    setReloadHeader(true);
+    setReloadFavouriteItem(true);
   }
 
   useEffect(() => {
