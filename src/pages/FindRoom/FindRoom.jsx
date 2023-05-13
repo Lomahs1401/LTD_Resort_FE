@@ -10,7 +10,7 @@ import overviewRoom5 from '../../img/overviewRoom5.png'
 import { BsFillCalendar2CheckFill } from 'react-icons/bs'
 import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
-import { Form, Divider, Slider, DatePicker, Select, Collapse, Checkbox, Pagination, message } from 'antd';
+import { Form, Divider, Slider, DatePicker, Select, Collapse, Checkbox, Pagination } from 'antd';
 import { FaBed, FaDollarSign, FaUser } from 'react-icons/fa';
 import { BiSearch } from "react-icons/bi"
 import BookingCard from '../../components/BookingCard/BookingCard';
@@ -21,6 +21,10 @@ import currency from '../../utils/currency';
 import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from '../../utils/firebase'
 import Loading from '../../components/Loading/Loading';
+import { useDispatch, useSelector } from 'react-redux';
+import { addAvatar } from '../../redux/actions';
+import { avatarSelector } from '../../redux/selectors';
+import { toast } from 'react-toastify';
 
 const { Panel } = Collapse;
 const cx = classNames.bind(styles);
@@ -35,9 +39,9 @@ const FindRoom = () => {
 
   // Fetch avatar state
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
-
+  
   // Create a reference from a Google Cloud Storage URI
+  const avatar = useSelector(avatarSelector);
   const avatarRef = ref(storage, user.avatar);
 
   // Fetch price state
@@ -62,7 +66,8 @@ const FindRoom = () => {
   const currentPost = listRoomTypes.slice(firstPostIndex, lastPostIndex);
 
   // reload "Favourites" in header
-  const [, setReloadHeader] = useState(false);
+  const [, setReloadFavouriteItem] = useState(false);
+  const dispatch = useDispatch();
 
   // Filter state
   const [filterPrice, setFilterPrice] = useState(0);
@@ -144,26 +149,62 @@ const FindRoom = () => {
       (filterRoomSize === 0 || filterRoomSize === smallestRoomSize) &&
       (filterBedroomType.length === 0) && (filterRoomType.length === 0)
     ) {
-      http.get('/list-room-types')
+      http.get('/auth/room-types')
         .then((resolve) => {
           setListRoomTypes(resolve.data.list_room_types);
           setCurrentPage(1);
-          message.success('Filter successfully!')
+          toast.success('Filter successfully!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          })
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Something went wrong..')
+          toast.error('Opps. Something went wrong..', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          })
         })
     } else {
-      http.post('/filter-room-type', formData)
+      http.post('/auth/room-types/filter', formData)
         .then((resolve) => {
           setListRoomTypes(resolve.data.list_filter_room_type)
           setCurrentPage(1);
-          message.success('Filter successfully!')
+          toast.success('Filter successfully!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          })
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Something went wrong..')
+          toast.error('Opps. Something went wrong..', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          })
         })
     }
   }
@@ -179,82 +220,78 @@ const FindRoom = () => {
   useEffect(() => {
     const fetchAvatar = () => {
       getDownloadURL(avatarRef).then(url => {
-        setImageUrl(url);
+        dispatch(addAvatar(url));
       })
     }
 
+    fetchAvatar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
     const fetchData = () => {
-      http.get('/list-room-types')
+      http.get('/auth/room-types')
         .then((resolve) => {
+          console.log(resolve);
           setListRoomTypes(resolve.data.list_room_types);
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
         })
   
-      http.get('/lowest-price-room-type')
+      http.get('/auth/room-types/lowest-price')
         .then((resolve) => {
           setLowestPrice(resolve.data.lowest_price);
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
         })
   
-      http.get('/highest-price-room-type')
+      http.get('/auth/room-types/highest-price')
         .then((resolve) => {
           setHighestPrice(resolve.data.highest_price);
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
         })
   
-      http.get('/smallest-size-room-type')
+      http.get('/auth/room-types/smallest-size')
         .then((resolve) => {
           setSmallestRoomSize(resolve.data.smallest_room_size);
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
         })
   
-      http.get('/biggest-size-room-type')
+      http.get('/auth/room-types/biggest-size')
         .then((resolve) => {
           setBiggestRoomSize(resolve.data.biggest_room_size);
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
         })
   
-      http.get('/bedroom-type-names')
+      http.get('/auth/room-types/bedroom-names')
         .then((resolve) => {
           setBedRoomTypes(resolve.data.bedroom_type_names);
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
         })
   
-      http.get('/room-type-names')
+      http.get('/auth/room-types/room-names')
         .then((resolve) => {
           setRoomTypes(resolve.data.room_type_names);
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Opps. Fetch data failed!')
         })
     }
-
-    fetchAvatar();
+      
     fetchData();
-    
     setLoading(true);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   if (!loading) {
     return (
@@ -264,7 +301,7 @@ const FindRoom = () => {
     return (
       <div className={cx("wrapper")}>
         <div className={cx("header")}>
-          <Header active='Find Rooms' userInfo={user} imageUrl={imageUrl} />
+          <Header active='Find Rooms' userInfo={user} imageUrl={avatar} />
           <nav className={cx("nav")}>
             <div className={cx("header-middle")}>
               <div className={"header-middle__content"}>
@@ -608,7 +645,7 @@ const FindRoom = () => {
                   listRooms={roomType.number_rooms}
                   area={roomType.room_size}
                   totalReviews={54}
-                  setReloadHeader={setReloadHeader}
+                  setReloadFavouriteItem={setReloadFavouriteItem}
                 />
               )
             })}
