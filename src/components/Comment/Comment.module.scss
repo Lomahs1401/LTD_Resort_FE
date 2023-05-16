@@ -65,6 +65,14 @@
         > p {
             font-size: 20px;
             margin-block: 8px;
+            transition: 0.3s;
+
+            &:hover {
+                font-size: 20px;
+                cursor: pointer;
+                color: #8dd3bb;
+                font-weight: 500;
+            }
         }
     }
     
@@ -84,3 +92,4 @@
 .seperate-line {
     border: 1px solid #bfc4c1;
 }
+

@@ -24,7 +24,6 @@ const BookingCard = ({
   capacity = '',
   listRooms = '',
   area = '',
-  totalReviews,
   disableFavouriteCheck,
   setReloadFavouriteItem,
 }) => {

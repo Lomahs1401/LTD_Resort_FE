@@ -515,10 +515,19 @@ export const RoomTypeDetail = () => {
                 return (
                   <Comment
                     key={feedback.id}
-                    comment={feedback.comment}
-                    rating={feedback.rating}
-                    fullName={feedback.username}
+                    accountId={feedback.account_id}
                     avatar={feedback.avatar}
+                    comment={feedback.comment}
+                    username={feedback.username}
+                    rating={feedback.rating}
+                    fullName={feedback.full_name}
+                    email={feedback.email}
+                    gender={feedback.gender}
+                    birthDate={feedback.birthday}
+                    ID_Card={feedback.CMND}
+                    address={feedback.address}
+                    phone={feedback.phone}
+                    rankingPoint={feedback.ranking_point}
                   />
                 )
               } else {
@@ -526,10 +535,19 @@ export const RoomTypeDetail = () => {
                   <>
                     <Comment
                       key={feedback.id}
-                      comment={feedback.comment}
-                      rating={feedback.rating}
-                      fullName={feedback.username}
+                      accountId={feedback.account_id}
                       avatar={feedback.avatar}
+                      comment={feedback.comment}
+                      username={feedback.username}
+                      rating={feedback.rating}
+                      fullName={feedback.full_name}
+                      email={feedback.email}
+                      gender={feedback.gender}
+                      birthDate={feedback.birthday}
+                      ID_Card={feedback.CMND}
+                      address={feedback.address}
+                      phone={feedback.phone}
+                      rankingPoint={feedback.ranking_point}
                     />
                     <Divider className={cx("seperate-line")} />
                   </>
