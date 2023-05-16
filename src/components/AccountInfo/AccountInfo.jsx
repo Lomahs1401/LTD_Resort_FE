@@ -75,7 +75,7 @@ const AccountInfo = ({ customerInfo, customerRanking }) => {
     formData.append('address', address);
     formData.append('phone', phone);
 
-    http.patch(`/customer/${user.id}`, formData)
+    http.patch(`/customer/account/${user.id}`, formData)
       .then(() => {
         Swal.fire(
           'Update!',

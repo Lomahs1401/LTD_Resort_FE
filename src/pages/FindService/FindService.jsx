@@ -32,12 +32,9 @@ const FindService = () => {
   // Fetch list services state
   const [listServices, setListServices] = useState([]);
 
-  // Fetch avatar state
+  // Fetch data state
   const [loading, setLoading] = useState(false);
-
-  // Create a reference from a Google Cloud Storage URI
   const avatar = useSelector(avatarSelector);
-  // const avatarRef = ref(storage, user.avatar);
 
   // Fetch price state
   const [lowestPrice, setLowestPrice] = useState(0);

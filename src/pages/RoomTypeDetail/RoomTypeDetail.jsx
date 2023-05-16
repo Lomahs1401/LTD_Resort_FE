@@ -5,199 +5,366 @@ import Header from "../../layouts/Header/Header";
 import Footer from "../../layouts/Footer/Footer";
 import Comment from "../../components/Comment/Comment";
 import AuthUser from "../../utils/AuthUser";
-import { Rate, Divider, Pagination, message } from "antd";
+import { Rate, Divider, Pagination } from "antd";
+import { BiArrowBack } from "react-icons/bi"
 import { BsFillHeartFill, BsFillShareFill, BsWifi } from "react-icons/bs";
-import {
-  IoSparkles,
-  IoRestaurant,
-  IoCafe,
-  IoPersonSharp,
-  IoBedSharp,
-} from "react-icons/io5";
+import { IoSparkles, IoRestaurant, IoCafe, IoPersonSharp, IoBedSharp } from "react-icons/io5";
 import { FaSwimmingPool, FaConciergeBell } from "react-icons/fa";
 import { BiSpa, BiDrink } from "react-icons/bi";
 import { IoIosFitness } from "react-icons/io";
 import { GiAchievement } from "react-icons/gi";
 import { RxDimensions } from "react-icons/rx";
-import img1 from "../../img/overviewRoom1.png";
-import img2 from "../../img/overviewRoom2.png";
-import img3 from "../../img/overviewRoom3.png";
-import img4 from "../../img/overviewRoom4.png";
-import img5 from "../../img/overviewRoom5.png";
-import img6 from "../../img/overviewService1.png";
-import img7 from "../../img/overviewService2.png";
-import img8 from "../../img/overviewService3.png";
-import img9 from "../../img/overviewService4.png";
-import img10 from "../../img/overviewService5.png";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { ref, getDownloadURL } from "firebase/storage"
-import { storage } from '../../utils/firebase'
+import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { avatarSelector } from "../../redux/selectors";
-import { addAvatar } from "../../redux/actions";
+import { avatarSelector, favouritesRoomsSelector } from "../../redux/selectors";
+import currency from "../../utils/currency";
+import { addFavouriteRoom, removeFavouriteRoom } from "../../redux/actions";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { ref, listAll, getDownloadURL } from "firebase/storage"
+import { storage } from "../../utils/firebase";
+import Loading from "../../components/Loading/Loading";
+import checkin from "../../img/checkin.jpg"
+import checkout from "../../img/chekout.png"
+import { toast } from "react-toastify";
 
 const cx = classNames.bind(styles);
+
+function SampleNextArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block", background: "#8dd3bb", borderRadius: '50%', fontSize: 20 }}
+      onClick={onClick}
+    />
+  );
+}
+
+function SamplePrevArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block", background: "#8dd3bb", borderRadius: '50%', fontSize: 20 }}
+      onClick={onClick}
+    />
+  );
+}
 
 export const RoomTypeDetail = () => {
   const { roomTypeId } = useParams();
   const { http, user } = AuthUser();
+  const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
+  const FIREBASE_URL = `gs://ltd-resort.appspot.com/room-types/${roomTypeId}/`;
 
-  function showImage(image) {
-    // document.getElementById('mainImage').src = image;
-    const mainimg = document.getElementById("mainImage");
-    if (mainimg) {
-      mainimg.src = image;
-    }
+  const settings = {
+    dots: true,
+    infinite: true,
+    slidesToShow: 3,
+    slidesToScroll: 3,
+    initialSlide: 0,
+    speed: 1000,
+    nextArrow: <SampleNextArrow style={{ backgroundColor: 'green' }} />,
+    prevArrow: <SamplePrevArrow style={{ backgroundColor: 'red' }} />,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          initialSlide: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  };
 
-    // console.log("showImage called with", image, number);
-  }
+  const [isLoading, setIsLoading] = useState(false);
 
-  function showPopup(imageSrc) {
-    // Tạo một phần tử <div> mới để chứa cửa sổ popup
-    const popupDiv = document.createElement("div");
-    popupDiv.classList.add("popup");
+  // Fetch room type state
+  const [roomTypeDetail, setRoomTypeDetail] = useState({});
+  // Fetch feedbacks state
+  const [feedbacks, setFeedbacks] = useState([]);
 
-    // Tạo một phần tử <img> mới với nguồn là ảnh được chọn
-    const popupImg = document.createElement("img");
-    popupImg.src = imageSrc;
+  // Fetch list image state
+  const [imageList, setImageList] = useState([]);
+  const imageRef = ref(storage, FIREBASE_URL);
 
-    // Thêm phần tử <img> vào phần tử <div> popup
-    popupDiv.appendChild(popupImg);
-
-    // Thêm phần tử <div> popup vào thân của trang web
-    document.body.appendChild(popupDiv);
-  }
-
-  // Fetch list room types state
-  const [listRoomTypes, setListRoomTypes] = useState([]);
-
-  // Fetch avatar state
-  const [loading, setLoading] = useState(false);
-  // const [imageUrl, setImageUrl] = useState('');
-
-  // Create a reference from a Google Cloud Storage URI
   const dispatch = useDispatch();
   const avatar = useSelector(avatarSelector);
-  const avatarRef = ref(storage, user.avatar);
+  const favouritesRooms = useSelector(favouritesRoomsSelector);
 
-  const [roomTypeDetail, setRoomTypeDetail] = useState({});
+  const [toggleFavourite, setToggleFavourite] = useState(() => {
+    let isToggleFavourite = false;
+    favouritesRooms.some((favouriteRoom) => {
+      if (favouriteRoom.id === parseInt(roomTypeId)) {
+        isToggleFavourite = true;
+        return true;
+      } else {
+        return false;
+      }
+    })
+    return isToggleFavourite;
+  });
 
-  // useEffect(() => {
-  //   const fetchAvatar = () => {
-  //     getDownloadURL(avatarRef).then(url => {
-  //       dispatch(addAvatar(url));
-  //     })
-  //   }
+  const handleClickFavourite = () => {
+    if (!toggleFavourite) {
+      dispatch(addFavouriteRoom({
+        id: parseInt(roomTypeId),
+        image: roomTypeDetail.image,
+        title: roomTypeDetail.room_type_name,
+        price: roomTypeDetail.price,
+        ranking: roomTypeDetail.point_ranking,
+        type: "Room",
+        capacity: roomTypeDetail.number_customers,
+        listRooms: roomTypeDetail.number_rooms,
+        area: roomTypeDetail.room_size,
+      }));
+      setToggleFavourite(true);
+    } else {
+      dispatch(removeFavouriteRoom(parseInt(roomTypeId)));
+      setToggleFavourite(false);
+    }
+  }
 
-  //   fetchAvatar();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // })
+  const giveYourReview = () => {
+    toast.success('Give your review', {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: 0,
+      theme: "colored",
+    })
+  }
+
+  var totalRating = 0;
+  var averageRating = 0;
+  var totalVerifiedReviews = 0;
+
+  totalRating = feedbacks.reduce((sum, feedback) => {
+    return sum + feedback.rating
+  }, 0);
+
+  averageRating = totalRating / feedbacks.length;
+
+  totalVerifiedReviews = feedbacks.reduce((sum, feedback) => {
+    if (feedback.feedback_status === "Feedbacked") {
+      return sum + 1;
+    }
+    return sum;
+  }, 0);
 
   useEffect(() => {
-    // const fetchAvatar = () => {
-    //   getDownloadURL(avatarRef).then(url => {
-    //     setImageUrl(url);
-    //   })
-    // }
+    const fetchImage = () => {
+      let fetchedImages = []; // Tạo một mảng tạm để lưu trữ các ảnh lấy được từ Firebase
 
+      listAll(imageRef)
+        .then((response) => {
+          const promises = response.items.map((item) => {
+            return getDownloadURL(item)
+              .then((url) => {
+                fetchedImages.push(url); // Thêm ảnh vào mảng tạm
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          });
+
+          Promise.all(promises).then(() => {
+            setImageList(fetchedImages); // Cập nhật state ImageList với các ảnh đã lấy được
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    if (imageList.length === 0) {
+      // Chỉ gọi fetchImage khi imageList chưa có ảnh nào
+      fetchImage();
+    }
+
+    setIsLoading(true);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
     const fetchData = () => {
-      http.get(`/find-rooms/${roomTypeId}`)
+      http.get(`/auth/room-types/${roomTypeId}`)
         .then((resolve) => {
-          console.log(resolve);
-          setRoomTypeDetail(resolve.data);
+          setRoomTypeDetail(resolve.data.room_type);
         })
         .catch((reject) => {
           console.log(reject);
-          message.error('Oops. Fetch data failed..')
         })
     }
 
-    // fetchAvatar();
     fetchData();
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return (
-    <div>
-      <Header active='Find Rooms' userInfo={user} imageUrl={avatar} />
-      <div className={cx("room-content")}>
-        <div className={cx("room-info")}>
-          <div className={cx("left")}>
-            <h2>Single Bedroom - Superior Room</h2>
-            <div className={cx("achievement")}>
-              <div>
-                <Rate disabled defaultValue={5} style={{ color: "#FF8682" }} />5
-                Star Hotel
+  useEffect(() => {
+    const fetchFeedbacks = () => {
+      http.get(`/auth/feedbacks/room-type/${roomTypeId}`).then((resolve) => {
+        console.log(resolve);
+        setFeedbacks(resolve.data.list_feedback_rooms);
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
+
+    fetchFeedbacks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (!isLoading) {
+    return (
+      <Loading />
+    )
+  } else {
+    return (
+      <div>
+        <Header active='Find Rooms' userInfo={user} imageUrl={avatar} />
+
+        <div className={cx("room-content")}>
+          <Link
+            to="/find-rooms"
+            className={cx("link-back")}
+          >
+            <BiArrowBack />
+            Back
+          </Link>
+          <div className={cx("room-info")}>
+            <div className={cx("room-info__left")}>
+              <h2>{roomTypeDetail.room_type_name}</h2>
+              <div className={cx("achievement")}>
+                <div className={cx("achievement__left")}>
+                  <Rate
+                    disabled
+                    defaultValue={5}
+                    tooltips={RATING_DESC}
+                    style={{ color: "#FF8682" }}
+                  />
+                  <p className={cx("achievement-desc")}>5 Star Room</p>
+                </div>
+                <div className={cx("achievement__right")}>
+                  <GiAchievement size={25} style={{ color: "#FFD700	" }} />
+                  <p className={cx("achievement-desc")}>Star</p>
+                </div>
               </div>
-              <div style={{ display: "flex" }}>
-                <GiAchievement size={25} style={{ color: "#FFD700	" }} />
-                star
+              <div className={cx("detail")}>
+                <div className={cx("detail-person")}>
+                  <IoPersonSharp />
+                  <p>
+                    {
+                      roomTypeDetail.number_customers > 1
+                        ? `${roomTypeDetail.number_customers} persons`
+                        : `${roomTypeDetail.number_customers} person`
+                    }
+                  </p>
+                </div>
+                <div className={cx("detail-rooms")}>
+                  <IoBedSharp />
+                  <p>{roomTypeDetail.number_rooms} rooms</p>
+                </div>
+                <div className={cx("detail-size")}>
+                  <RxDimensions />
+                  <p>{roomTypeDetail.room_size} m<sup>2</sup></p>
+                </div>
               </div>
             </div>
-            <div className={cx("space")}>
-              <IoPersonSharp />
-              1 persons
-              <IoBedSharp />
-              50 rooms
-              <RxDimensions />
-              18 m2
+            <div className={cx("room-info__right")}>
+              <p>Price from</p>
+              <h1 style={{ color: "#FF8682" }}>
+                {roomTypeDetail?.price && currency(roomTypeDetail?.price)}
+                <sub>/Night</sub>
+              </h1>
+              <div className={cx("button")}>
+                <div className={cx("button__left")}>
+                  <button
+                    className={toggleFavourite ? cx("btn-toggle") : cx("btn-untoggle")}
+                    onClick={handleClickFavourite}
+                  >
+                    <BsFillHeartFill />
+                  </button>
+                  <button>
+                    <BsFillShareFill />
+                  </button>
+                </div>
+                <div className={cx("button__right")}>
+                  <button>Book now</button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <Divider style={{ background: "#112211" }} />
-        <div className={cx("use")}>
-          <div className={cx("image")}>
-            <div>
-              <img id="mainImage" src={img1} />
-            </div>
-            <div className={cx("holder")}>
-              <img src={img1} title="Item 1" onClick={() => showImage(img1)} />
 
-              <img src={img2} title="Item 2" onClick={() => showImage(img2)} />
-
-              <img src={img3} title="Item 3" onClick={() => showImage(img3)} />
-
-              <img src={img4} title="Item 4" onClick={() => showImage(img4)} />
-
-              <img src={img5} title="Item 5" onClick={() => showImage(img5)} />
-
-              <img src={img6} title="Item 6" onClick={() => showImage(img6)} />
-
-              <img src={img7} title="Item 7" onClick={() => showImage(img7)} />
-
-              <img src={img8} title="Item 8" onClick={() => showImage(img8)} />
-
-              <img src={img9} title="Item 9" onClick={() => showImage(img9)} />
-
-              <img
-                src={img10}
-                title="Item 10"
-                onClick={() => showImage(img10)}
-              />
-            </div>
+          <div className={cx("image-carousel")}>
+            <Slider {...settings}>
+              {imageList.map((image, index) => {
+                return (
+                  <div className={cx("image-container")} key={index}>
+                    <img src={image} title={`Image ${index}`} alt="Room Type" />
+                  </div>
+                )
+              })}
+            </Slider>
           </div>
+
+          <Divider className={cx("seperate-line")} />
 
           <div className={cx("overview")}>
-            <h1>overview</h1>
-            Located in Taksim Gmsuyu, the heart of Istanbul, the CVK Park
-            Bosphorus Hotel Istanbul has risen from the ashes of the historic
-            Park Hotel, which also served as Foreign Affairs Palace 120 years
-            ago and is hosting its guests by assuming this hospitality mission.
-            With its 452 luxurious rooms and suites, 8500 m2 SPA and fitness
-            area, 18 meeting rooms including 4 dividable ones and 3 terraces
-            with Bosphorus view, Istanbuls largest terrace with Bosphorus view
-            (4500 m2) and latest technology infrastructure, CVK Park Bosphorus
-            Hotel Istanbul is destined to be the popular attraction point of the
-            city. Room and suite categories at various sizes with city and
-            Bosphorus view, as well as 68 separate luxury suites, are offered to
-            its special guests as a wide variety of selection.
+            <h1>Overview</h1>
+            <p>{roomTypeDetail.description}</p>
             <div className={cx("strength")}>
               <div className={cx("box__special")}>
-                <h3>4.2</h3>
+                <h3>{averageRating}</h3>
                 <div>
-                  <h4>very good</h4>
-                  371 reviews
+                  {(() => {
+                    if (averageRating > 4) {
+                      return (
+                        <h4>Wonderful</h4>
+                      )
+                    } else if (averageRating > 3 && averageRating <= 4) {
+                      return (
+                        <h4>Good</h4>
+                      )
+                    } else if (averageRating > 2 && averageRating <= 3) {
+                      return (
+                        <h4>Normal</h4>
+                      )
+                    } else if (averageRating > 1 && averageRating <= 2) {
+                      return (
+                        <h4>Not Good</h4>
+                      )
+                    } else {
+                      return (
+                        <h4>Bad</h4>
+                      )
+                    }
+                  })()}
+                  {feedbacks.length === 1 ? `${feedbacks.length} Review` : `${feedbacks.length} Reviews`}
                 </div>
               </div>
               <div className={cx("box")}>
@@ -217,126 +384,168 @@ export const RoomTypeDetail = () => {
                 Clean Room
               </div>
             </div>
-            <div className={cx("right")}>
-              Price from
-              <h3 style={{ color: "#FF8682" }}>203.000 VND/Night</h3>
-              <div className={cx("button")}>
-                <div className={cx("button__left")}>
-                  <button>
-                    <BsFillHeartFill />
-                  </button>
-                  <button>
-                    <BsFillShareFill />
-                  </button>
+          </div>
+
+          <Divider className={cx("seperate-line")} />
+
+
+          <div className={cx("room-type-info")}>
+            <div className={cx("room-type-info__left")}>
+              <h1>Check-in time/Check-out time</h1>
+              <div className={cx("checkin-container")}>
+                <div className={cx("checkin-time")}>
+                  <div className={cx("checkin-time__left")}>
+                    <img src={checkin} alt="checkin" />
+                    <h2>Check-in time</h2>
+                  </div>
+                  <div className={cx("checkin-time__right")}>
+                    <h2>from 2:00 pm</h2>
+                  </div>
                 </div>
-                <div className={cx("button__right")}>
-                  <button>book now</button>
+                <div className={cx("checkout-time")}>
+                  <div className={cx("checkout-time__left")}>
+                    <img src={checkout} alt="checkout" />
+                    <h2>Check-out time</h2>
+                  </div>
+                  <div className={cx("checkout-time__right")}>
+                    <h2>before 12.00 am</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Divider className={cx("seperate-line")} type="vertical" style={{ height: 200 }} />
+            <div className={cx("room-type-info__right")}>
+              <h1>Amenities</h1>
+              <div className={cx("amenities")}>
+                <div className={cx("amenities-attributes")}>
+                  <div className={cx("amenities-attributes__icons")}>
+                    <div className={cx("amenities-attributes__icons-item")}>
+                      <FaSwimmingPool size={20} />
+                      Outdoor pool
+                    </div>
+                    <div className={cx("amenities-attributes__icons-item")}>
+                      <FaSwimmingPool size={20} />
+                      Indoor pool
+                    </div>
+                    <div className={cx("amenities-attributes__icons-item")}>
+                      <BiSpa size={20} />
+                      Spa and wellness center
+                    </div>
+                    <div className={cx("amenities-attributes__icons-item")}>
+                      <IoRestaurant size={20} />
+                      Restaurant
+                    </div>
+                    <div className={cx("amenities-attributes__icons-item")}>
+                      <FaConciergeBell size={20} />
+                      Room service
+                    </div>
+                  </div>
+                  <div className={cx("amenities-attributes__icons")}>
+                    <div className={cx("amenities-attributes__icons-item")}>
+                      <IoIosFitness size={20} />
+                      Fitness center
+                    </div>
+                    <div className={cx("amenities-attributes__icons-item")}>
+                      <BiDrink size={20} />
+                      Bar/Lounge
+                    </div>
+                    <div className={cx("amenities-attributes__icons-item")}>
+                      <BsWifi size={20} />
+                      Free Wi-Fi
+                    </div>
+                    <div className={cx("amenities-attributes__icons-item")}>
+                      <IoCafe size={20} />
+                      Tea/coffee machine
+                    </div>
+                    <div
+                      className={cx("amenities-attributes__icons-item")}
+                      style={{ color: "orange" }}
+                    >
+                      +24 more
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <Divider className={cx("seperate-line")} />
+
+          <div className={cx("review-wrapper")}>
+            <div className={cx("review-wrapper__left")}>
+              <h2>Reviews</h2>
+              <div className={cx("score")}>
+                <h1>{averageRating}</h1>
+                <div className={cx("summary")}>
+                  {(() => {
+                    if (averageRating > 4) {
+                      return (
+                        <h4>Wonderful</h4>
+                      )
+                    } else if (averageRating > 3 && averageRating <= 4) {
+                      return (
+                        <h4>Good</h4>
+                      )
+                    } else if (averageRating > 2 && averageRating <= 3) {
+                      return (
+                        <h4>Normal</h4>
+                      )
+                    } else if (averageRating > 1 && averageRating <= 2) {
+                      return (
+                        <h4>Not Good</h4>
+                      )
+                    } else {
+                      return (
+                        <h4>Bad</h4>
+                      )
+                    }
+                  })()}
+                  <p>{totalVerifiedReviews} verified {totalVerifiedReviews === 1 ? "review" : "reviews"}</p>
+                </div>
+              </div>
+            </div>
+            <div className={cx("review-wrapper__right")}>
+              <button onClick={giveYourReview}>Give your review</button>
+            </div>
+          </div>
+
+          <div className={cx("comment")}>
+            {feedbacks.map((feedback, index) => {
+              if (index === feedbacks.length - 1) {
+                return (
+                  <Comment
+                    key={feedback.id}
+                    comment={feedback.comment}
+                    rating={feedback.rating}
+                    fullName={feedback.username}
+                    avatar={feedback.avatar}
+                  />
+                )
+              } else {
+                return (
+                  <>
+                    <Comment
+                      key={feedback.id}
+                      comment={feedback.comment}
+                      rating={feedback.rating}
+                      fullName={feedback.username}
+                      avatar={feedback.avatar}
+                    />
+                    <Divider className={cx("seperate-line")} />
+                  </>
+                )
+              }
+            })}
+            <div className="pagination">
+              <Pagination defaultCurrent={1} total={12} />
+            </div>
+          </div>
         </div>
 
-        <Divider style={{ background: "#112211" }} />
-
-        <div className={cx("checking")}>
-          <h1>Check-in time/Check-out time</h1>
-          <div className={cx("time")}>
-            <div className={cx("checkingtime")}>
-              <div>Check-in time</div>
-              <div>Check-out time</div>
-            </div>
-            <div className={cx("checkingtime")}>
-              <h4>from 2:00 pm</h4>
-              <h4>before 12.00 am</h4>
-            </div>
-          </div>
-        </div>
-        <Divider style={{ background: "#112211" }} />
-
-        <div className={cx("amenities")}>
-          <h2>Amenities</h2>
-          <div className={cx("amenities-attributes")}>
-            <div className={cx("amenities-attributes__icons")}>
-              <div className={cx("amenities-attributes__icons-one")}>
-                <FaSwimmingPool size={20} />
-                Outdoor pool
-              </div>
-              <div className={cx("amenities-attributes__icons-one")}>
-                <FaSwimmingPool size={20} />
-                Indoor pool
-              </div>
-              <div className={cx("amenities-attributes__icons-one")}>
-                <BiSpa size={20} />
-                Spa and wellness center
-              </div>
-              <div className={cx("amenities-attributes__icons-one")}>
-                <IoRestaurant size={20} />
-                Restaurant
-              </div>
-              <div className={cx("amenities-attributes__icons-one")}>
-                <FaConciergeBell size={20} />
-                Room service
-              </div>
-            </div>
-            <div>
-              <div className={cx("amenities-attributes__icons-one")}>
-                <IoIosFitness size={20} />
-                Fitness center
-              </div>
-              <div className={cx("amenities-attributes__icons-one")}>
-                <BiDrink size={20} />
-                Bar/Lounge
-              </div>
-              <div className={cx("amenities-attributes__icons-one")}>
-                <BsWifi size={20} />
-                Free Wi-Fi
-              </div>
-              <div className={cx("amenities-attributes__icons-one")}>
-                <IoCafe size={20} />
-                Tea/coffee machine
-              </div>
-              <div
-                className={cx("amenities-attributes__icons-one")}
-                style={{ color: "orange" }}
-              >
-                +24 more
-              </div>
-            </div>
-          </div>
-        </div>
-        <Divider style={{ background: "#112211" }} />
-        <div className={cx("review")}>
-          <div>
-            <h2>Review</h2>
-            <div className={cx("score")}>
-              <h3>4.3</h3>
-              <div className={cx("summary")}>
-                <h4>Very good</h4>
-                371 verified reviews
-              </div>
-            </div>
-          </div>
-          <button>Give your review</button>
-        </div>
-        <div className={cx("comment")}>
-          <Comment />
-          <Divider style={{ background: "#112211" }} />
-          <Comment />
-          <Divider style={{ background: "#112211" }} />
-          <Comment />
-          <Divider style={{ background: "#112211" }} />
-          <Comment />
-          <Divider style={{ background: "#112211" }} />
-          <Comment />
-          <div className="pagination">
-            <Pagination defaultCurrent={1} total={12} />
-          </div>
-        </div>
+        <Footer />
       </div>
-
-      <Footer />
-    </div>
-  );
+    )
+  }
 };
+
 export default RoomTypeDetail;
