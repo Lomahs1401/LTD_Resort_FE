@@ -42,7 +42,7 @@ const FindRoom = () => {
   
   // Create a reference from a Google Cloud Storage URI
   const avatar = useSelector(avatarSelector);
-  const avatarRef = ref(storage, user.avatar);
+  const avatarRef = ref(storage, avatar ? avatar : user.avatar);
 
   // Fetch price state
   const [lowestPrice, setLowestPrice] = useState(0);
@@ -226,7 +226,7 @@ const FindRoom = () => {
 
     fetchAvatar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [avatar])
 
   useEffect(() => {
     const fetchData = () => {
