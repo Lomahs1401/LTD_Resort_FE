@@ -500,7 +500,7 @@ export const RoomTypeDetail = () => {
                       )
                     }
                   })()}
-                  <p>{totalVerifiedReviews} verified {totalVerifiedReviews === 1 ? "review" : "reviews"}</p>
+                  <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
                 </div>
               </div>
             </div>
