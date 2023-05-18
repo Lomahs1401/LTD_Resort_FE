@@ -13,6 +13,7 @@ import Form from './Form/Form';
 import Line from './Line/Line';
 import Pie from './Pie/Pie';
 import FAQ from './FAQ/FAQ';
+import AccordionDetails from './AccountDetail/AccountDetail';
 import Geography from './Geography/Geography';
 import Calendar from './Calendar/Calendar';
 import styles from "./Admin.module.scss";
@@ -33,7 +34,7 @@ const Admin = () => {
           <main className={cx("content")}>
           <Topbar setIsSidebar={setIsSidebar} />
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard />} exact/>
               <Route path="/team" element={<Team />} />
               <Route path="/contacts" element={<Contacts />} />
               <Route path="/invoices" element={<Invoices />} />
@@ -43,7 +44,9 @@ const Admin = () => {
               <Route path="/line" element={<Line />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/calendar" element={<Calendar />} />
-              <Route path="/geography" element={<Geography />} />
+              <Route path="/test" element={< AccordionDetails />} />
+              
+              {/* <Route path="/geography" element={<Geography />} /> */}
             </Routes>
           </main>
         </div>

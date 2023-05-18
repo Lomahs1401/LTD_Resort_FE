@@ -8,6 +8,7 @@ import { useTheme } from "@mui/material";
 import styles from "./Contacts.module.scss";
 import classNames from "classnames/bind";
 
+
 const cx = classNames.bind(styles);
 
 const Contacts = () => {
@@ -57,6 +58,14 @@ const Contacts = () => {
     },
   ];
 
+  const  handleDoubleClickCell = (params) =>  {
+    const {  row } = params;
+
+   
+    console.log(row);
+    
+  }
+
   return (
     <div className={cx("contact-wrapper")}>
       <Header
@@ -96,6 +105,7 @@ const Contacts = () => {
         }}
       >
         <DataGrid
+          onCellDoubleClick={handleDoubleClickCell}
           rows={mockDataContacts}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
