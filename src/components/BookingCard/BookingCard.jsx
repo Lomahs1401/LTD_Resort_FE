@@ -9,7 +9,7 @@ import { addFavouriteRoom, addFavouriteService, removeFavouriteRoom, removeFavou
 import { favouritesRoomsSelector, favouritesServicesSelector } from "../../redux/selectors";
 import currency from '../../utils/currency';
 import { Link } from 'react-router-dom';
-import { ref, getDownloadURL } from "firebase/storage"
+import { ref, getDownloadURL, listAll } from "firebase/storage"
 import { storage } from '../../utils/firebase'
 
 const cx = classNames.bind(styles);
@@ -24,7 +24,6 @@ const BookingCard = ({
   capacity = '',
   listRooms = '',
   area = '',
-  totalReviews,
   disableFavouriteCheck,
   setReloadFavouriteItem,
 }) => {
@@ -34,7 +33,7 @@ const BookingCard = ({
 
   // Fetch image state
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
+  const [firstImageURL, setFirstImageURL] = useState(null);
 
   // Create a reference from a Google Cloud Storage URI
   const imageRef = ref(storage, image);
@@ -105,11 +104,21 @@ const BookingCard = ({
   }
 
   useEffect(() => {
-    getDownloadURL(imageRef).then(url => {
-      setImageUrl(url);
-      setLoading(true);
+    listAll(imageRef).then((response) => {
+      const firstImageRef = response.items[0];
+
+      getDownloadURL(firstImageRef).then((url) => {
+        setFirstImageURL(url);
+        setLoading(true);
+      }).catch((error) => {
+        console.log(error);
+      })
+    }).catch(error => {
+      console.log(error);
     })
-  })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   if (!loading) {
     return <></>
@@ -117,7 +126,7 @@ const BookingCard = ({
     return (
       <div className={cx("booking-container")}>
         <div className={cx("booking-container__left")}>
-          <img src={imageUrl} alt={`${title}`} />
+          <img src={firstImageURL} alt={`${title}`} />
           <div className={cx("booking-container__left-images")}>
             <span>9 images</span>
           </div>
