@@ -166,7 +166,10 @@ export const RoomTypeDetail = () => {
     return sum + feedback.rating
   }, 0);
 
-  averageRating = totalRating / feedbacks.length;
+  if (feedbacks.length > 0) {
+    averageRating = totalRating / feedbacks.length;
+  }
+
 
   totalVerifiedReviews = feedbacks.reduce((sum, feedback) => {
     if (feedback.feedback_status === "Feedbacked") {
@@ -339,29 +342,35 @@ export const RoomTypeDetail = () => {
             <p>{roomTypeDetail.description}</p>
             <div className={cx("strength")}>
               <div className={cx("box__special")}>
-                <h3>{averageRating}</h3>
+                <h3>{feedbacks.length === 0 ? "" : averageRating}</h3>
                 <div>
                   {(() => {
-                    if (averageRating > 4) {
+                    if (feedbacks.length === 0) {
                       return (
-                        <h4>Wonderful</h4>
-                      )
-                    } else if (averageRating > 3 && averageRating <= 4) {
-                      return (
-                        <h4>Good</h4>
-                      )
-                    } else if (averageRating > 2 && averageRating <= 3) {
-                      return (
-                        <h4>Normal</h4>
-                      )
-                    } else if (averageRating > 1 && averageRating <= 2) {
-                      return (
-                        <h4>Not Good</h4>
+                        <h4>No comment yet</h4>
                       )
                     } else {
-                      return (
-                        <h4>Bad</h4>
-                      )
+                      if (averageRating > 4) {
+                        return (
+                          <h4>Wonderful</h4>
+                        )
+                      } else if (averageRating > 3 && averageRating <= 4) {
+                        return (
+                          <h4>Good</h4>
+                        )
+                      } else if (averageRating > 2 && averageRating <= 3) {
+                        return (
+                          <h4>Normal</h4>
+                        )
+                      } else if (averageRating > 1 && averageRating <= 2) {
+                        return (
+                          <h4>Not Good</h4>
+                        )
+                      } else {
+                        return (
+                          <h4>Bad</h4>
+                        )
+                      }
                     }
                   })()}
                   {feedbacks.length === 1 ? `${feedbacks.length} Review` : `${feedbacks.length} Reviews`}
@@ -475,32 +484,52 @@ export const RoomTypeDetail = () => {
             <div className={cx("review-wrapper__left")}>
               <h2>Reviews</h2>
               <div className={cx("score")}>
-                <h1>{averageRating}</h1>
+                <h1>{feedbacks.length == 0 ? "No comment yet" : averageRating}</h1>
                 <div className={cx("summary")}>
                   {(() => {
-                    if (averageRating > 4) {
+                    if (feedbacks.length === 0) {
                       return (
-                        <h4>Wonderful</h4>
-                      )
-                    } else if (averageRating > 3 && averageRating <= 4) {
-                      return (
-                        <h4>Good</h4>
-                      )
-                    } else if (averageRating > 2 && averageRating <= 3) {
-                      return (
-                        <h4>Normal</h4>
-                      )
-                    } else if (averageRating > 1 && averageRating <= 2) {
-                      return (
-                        <h4>Not Good</h4>
+                        <h4>Be the first one comment!</h4>
                       )
                     } else {
-                      return (
-                        <h4>Bad</h4>
-                      )
+                      if (averageRating > 4) {
+                        return (
+                          <>
+                            <h4>Wonderful</h4>
+                            <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
+                          </>
+                        )
+                      } else if (averageRating > 3 && averageRating <= 4) {
+                        return (
+                          <>
+                            <h4>Good</h4>
+                            <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
+                          </>
+                        )
+                      } else if (averageRating > 2 && averageRating <= 3) {
+                        return (
+                          <>
+                            <h4>Normal</h4>
+                            <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
+                          </>
+                        )
+                      } else if (averageRating > 1 && averageRating <= 2) {
+                        return (
+                          <>
+                            <h4>Not Good</h4>
+                            <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
+                          </>
+                        )
+                      } else {
+                        return (
+                          <>
+                            <h4>Bad</h4>
+                            <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
+                          </>
+                        )
+                      }
                     }
                   })()}
-                  <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
                 </div>
               </div>
             </div>
