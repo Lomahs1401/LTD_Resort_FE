@@ -226,7 +226,7 @@ const FindRoom = () => {
 
     fetchAvatar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [avatar])
+  }, [])
 
   useEffect(() => {
     const fetchData = () => {
