@@ -2,11 +2,6 @@ import React, { useEffect, useState } from 'react'
 import styles from './FindService.module.scss'
 import classNames from "classnames/bind";
 import findServices from '../../img/FindServices.png'
-import overviewService1 from '../../img/overviewService1.png'
-import overviewService2 from '../../img/overviewService2.png'
-import overviewService3 from '../../img/overviewService3.png'
-import overviewService4 from '../../img/overviewService4.png'
-import overviewService5 from '../../img/overviewService5.png'
 import Header from '../../layouts/Header/Header';
 import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
@@ -31,6 +26,9 @@ const FindService = () => {
 
   // Fetch list services state
   const [listServices, setListServices] = useState([]);
+
+  // Fetch list top 5 lowest price of room type (Overview section)
+  const [listOverviewRoomServices, setListOverviewRoomServices] = useState([]);
 
   // Fetch data state
   const [loading, setLoading] = useState(false);
@@ -170,6 +168,14 @@ const FindService = () => {
           console.log(reject);
         })
 
+      http.get('/auth/services/list-lowest-price')
+        .then((resolve) => {
+          setListOverviewRoomServices(resolve.data.list_lowest_price);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
+
       http.get('/auth/services/lowest-price')
         .then((resolve) => {
           setLowestPrice(resolve.data.lowest_price);
@@ -235,46 +241,18 @@ const FindService = () => {
 
         <div className={cx("section-overview")}>
           <div className={cx("section-overview__list-services")}>
-            <OverviewCard
-              image={overviewService1}
-              service={'SPA - Massage'}
-              price={'230.000'}
-              ranking={5}
-              type={'Service'}
-              description={'Book service'}
-            />
-            <OverviewCard
-              image={overviewService2}
-              service={'Pool'}
-              price={'300.000'}
-              ranking={5}
-              type={'Service'}
-              description={'Book service'}
-            />
-            <OverviewCard
-              image={overviewService3}
-              service={'Fitness'}
-              price={'250.000'}
-              ranking={5}
-              type={'Service'}
-              description={'Book service'}
-            />
-            <OverviewCard
-              image={overviewService4}
-              service={'Karaoke'}
-              price={'200.000'}
-              ranking={5}
-              type={'Service'}
-              description={'Book service'}
-            />
-            <OverviewCard
-              image={overviewService5}
-              service={'Tennis'}
-              price={'150.000'}
-              ranking={5}
-              type={'Service'}
-              description={'Book service'}
-            />
+          {listOverviewRoomServices.map((overviewRoomService) => {
+              return (
+                <OverviewCard
+                  key={overviewRoomService.id}
+                  image={overviewRoomService.image}
+                  title={overviewRoomService.service_name}
+                  price={overviewRoomService.price}
+                  ranking={5}
+                  type={'Service'}
+                />
+              )
+            })}
           </div>
         </div>
 

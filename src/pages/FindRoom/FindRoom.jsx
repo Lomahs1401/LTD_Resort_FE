@@ -2,11 +2,6 @@ import React, { useState, useEffect } from 'react'
 import styles from './FindRoom.module.scss'
 import classNames from "classnames/bind";
 import findRooms from '../../img/FindRooms.png'
-import overviewRoom1 from '../../img/overviewRoom1.png'
-import overviewRoom2 from '../../img/overviewRoom2.png'
-import overviewRoom3 from '../../img/overviewRoom3.png'
-import overviewRoom4 from '../../img/overviewRoom4.png'
-import overviewRoom5 from '../../img/overviewRoom5.png'
 import { BsFillCalendar2CheckFill } from 'react-icons/bs'
 import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
@@ -36,6 +31,9 @@ const FindRoom = () => {
 
   // Fetch list room types state
   const [listRoomTypes, setListRoomTypes] = useState([]);
+
+  // Fetch list top 5 lowest price of room type (Overview section)
+  const [listOverviewRoomTypes, setListOverviewRoomTypes] = useState([]);
 
   // Fetch avatar state
   const [loading, setLoading] = useState(false);
@@ -238,6 +236,15 @@ const FindRoom = () => {
         .catch((reject) => {
           console.log(reject);
         })
+
+      http.get('/auth/room-types/list-lowest-price')
+        .then((resolve) => {
+          console.log(resolve);
+          setListOverviewRoomTypes(resolve.data.list_lowest_price);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
   
       http.get('/auth/room-types/lowest-price')
         .then((resolve) => {
@@ -328,47 +335,18 @@ const FindRoom = () => {
 
         <div className={cx("section-overview")}>
           <div className={cx("section-overview__list-rooms")}>
-            <OverviewCard
-              image={overviewRoom1}
-              bedroomType={'Single Bedroom'}
-              roomType={'Superior Room'}
-              price={'700.000 VND'}
-              ranking={5}
-              type={'Room'}
-              description={'Book room'}
-            />
-            <OverviewCard
-              image={overviewRoom2}
-              bedroomType={'Twin Bedroom'}
-              roomType={'Superior Room'}
-              price={'600.000 VND'}
-              ranking={5}
-              description={'Book room'}
-            />
-            <OverviewCard
-              image={overviewRoom3}
-              bedroomType={'Double Bedroom'}
-              roomType={'Superior Room'}
-              price={'700.000 VND'}
-              ranking={5}
-              description={'Book room'}
-            />
-            <OverviewCard
-              image={overviewRoom4}
-              bedroomType={'Triple Bedroom'}
-              roomType={'Superior Room'}
-              price={'700.000 VND'}
-              ranking={5}
-              description={'Book room'}
-            />
-            <OverviewCard
-              image={overviewRoom5}
-              bedroomType={'Quad Bedroom'}
-              roomType={'Superior Room'}
-              price={'700.000 VND'}
-              ranking={5}
-              description={'Book room'}
-            />
+          {listOverviewRoomTypes.map((overviewRoomType) => {
+              return (
+                <OverviewCard
+                  key={overviewRoomType.id}
+                  image={overviewRoomType.image}
+                  title={overviewRoomType.room_type_name}
+                  price={overviewRoomType.price}
+                  ranking={5}
+                  type={'Room'}
+                />
+              )
+            })}
           </div>
         </div>
 
