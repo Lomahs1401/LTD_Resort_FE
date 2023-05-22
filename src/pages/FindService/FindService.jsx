@@ -170,7 +170,7 @@ const FindService = () => {
     const fetchData = () => {
       http.get('/auth/services/total')
         .then((resolve) => {
-          console.log(resolve);
+          console.log('Total Services: ', resolve);
           setTotalServices(resolve.data.total_services);
         })
         .catch((reject) => {
@@ -179,6 +179,7 @@ const FindService = () => {
 
       http.get('/auth/services/list-lowest-price')
         .then((resolve) => {
+          console.log('List Lowest Price: ', resolve);
           setListOverviewRoomServices(resolve.data.list_lowest_price);
         })
         .catch((reject) => {
@@ -187,6 +188,7 @@ const FindService = () => {
 
       http.get('/auth/services/lowest-price')
         .then((resolve) => {
+          console.log('Lowest Price: ', resolve);
           setLowestPrice(resolve.data.lowest_price);
           setFilterPrice(resolve.data.lowest_price)
         })
@@ -196,6 +198,7 @@ const FindService = () => {
 
       http.get('/auth/services/highest-price')
         .then((resolve) => {
+          console.log('Highest Price: ', resolve);
           setHighestPrice(resolve.data.highest_price);
         })
         .catch((reject) => {
@@ -204,6 +207,7 @@ const FindService = () => {
 
       http.get('/auth/services/names')
         .then((resolve) => {
+          console.log('List Service Name: ', resolve);
           setServiceTypes(resolve.data.list_service_names);
         })
         .catch((reject) => {
@@ -366,7 +370,6 @@ const FindService = () => {
               {(() => {
                 if (totalServices <= pageSize) {
                   return `Showing ${totalServices} of `
-
                 } else {
                   if (pageSize * currentPage <= totalServices) {
                     return `Showing ${pageSize * currentPage} of `

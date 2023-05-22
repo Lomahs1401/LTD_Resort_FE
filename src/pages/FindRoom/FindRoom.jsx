@@ -242,7 +242,7 @@ const FindRoom = () => {
     const fetchData = () => {
       http.get('/auth/room-types/total')
         .then((resolve) => {
-          console.log(resolve);
+          console.log('Total Room Types: ', resolve);
           setTotalRoomTypes(resolve.data.total_room_types);
         })
         .catch((reject) => {
@@ -251,7 +251,7 @@ const FindRoom = () => {
 
       http.get('/auth/room-types/list-lowest-price')
         .then((resolve) => {
-          console.log(resolve);
+          console.log('List Lowest Price: ', resolve);
           setListOverviewRoomTypes(resolve.data.list_lowest_price);
         })
         .catch((reject) => {
@@ -260,6 +260,7 @@ const FindRoom = () => {
 
       http.get('/auth/room-types/lowest-price')
         .then((resolve) => {
+          console.log('Lowest Price: ', resolve)
           setLowestPrice(resolve.data.lowest_price);
           setFilterPrice(resolve.data.lowest_price);
         })
@@ -269,6 +270,7 @@ const FindRoom = () => {
 
       http.get('/auth/room-types/highest-price')
         .then((resolve) => {
+          console.log('Highest Price: ', resolve)
           setHighestPrice(resolve.data.highest_price);
         })
         .catch((reject) => {
@@ -277,6 +279,7 @@ const FindRoom = () => {
 
       http.get('/auth/room-types/smallest-size')
         .then((resolve) => {
+          console.log('Smallest Room Size: ', resolve)
           setSmallestRoomSize(resolve.data.smallest_room_size);
           setFilterRoomSize(resolve.data.smallest_room_size);
         })
@@ -286,6 +289,7 @@ const FindRoom = () => {
 
       http.get('/auth/room-types/biggest-size')
         .then((resolve) => {
+          console.log('Biggest Room Size: ', resolve)
           setBiggestRoomSize(resolve.data.biggest_room_size);
         })
         .catch((reject) => {
@@ -294,6 +298,7 @@ const FindRoom = () => {
 
       http.get('/auth/room-types/bedroom-names')
         .then((resolve) => {
+          console.log('Bedroom Type Names: ', resolve)
           setBedRoomTypes(resolve.data.bedroom_type_names);
         })
         .catch((reject) => {
@@ -302,6 +307,7 @@ const FindRoom = () => {
 
       http.get('/auth/room-types/room-names')
         .then((resolve) => {
+          console.log('Room Type Names: ', resolve)
           setRoomTypes(resolve.data.room_type_names);
         })
         .catch((reject) => {
