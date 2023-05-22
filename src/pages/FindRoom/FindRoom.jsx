@@ -29,15 +29,12 @@ const FindRoom = () => {
 
   const { http, user } = AuthUser();
 
-  // Fetch list room types state
-  const [listRoomTypes, setListRoomTypes] = useState([]);
-
   // Fetch list top 5 lowest price of room type (Overview section)
   const [listOverviewRoomTypes, setListOverviewRoomTypes] = useState([]);
 
   // Fetch avatar state
   const [loading, setLoading] = useState(false);
-  
+
   // Create a reference from a Google Cloud Storage URI
   const avatar = useSelector(avatarSelector);
   const avatarRef = ref(storage, avatar ? avatar : user.avatar);
@@ -57,11 +54,13 @@ const FindRoom = () => {
   const [roomTypes, setRoomTypes] = useState([]);
 
   // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const POST_PER_PAGE = 4;
-  const lastPostIndex = currentPage * POST_PER_PAGE;
-  const firstPostIndex = lastPostIndex - POST_PER_PAGE;
-  const currentPost = listRoomTypes.slice(firstPostIndex, lastPostIndex);
+  const pageSizeOptions = [3, 4, 5];
+  const DEFAULT_CURRENT_PAGE_NUMBER = 1;
+  const DEFAULT_PAGE_SIZE_NUMBER = 4;
+  const [listRoomTypes, setListRoomTypes] = useState([]); // Fetch list room types state
+  const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE_NUMBER);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_NUMBER);
+  const [totalRoomTypes, setTotalRoomTypes] = useState(0);
 
   // reload "Favourites" in header
   const [, setReloadFavouriteItem] = useState(false);
@@ -72,6 +71,7 @@ const FindRoom = () => {
   const [filterRoomSize, setFilterRoomSize] = useState(0);
   const [filterBedroomType, setFilterBedroomType] = useState([]);
   const [filterRoomType, setFilterRoomType] = useState([]);
+  const [listFilterRoomTypes, setListFilterRoomTypes] = useState([]);
 
   const bedroomTypeOptions = bedroomTypes.map((bedroomType) => {
     return {
@@ -131,7 +131,7 @@ const FindRoom = () => {
         formData.append('bedroom_type[]', bedroomType);
       })
     } else {
-        formData.append('bedroom_type[]', []);
+      formData.append('bedroom_type[]', []);
     }
 
     if (filterRoomType.length !== 0) {
@@ -142,14 +142,17 @@ const FindRoom = () => {
       formData.append('room_type[]', []);
     }
 
+    console.log(filterRoomType);
+
     if (
-      (filterPrice === 0 || filterPrice === lowestPrice) && 
+      (filterPrice === 0 || filterPrice === lowestPrice) &&
       (filterRoomSize === 0 || filterRoomSize === smallestRoomSize) &&
       (filterBedroomType.length === 0) && (filterRoomType.length === 0)
     ) {
       http.get('/auth/room-types')
         .then((resolve) => {
-          setListRoomTypes(resolve.data.list_room_types);
+          setListFilterRoomTypes([]);
+          setTotalRoomTypes(resolve.data.list_room_types.length)
           setCurrentPage(1);
           toast.success('Filter successfully!', {
             position: "top-right",
@@ -178,7 +181,8 @@ const FindRoom = () => {
     } else {
       http.post('/auth/room-types/filter', formData)
         .then((resolve) => {
-          setListRoomTypes(resolve.data.list_filter_room_type)
+          console.log(resolve);
+          setListFilterRoomTypes(resolve.data.list_filter_room_type);
           setCurrentPage(1);
           toast.success('Filter successfully!', {
             position: "top-right",
@@ -209,8 +213,15 @@ const FindRoom = () => {
 
   // --------------------------     Paginate     --------------------------
 
-  const handleClickPaginate = (page) => {
+  const handleClickPaginate = (page, pageSize) => {
+    console.log(page, pageSize);
     setCurrentPage(page);
+  }
+
+  const handleShowSizeChange = (currentPage, pageSize) => {
+    console.log(currentPage, pageSize);
+    setCurrentPage(currentPage);
+    setPageSize(pageSize);
   }
 
   // --------------------------     Fetch API     --------------------------
@@ -228,10 +239,10 @@ const FindRoom = () => {
 
   useEffect(() => {
     const fetchData = () => {
-      http.get('/auth/room-types')
+      http.get('/auth/room-types/total')
         .then((resolve) => {
           console.log(resolve);
-          setListRoomTypes(resolve.data.list_room_types);
+          setTotalRoomTypes(resolve.data.total_room_types);
         })
         .catch((reject) => {
           console.log(reject);
@@ -245,15 +256,16 @@ const FindRoom = () => {
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/lowest-price')
         .then((resolve) => {
           setLowestPrice(resolve.data.lowest_price);
+          setFilterPrice(resolve.data.lowest_price);
         })
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/highest-price')
         .then((resolve) => {
           setHighestPrice(resolve.data.highest_price);
@@ -261,15 +273,16 @@ const FindRoom = () => {
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/smallest-size')
         .then((resolve) => {
           setSmallestRoomSize(resolve.data.smallest_room_size);
+          setFilterRoomSize(resolve.data.smallest_room_size);
         })
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/biggest-size')
         .then((resolve) => {
           setBiggestRoomSize(resolve.data.biggest_room_size);
@@ -277,7 +290,7 @@ const FindRoom = () => {
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/bedroom-names')
         .then((resolve) => {
           setBedRoomTypes(resolve.data.bedroom_type_names);
@@ -285,7 +298,7 @@ const FindRoom = () => {
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/room-names')
         .then((resolve) => {
           setRoomTypes(resolve.data.room_type_names);
@@ -294,11 +307,51 @@ const FindRoom = () => {
           console.log(reject);
         })
     }
-      
+
     fetchData();
     setLoading(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    const fetchData = () => {
+      if (listFilterRoomTypes.length === 0) {
+        if (
+          filterPrice !== lowestPrice || 
+          filterRoomSize !== smallestRoomSize ||
+          filterBedroomType.length !== 0 || 
+          filterRoomType.length !== 0
+        ) {
+          setListRoomTypes([]);
+          setTotalRoomTypes(0);
+        } else {
+          http.post(`/auth/room-types/paginate/${currentPage}/${pageSize}`, {
+            list_filter_room_types: listFilterRoomTypes
+          })
+            .then((resolve) => {
+              setListRoomTypes(resolve.data.list_room_types);
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+        }
+      } else {
+        http.post(`/auth/room-types/paginate/${currentPage}/${pageSize}`, {
+          list_filter_room_types: listFilterRoomTypes
+        })
+          .then((resolve) => {
+            setListRoomTypes(resolve.data.list_room_types);
+            setTotalRoomTypes(listFilterRoomTypes.length);
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+      }
+    }
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, pageSize, listFilterRoomTypes])
 
   if (!loading) {
     return (
@@ -335,7 +388,7 @@ const FindRoom = () => {
 
         <div className={cx("section-overview")}>
           <div className={cx("section-overview__list-rooms")}>
-          {listOverviewRoomTypes.map((overviewRoomType) => {
+            {listOverviewRoomTypes.map((overviewRoomType) => {
               return (
                 <OverviewCard
                   key={overviewRoomType.id}
@@ -602,14 +655,22 @@ const FindRoom = () => {
           <div className={cx("list-rooms-container")}>
             <h2>List Type Rooms</h2>
             <div className={cx("list-rooms-container__result")}>
-              {
-                listRoomTypes.length < POST_PER_PAGE 
-                  ? `Showing ${listRoomTypes.length} of `
-                  : `Showing ${firstPostIndex + currentPost.length} of `
-              }
-              <span>{listRoomTypes.length} type rooms</span>
+              {(() => {
+                if (totalRoomTypes <= pageSize) {
+                  return `Showing ${totalRoomTypes} of `
+
+                } else {
+                  if (pageSize * currentPage <= totalRoomTypes) {
+                    return `Showing ${pageSize * currentPage} of `
+                  } else {
+                    const total = pageSize * currentPage;
+                    return `Showing ${total - (total - totalRoomTypes)} of `
+                  }
+                }
+              })()}
+              <span>{totalRoomTypes} type rooms</span>
             </div>
-            {currentPost.map((roomType) => {
+            {listRoomTypes.map((roomType) => {
               return (
                 <BookingCard
                   key={roomType.id}
@@ -629,12 +690,16 @@ const FindRoom = () => {
             })}
             <div className={cx("list-room-pagination")}>
               <Pagination
-                showQuickJumper
                 current={currentPage}
-                defaultCurrent={currentPage}
-                pageSize={POST_PER_PAGE}
-                total={listRoomTypes.length}
+                defaultCurrent={DEFAULT_CURRENT_PAGE_NUMBER}
+                defaultPageSize={DEFAULT_PAGE_SIZE_NUMBER}
+                hideOnSinglePage
+                total={totalRoomTypes}
+                pageSizeOptions={pageSizeOptions}
+                showQuickJumper
+                showSizeChanger
                 onChange={handleClickPaginate}
+                onShowSizeChange={handleShowSizeChange}
               />
             </div>
           </div>
