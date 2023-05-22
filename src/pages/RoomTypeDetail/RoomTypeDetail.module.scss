@@ -419,7 +419,9 @@
 
 .pagination {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  align-items: center;
+  margin-block: 24px;
 }
 
 .seperate-line {

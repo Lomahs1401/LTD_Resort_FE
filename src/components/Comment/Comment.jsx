@@ -89,7 +89,7 @@ const Comment = ({
   return (
     <div className={cx("comment-wrapper")}>
       <div className={cx("comment-wrapper__left")}>
-        <img src={avatarUrl} alt="Avatar" className={cx("avatar")} />
+        <img src={avatarUrl} alt="Avatar" className={cx("avatar")} loading="lazy" />
       </div>
       <div className={cx("comment-wrapper__middle")}>
         <div className={cx("score")}>

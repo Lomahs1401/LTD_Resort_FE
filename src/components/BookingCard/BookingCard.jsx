@@ -126,7 +126,7 @@ const BookingCard = ({
     return (
       <div className={cx("booking-container")}>
         <div className={cx("booking-container__left")}>
-          <img src={firstImageURL} alt={`${title}`} />
+          <img src={firstImageURL} alt={`${title}`} loading='lazy' />
           <div className={cx("booking-container__left-images")}>
             <span>9 images</span>
           </div>

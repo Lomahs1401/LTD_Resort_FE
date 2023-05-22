@@ -101,8 +101,7 @@ export const RoomTypeDetail = () => {
 
   // Fetch room type state
   const [roomTypeDetail, setRoomTypeDetail] = useState({});
-  // Fetch feedbacks state
-  const [feedbacks, setFeedbacks] = useState([]);
+  
 
   // Fetch list image state
   const [imageList, setImageList] = useState([]);
@@ -111,6 +110,17 @@ export const RoomTypeDetail = () => {
   const dispatch = useDispatch();
   const avatar = useSelector(avatarSelector);
   const favouritesRooms = useSelector(favouritesRoomsSelector);
+
+  // Pagination state
+  const pageSizeOptions = [5, 10, 20];
+  const DEFAULT_CURRENT_PAGE_NUMBER = 1;
+  const DEFAULT_PAGE_SIZE_NUMBER = 5;
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE_NUMBER);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_NUMBER);
+  const [totalFeedbacks, setTotalFeedbacks] = useState(0);
+  const [totalVerifiedFeedbacks, setTotalVerifiedFeedbacks] = useState(0);
 
   const [toggleFavourite, setToggleFavourite] = useState(() => {
     let isToggleFavourite = false;
@@ -158,25 +168,16 @@ export const RoomTypeDetail = () => {
     })
   }
 
-  var totalRating = 0;
-  var averageRating = 0;
-  var totalVerifiedReviews = 0;
-
-  totalRating = feedbacks.reduce((sum, feedback) => {
-    return sum + feedback.rating
-  }, 0);
-
-  if (feedbacks.length > 0) {
-    averageRating = totalRating / feedbacks.length;
+  const handleClickPaginate = (page, pageSize) => {
+    console.log(page, pageSize);
+    setCurrentPage(page);
   }
 
-
-  totalVerifiedReviews = feedbacks.reduce((sum, feedback) => {
-    if (feedback.feedback_status === "Feedbacked") {
-      return sum + 1;
-    }
-    return sum;
-  }, 0);
+  const handleShowSizeChange = (currentPage, pageSize) => {
+    console.log(currentPage, pageSize);
+    setCurrentPage(currentPage);
+    setPageSize(pageSize);
+  }
 
   useEffect(() => {
     const fetchImage = () => {
@@ -222,6 +223,33 @@ export const RoomTypeDetail = () => {
         .catch((reject) => {
           console.log(reject);
         })
+
+      http.get(`/auth/feedbacks/room-type/total/${roomTypeId}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setTotalFeedbacks(resolve.data.total_feedback_rooms);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+
+      http.get(`/auth/feedbacks/average-rate/room/${roomTypeId}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setAverageRating(resolve.data.average_rating_room_type);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+
+      http.get(`/auth/feedbacks/room-type/total-verified/${roomTypeId}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setTotalVerifiedFeedbacks(resolve.data.total_verified_feedback_room_types);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
     }
 
     fetchData();
@@ -230,17 +258,20 @@ export const RoomTypeDetail = () => {
 
   useEffect(() => {
     const fetchFeedbacks = () => {
-      http.get(`/auth/feedbacks/room-type/${roomTypeId}`).then((resolve) => {
-        console.log(resolve);
-        setFeedbacks(resolve.data.list_feedback_rooms);
-      }).catch((error) => {
-        console.log(error);
-      })
+      
+      http.get(`/auth/feedbacks/${roomTypeId}/room/paginate/${currentPage}/${pageSize}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setFeedbacks(resolve.data.list_feedbacks);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
     }
 
     fetchFeedbacks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [currentPage, pageSize])
 
   if (!isLoading) {
     return (
@@ -342,10 +373,10 @@ export const RoomTypeDetail = () => {
             <p>{roomTypeDetail.description}</p>
             <div className={cx("strength")}>
               <div className={cx("box__special")}>
-                <h3>{feedbacks.length === 0 ? "" : averageRating}</h3>
+                <h3>{averageRating.toFixed(2)}</h3>
                 <div>
                   {(() => {
-                    if (feedbacks.length === 0) {
+                    if (totalFeedbacks === 0) {
                       return (
                         <h4>No comment yet</h4>
                       )
@@ -373,7 +404,7 @@ export const RoomTypeDetail = () => {
                       }
                     }
                   })()}
-                  {feedbacks.length === 1 ? `${feedbacks.length} Review` : `${feedbacks.length} Reviews`}
+                  {totalFeedbacks === 1 ? `${totalFeedbacks} Review` : `${totalFeedbacks} Reviews`}
                 </div>
               </div>
               <div className={cx("box")}>
@@ -484,10 +515,10 @@ export const RoomTypeDetail = () => {
             <div className={cx("review-wrapper__left")}>
               <h2>Reviews</h2>
               <div className={cx("score")}>
-                <h1>{feedbacks.length == 0 ? "No comment yet" : averageRating}</h1>
+                <h1>{averageRating.toFixed(2)}</h1>
                 <div className={cx("summary")}>
                   {(() => {
-                    if (feedbacks.length === 0) {
+                    if (totalFeedbacks === 0) {
                       return (
                         <h4>Be the first one comment!</h4>
                       )
@@ -496,35 +527,35 @@ export const RoomTypeDetail = () => {
                         return (
                           <>
                             <h4>Wonderful</h4>
-                            <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
+                            <p>{totalVerifiedFeedbacks} verified {totalVerifiedFeedbacks <= 1 ? "review" : "reviews"}</p>
                           </>
                         )
                       } else if (averageRating > 3 && averageRating <= 4) {
                         return (
                           <>
                             <h4>Good</h4>
-                            <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
+                            <p>{totalVerifiedFeedbacks} verified {totalVerifiedFeedbacks <= 1 ? "review" : "reviews"}</p>
                           </>
                         )
                       } else if (averageRating > 2 && averageRating <= 3) {
                         return (
                           <>
                             <h4>Normal</h4>
-                            <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
+                            <p>{totalVerifiedFeedbacks} verified {totalVerifiedFeedbacks <= 1 ? "review" : "reviews"}</p>
                           </>
                         )
                       } else if (averageRating > 1 && averageRating <= 2) {
                         return (
                           <>
                             <h4>Not Good</h4>
-                            <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
+                            <p>{totalVerifiedFeedbacks} verified {totalVerifiedFeedbacks <= 1 ? "review" : "reviews"}</p>
                           </>
                         )
                       } else {
                         return (
                           <>
                             <h4>Bad</h4>
-                            <p>{totalVerifiedReviews} verified {totalVerifiedReviews <= 1 ? "review" : "reviews"}</p>
+                            <p>{totalVerifiedFeedbacks} verified {totalVerifiedFeedbacks <= 1 ? "review" : "reviews"}</p>
                           </>
                         )
                       }
@@ -583,8 +614,20 @@ export const RoomTypeDetail = () => {
                 )
               }
             })}
-            <div className="pagination">
-              <Pagination defaultCurrent={1} total={12} />
+            <div className={cx("pagination")}>
+              <Pagination
+                current={currentPage}
+                defaultCurrent={DEFAULT_CURRENT_PAGE_NUMBER}
+                defaultPageSize={DEFAULT_PAGE_SIZE_NUMBER}
+                hideOnSinglePage
+                total={totalFeedbacks}
+                pageSizeOptions={pageSizeOptions}
+                showTotal={(totalFeedbacks) => totalFeedbacks <= 1 ? `Total ${totalFeedbacks} feedback` : `Total ${totalFeedbacks} feedbacks`}
+                showQuickJumper
+                showSizeChanger
+                onChange={handleClickPaginate}
+                onShowSizeChange={handleShowSizeChange}
+              />
             </div>
           </div>
         </div>
