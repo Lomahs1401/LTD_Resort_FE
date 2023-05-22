@@ -125,7 +125,7 @@ const BookingCard = ({
   }, [])
 
   if (!loading) {
-    return <Loading />
+    return <></>
   } else {
     return (
       <div className={cx("booking-container")}>

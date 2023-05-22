@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ServiceDetail from './pages/ServiceDetail/ServicveDetail';
 
 const ScrollToTop = lazy(() => import('./utils/ScrollToTop'))
 const Home = lazy(() => import('./pages/Home/Home'))
@@ -71,63 +72,69 @@ function App() {
     <div className='App'>
       <BrowserRouter>
         <Suspense fallback={<Loading />}>
-        <ScrollToTop />
-        <Routes>
-          {/* public routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/facilities" element={<Facilities />} />
-          <Route path="/rooms" element={<Room />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/comment' element={<Comment />} />
-          <Route path='/forgot-password' element={<ForgotPassword />} />
+          <ScrollToTop />
+          <Routes>
+            {/* public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/facilities" element={<Facilities />} />
+            <Route path="/rooms" element={<Room />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Register />} />
+            <Route path='/comment' element={<Comment />} />
+            <Route path='/forgot-password' element={<ForgotPassword />} />
 
-          {/* customer routes */}
-          <Route path="/find-rooms" element={
-            <CustomerRoute
-              element={
-                <FindRoom />
-              } />
-          } />
-          <Route path="/find-rooms/:roomTypeId" element={
-            <CustomerRoute
-              element={
-                <RoomTypeDetail />
-              } />
-          } />
-          <Route path="/manage-account" element={
-            <CustomerRoute
-              element={
-                <ManageAccount />
-              } />
-          } />
-          <Route path="/find-services" element={
-            <CustomerRoute
-              element={
-                <FindService />
-              } />
-          } />
-          <Route path="/favourites" element={
-            <CustomerRoute
-              element={
-                <Favourites />
-              } />
-          } />
+            {/* customer routes */}
+            <Route path="/find-rooms" element={
+              <CustomerRoute
+                element={
+                  <FindRoom />
+                } />
+            } />
+            <Route path="/find-rooms/:roomTypeId" element={
+              <CustomerRoute
+                element={
+                  <RoomTypeDetail />
+                } />
+            } />
+            <Route path="/find-services" element={
+              <CustomerRoute
+                element={
+                  <FindService />
+                } />
+            } />
+            <Route path="/find-services/:serviceId" element={
+              <CustomerRoute
+                element={
+                  <ServiceDetail />
+                } />
+            } />
+            <Route path="/manage-account" element={
+              <CustomerRoute
+                element={
+                  <ManageAccount />
+                } />
+            } />
+            <Route path="/favourites" element={
+              <CustomerRoute
+                element={
+                  <Favourites />
+                } />
+            } />
 
-          {/* admin routes */}
-          <Route path="/admin/*" element={
-            <AdminRoute
-              element={
-                <Admin />
-              } />
-          } />
+            {/* admin routes */}
+            <Route path="/admin/*" element={
+              <AdminRoute
+                element={
+                  <Admin />
+                } />
+            } />
 
-          {/* Unauthorized Page */}
-          <Route path='/unauthorized' element={<Unauthorized />} />
+            {/* Unauthorized Page */}
+            <Route path='/unauthorized' element={<Unauthorized />} />
 
-          {/* Not found routes */}
-          <Route path='*' element={<NotFound />} />
-        </Routes>
+            {/* Not found routes */}
+            <Route path='*' element={<NotFound />} />
+          </Routes>
         </Suspense>
       </BrowserRouter>
       <ToastContainer />
