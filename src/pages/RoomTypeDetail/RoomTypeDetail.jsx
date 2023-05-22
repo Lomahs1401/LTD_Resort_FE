@@ -29,6 +29,7 @@ import Loading from "../../components/Loading/Loading";
 import checkin from "../../img/checkin.jpg"
 import checkout from "../../img/chekout.png"
 import { toast } from "react-toastify";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const cx = classNames.bind(styles);
 
@@ -359,7 +360,13 @@ export const RoomTypeDetail = () => {
               {imageList.map((image, index) => {
                 return (
                   <div className={cx("image-container")} key={index}>
-                    <img src={image} title={`Image ${index}`} alt="Room Type" />
+                    <LazyLoadImage
+                      key={image}
+                      src={image}
+                      alt={`Image ${index}`}
+                      effect="blur"
+                      placeholderSrc={image}
+                    />
                   </div>
                 )
               })}

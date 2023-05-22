@@ -1,23 +1,25 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Home from './pages/Home/Home';
-import Login from './pages/Login/Login';
-import Register from './pages/Register/Register';
-import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
-import Facilities from './pages/Facilities/Facilities';
-import Room from './pages/Room/Room';
-import FindRoom from './pages/FindRoom/FindRoom';
-import FindService from './pages/FindService/FindService';
-import Favourites from './pages/Favourites/Favourites';
-import RoomTypeDetail from './pages/RoomTypeDetail/RoomTypeDetail';
-import Comment from './components/Comment/Comment';
-import ManageAccount from './pages/ManageAccount/ManageAccount';
-import NotFound from './pages/Error/NotFound/NotFound';
-import Unauthorized from './pages/Error/Unauthorized/Unauthorized';
-import ScrollToTop from './utils/ScrollToTop';
-import Admin from './pages/Admin/Admin';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+const ScrollToTop = lazy(() => import('./utils/ScrollToTop'))
+const Home = lazy(() => import('./pages/Home/Home'))
+const Login = lazy(() => import('./pages/Login/Login'))
+const Register = lazy(() => import('./pages/Register/Register'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'))
+const Facilities = lazy(() => import('./pages/Facilities/Facilities'))
+const Room = lazy(() => import('./pages/Room/Room'))
+const FindRoom = lazy(() => import('./pages/FindRoom/FindRoom'))
+const RoomTypeDetail = lazy(() => import('./pages/RoomTypeDetail/RoomTypeDetail'))
+const Comment = lazy(() => import('./pages/Admin/Admin'))
+const Loading = lazy(() => import('./components/Loading/Loading'))
+const FindService = lazy(() => import('./pages/FindService/FindService'))
+const Favourites = lazy(() => import('./pages/Favourites/Favourites'))
+const ManageAccount = lazy(() => import('./pages/ManageAccount/ManageAccount'))
+const Admin = lazy(() => import('./pages/RoomTypeDetail/RoomTypeDetail'))
+const NotFound = lazy(() => import('./pages/Error/NotFound/NotFound'))
+const Unauthorized = lazy(() => import('./pages/Error/Unauthorized/Unauthorized'))
 
 function App() {
 
@@ -68,6 +70,7 @@ function App() {
   return (
     <div className='App'>
       <BrowserRouter>
+        <Suspense fallback={<Loading />}>
         <ScrollToTop />
         <Routes>
           {/* public routes */}
@@ -125,6 +128,7 @@ function App() {
           {/* Not found routes */}
           <Route path='*' element={<NotFound />} />
         </Routes>
+        </Suspense>
       </BrowserRouter>
       <ToastContainer />
     </div>
