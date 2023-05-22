@@ -1,0 +1,349 @@
+.service-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 30px 46px;
+}
+
+.link-back {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 5%;
+    gap: 8px;
+    font-size: 24px;
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+    border-radius: 5px;
+    padding: 6px 12px;
+
+    &:hover {
+        background-color: #e3dada;
+    }
+}
+
+.service-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &__left {
+        width: 80%;
+        font-size: larger;
+        h2 {
+            margin-block: 8px;
+        }
+    }
+
+    &__right {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        margin-right: 2%;
+
+        > p {
+            font-size: 18px;
+            margin-block: 4px 12px;
+        }
+
+        > h1 {
+            margin-block: 0 8px;
+        }
+    }
+}
+
+.button {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    &__left {
+        display: flex;
+        gap: 8px;
+
+        > button {
+            background-color: #fff;
+            border-radius: 5px;
+            border: 1px solid #8dd3bb;
+            padding: 16px 8px;
+            width: 50px;
+            height: 50px;
+            transition: 0.3s;
+            float: left;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #fff;
+                border: 1px solid rgb(30, 30, 216);
+                opacity: 0.8;
+            }
+        }
+
+        .btn-toggle {
+            background-color: #8dd3bb;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #8dd3bb;
+                border: 1px solid rgb(30, 30, 216);
+                opacity: 0.8;
+            }
+        }
+
+        .btn-untoggle {
+            background-color: #fff;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #fff;
+                border: 1px solid rgb(30, 30, 216);
+                opacity: 0.8;
+            }
+        }
+    }
+
+    &__right {
+        width: 100%;
+        margin-left: 8px;
+
+        > button {
+            width: 100%;
+            height: 50px;
+            border-radius: 5px;
+            border: none;
+            background-color: #8dd3bb;
+            transition: 0.3s;
+            font-weight: 600;
+            font-size: 16px;
+            padding-inline: 20px;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #8dd3bb;
+                opacity: 0.8;
+            }
+        }
+    }
+}
+
+.achievement {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+
+    &__left,
+    &__right {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &-desc {
+        margin: 0;
+        margin-top: 6px;
+        font-size: 22px;
+    }
+}
+
+.detail {
+    gap: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    &-person,
+    &-rooms,
+    &-size {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+
+        > p {
+            margin: 0;
+        }
+    }
+}
+
+.image-carousel {
+    margin-inline: 3%;
+}
+
+.image-container {
+    img {
+        width: 550px;
+        height: 550px;
+        border-radius: 20px;
+        object-fit: cover;
+    }
+}
+
+.holder {
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+
+    img {
+        height: 50px;
+        width: 50px;
+        border: 1px solid #8dd3bb;
+        border-radius: 10%;
+        padding: 5px;
+        &:hover {
+            cursor: pointer;
+            background-color: #8dd3bb;
+            opacity: 0.8;
+        }
+    }
+}
+
+.overview {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    > h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 600;
+    }
+
+    > p {
+        color: #112211;
+        font-size: 22px;
+        display: flex;
+        justify-content: center;
+        text-align: justify;
+    }
+}
+
+.strength {
+    display: flex;
+    flex-direction: row;
+    gap: 1%;
+}
+
+.box {
+    border: 1px solid #8dd3bb;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 15%;
+
+    h3 {
+        margin: 0;
+    }
+    h4 {
+        margin: 0;
+    }
+    &__special {
+        border: 1px solid #8dd3bb;
+        background-color: #8dd3bb;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: space-between;
+        padding: 10px;
+        border-radius: 15%;
+        h3 {
+            margin: 0;
+        }
+        h4 {
+            margin: 0;
+        }
+    }
+}
+
+.review-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-inline: 2%;
+
+    &__left {
+        > h2 {
+            font-size: 32px;
+        }
+
+        .score {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-top: 16px;
+
+            > h1 {
+                margin: 0;
+                padding: 12px 24px;
+                border-radius: 5px;
+                background: #8dd3bb;
+            }
+        }
+
+        .summary {
+            > h4 {
+                margin-block: 8px;
+                font-size: 24px;
+            }
+
+            > p {
+                font-size: 20px;
+                margin-block: 8px;
+            }
+        }
+    }
+
+    &__right {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        > button {
+            background-color: #8dd3bb;
+            border-radius: 5px;
+            border: none;
+            transition: 0.3s;
+            font-size: 16px;
+            font-weight: 600;
+            height: 50px;
+            padding-inline: 8px;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #8dd3bb;
+                opacity: 0.8;
+            }
+        }
+    }
+
+    h2 {
+        margin: 0;
+    }
+}
+
+.comment {
+    margin-inline: 2%;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-block: 24px;
+}
+
+.seperate-line {
+    border: 1px solid #bfc4c1;
+}

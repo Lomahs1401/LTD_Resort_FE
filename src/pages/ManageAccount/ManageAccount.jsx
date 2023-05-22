@@ -22,6 +22,7 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import ConfirmationToast from "../../components/ConfirmationToast/ConfirmationToast";
 import { addAvatar } from "../../redux/actions";
+import { useRef } from "react";
 
 const cx = classNames.bind(styles);
 
@@ -34,7 +35,8 @@ const ManageAccount = () => {
   const [customerRanking, setCustomerRanking] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [imageUpload, setImageUpload] = useState(null);
-
+  const fileInputRef = useRef(null);
+  
   // Create a reference from a Google Cloud Storage URI
   const avatar = useSelector(avatarSelector);
 
@@ -67,6 +69,12 @@ const ManageAccount = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const handleCancel = () => {
+    // Đặt giá trị của input thành null
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
+  };
 
   const handleImageChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -76,7 +84,7 @@ const ManageAccount = () => {
           <ConfirmationToast
             message="Do you want to save avatar?"
             onConfirm={() => uploadImage(selectedFile)}
-            onCancel={() => setImageUpload(null)}
+            onCancel={() => setImageUpload(handleCancel)}
           />, {
           position: "top-center",
           closeOnClick: true,
@@ -173,6 +181,7 @@ const ManageAccount = () => {
                   <input
                     type="file"
                     id="fileInput"
+                    ref={fileInputRef}
                     style={{ display: 'none' }}
                     onChange={handleImageChange}
                   />

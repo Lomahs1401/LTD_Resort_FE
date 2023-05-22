@@ -18,8 +18,10 @@
 .card-img {
     img {
         width: 300px;
+        height: 420px;
+        border-radius: 10px;
+        object-fit: cover;
         background-size: cover;
-        height: auto;
     }
 }
 
@@ -62,7 +64,7 @@
 }
 
 .btn-booking {
-    padding: 5% 33%;
+    padding: 5% 30%;
     background: #8DD3BB;
     border: none;
     border-radius: 5px;

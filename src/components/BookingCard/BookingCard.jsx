@@ -11,6 +11,8 @@ import currency from '../../utils/currency';
 import { Link } from 'react-router-dom';
 import { ref, getDownloadURL, listAll } from "firebase/storage"
 import { storage } from '../../utils/firebase'
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import Loading from '../Loading/Loading';
 
 const cx = classNames.bind(styles);
 
@@ -34,6 +36,7 @@ const BookingCard = ({
   // Fetch image state
   const [loading, setLoading] = useState(false);
   const [firstImageURL, setFirstImageURL] = useState(null);
+  const [totalImages, setTotalImages] = useState(0);
 
   // Create a reference from a Google Cloud Storage URI
   const imageRef = ref(storage, image);
@@ -106,6 +109,7 @@ const BookingCard = ({
   useEffect(() => {
     listAll(imageRef).then((response) => {
       const firstImageRef = response.items[0];
+      setTotalImages(response.items.length);
 
       getDownloadURL(firstImageRef).then((url) => {
         setFirstImageURL(url);
@@ -126,9 +130,15 @@ const BookingCard = ({
     return (
       <div className={cx("booking-container")}>
         <div className={cx("booking-container__left")}>
-          <img src={firstImageURL} alt={`${title}`} />
+          <LazyLoadImage
+            key={firstImageURL}
+            src={firstImageURL}
+            alt={`${title}`}
+            effect='blur'
+            placeholderSrc={firstImageURL}
+          />
           <div className={cx("booking-container__left-images")}>
-            <span>9 images</span>
+            <span>{totalImages} images</span>
           </div>
         </div>
         <div className={cx("booking-container__right")}>
