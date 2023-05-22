@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addAvatar } from '../../redux/actions';
 import { avatarSelector } from '../../redux/selectors';
 import { toast } from 'react-toastify';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const { Panel } = Collapse;
 const cx = classNames.bind(styles);
@@ -373,10 +374,12 @@ const FindRoom = () => {
             </div>
           </nav>
           <div className={cx("image-container")}>
-            <img
+            <LazyLoadImage
+              key={findRooms}
               src={findRooms}
-              alt="Pool outside"
-              className={cx("header-image")}
+              alt='Pool outside'
+              effect='blur'
+              placeholderSrc={findRooms}
             />
           </div>
         </div>

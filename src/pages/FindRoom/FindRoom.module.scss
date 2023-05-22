@@ -44,10 +44,17 @@
     z-index: 2;
 }
 
-.header-image {
-    object-fit: cover;
-    height: 90vh;
-    width: 100vw;
+.image-container {
+    
+    > span {
+        width: 100%;
+    }
+
+    img {
+        object-fit: cover;
+        height: 90vh;
+        width: 100%;
+    }
 }
 
 .header-middle {

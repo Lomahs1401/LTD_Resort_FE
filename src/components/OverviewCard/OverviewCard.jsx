@@ -6,6 +6,7 @@ import { ref, getDownloadURL, listAll } from "firebase/storage"
 import { storage } from '../../utils/firebase'
 import Loading from '../Loading/Loading';
 import currency from '../../utils/currency';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const cx = classNames.bind(styles);
 
@@ -80,7 +81,13 @@ const OverviewCard = ({
           </button>
         </div>
         <div className={cx("card-img")}>
-          <img alt={title} src={firstImageURL} />
+          <LazyLoadImage
+            key={firstImageURL}
+            src={firstImageURL}
+            alt={`${title}`}
+            effect="blur"
+            placeholderSrc={firstImageURL}
+          />
         </div>
       </div>
     )

@@ -16,6 +16,7 @@ import currency from '../../utils/currency';
 import { useSelector } from 'react-redux';
 import { avatarSelector } from '../../redux/selectors';
 import { toast } from 'react-toastify';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 const { Panel } = Collapse;
 
 const cx = classNames.bind(styles);
@@ -270,10 +271,12 @@ const FindService = () => {
             </div>
           </nav>
           <div className={cx("image-container")}>
-            <img
+            <LazyLoadImage
+              key={findServices}
               src={findServices}
-              alt="Services"
-              className={cx("header-image")}
+              alt='Services'
+              effect='blur'
+              placeholderSrc={findServices}
             />
           </div>
         </div>
@@ -299,7 +302,6 @@ const FindService = () => {
             })}
           </div>
         </div>
-
 
         <div className={cx("section-list-type-services")}>
           <div className={cx("filter-services")}>
