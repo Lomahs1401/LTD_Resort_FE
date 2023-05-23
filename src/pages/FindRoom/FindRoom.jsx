@@ -692,9 +692,7 @@ const FindRoom = () => {
                   ranking={5}
                   type={'Room'}
                   capacity={roomType.number_customers}
-                  listRooms={roomType.number_rooms}
                   area={roomType.room_size}
-                  totalReviews={54}
                   setReloadFavouriteItem={setReloadFavouriteItem}
                 />
               )

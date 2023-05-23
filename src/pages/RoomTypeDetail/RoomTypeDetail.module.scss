@@ -1,7 +1,7 @@
 .room-content {
   display: flex;
   flex-direction: column;
-  gap: 30px ;
+  gap: 16px;
   padding: 30px 46px;
 }
 
@@ -32,8 +32,10 @@
   &__left {
     width: 80%;
     font-size: larger;
-    h2 {
+
+    > h2 {
       margin-block: 8px;
+      font-size: 1.8em;
     }
   }
 
@@ -47,6 +49,7 @@
     > p {
       font-size: 18px;
       margin-block: 4px 12px;
+      font-weight: 600;
     }
 
     > h1 {
@@ -340,6 +343,135 @@
       align-items: center;
       gap: 15px;
       font-size: 20px;
+    }
+  }
+}
+
+.booking-room-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  > h1 {
+    margin-block: 0px 32px;
+  }
+}
+
+.booking-container {
+  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  gap: 20px;
+
+  &__left {
+    padding: 2% 5%;
+    border-radius: 10px;
+    border: 1px solid #8DD3BB;
+
+    &-detail {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 40px;
+    }
+  }
+
+  &__right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+
+    .cart-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      border: 1px solid #8DD3BB;
+      box-shadow: rgba(149, 157, 165, 0.7) 4px 8px 16px;
+
+      > h1 {
+        width: 100%;
+        text-align: center;
+        vertical-align: middle;
+        padding-block: 8px;
+        margin-block: 0;
+        border-bottom: 1px solid #8DD3BB;
+        background-color: #8DD3BB;
+      }
+    }
+
+    .cart-detail {
+
+      &__top {
+        width: 90%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+
+        &-left {
+          width: 100%;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          gap: 16px;
+
+          > h3 {
+            max-width: 80%;
+            font-size: 20px;
+            margin: 12px;
+          }
+        }
+
+        &-right {
+          display: flex;
+          margin: 0 auto;
+
+          > h3 {
+            font-size: 20px;
+            background-color: #FF8682;
+            border-radius: 50%;
+            margin: 0;
+            padding: 20px;
+            width: 100%;
+            line-height: 12px;
+          }
+        }
+      }
+
+      &__bottom {
+        display: flex;
+        justify-content: center;
+        margin: 12px auto;
+
+        .cart-btn {
+          width: 90%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 12px;
+          border: none;
+          border-radius: 8px;
+          background: #8DD3BB;
+          transition: 0.3s;
+
+          > p {
+            font-size: 24px;
+            font-weight: 600;
+            margin-block: 10px;
+          }
+
+          &:hover {
+            cursor: pointer;
+            opacity: 0.8;  
+          }
+        }
+      }
     }
   }
 }

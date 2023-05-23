@@ -391,7 +391,6 @@ const FindService = () => {
                   price={service.price}
                   ranking={5}
                   type={'Service'}
-                  totalReviews={54}
                   setReloadHeader={setReloadHeader}
                 />
               )
