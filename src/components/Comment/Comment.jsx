@@ -7,6 +7,7 @@ import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from '../../utils/firebase'
 import Draggable from "react-draggable";
 import UserProfile from "../UserProfile/UserProfile";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const cx = classNames.bind(styles);
 
@@ -89,7 +90,13 @@ const Comment = ({
   return (
     <div className={cx("comment-wrapper")}>
       <div className={cx("comment-wrapper__left")}>
-        <img src={avatarUrl} className={cx("avatar")} loading="lazy" />
+        <LazyLoadImage
+          key={avatarUrl}
+          src={avatarUrl}
+          alt={`${avatarUrl}`}
+          effect="blur"
+          placeholderSrc={avatarUrl}
+        />
       </div>
       <div className={cx("comment-wrapper__middle")}>
         <div className={cx("score")}>

@@ -60,6 +60,7 @@ export const RoomTypeDetail = () => {
   const { http, user } = AuthUser();
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
   const FIREBASE_URL = `gs://ltd-resort.appspot.com/room-types/${roomTypeId}/`;
+  const [totalRooms, setTotalRooms] = useState(0);
 
   const settings = {
     dots: true,
@@ -225,6 +226,14 @@ export const RoomTypeDetail = () => {
           console.log(reject);
         })
 
+      http.get(`/auth/room-types/total-rooms/${roomTypeId}`)
+        .then((resolve) => {
+          setTotalRooms(resolve.data.number_of_rooms);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
+
       http.get(`/auth/feedbacks/room-type/total/${roomTypeId}`)
         .then((resolve) => {
           console.log(resolve);
@@ -322,7 +331,7 @@ export const RoomTypeDetail = () => {
                 </div>
                 <div className={cx("detail-rooms")}>
                   <IoBedSharp />
-                  <p>{roomTypeDetail.number_rooms} rooms</p>
+                  <p>{totalRooms} rooms</p>
                 </div>
                 <div className={cx("detail-size")}>
                   <RxDimensions />
@@ -361,9 +370,9 @@ export const RoomTypeDetail = () => {
                 return (
                   <div className={cx("image-container")} key={index}>
                     <LazyLoadImage
-                      key={index}
+                      key={image}
                       src={image}
-                      alt={`Image ${index}`}
+                      alt={`Pic ${index}`}
                       effect="blur"
                       placeholderSrc={image}
                     />
