@@ -7,11 +7,11 @@ import Comment from "../../components/Comment/Comment";
 import AuthUser from "../../utils/AuthUser";
 import { Rate, Divider, Pagination } from "antd";
 import { BiArrowBack } from "react-icons/bi"
-import { BsFillHeartFill, BsFillShareFill, BsWifi } from "react-icons/bs";
+import { BsFillCartCheckFill, BsFillHeartFill, BsFillShareFill, BsWifi } from "react-icons/bs";
 import { IoSparkles, IoRestaurant, IoCafe, IoPersonSharp, IoBedSharp } from "react-icons/io5";
 import { FaSwimmingPool, FaConciergeBell } from "react-icons/fa";
 import { BiSpa, BiDrink } from "react-icons/bi";
-import { IoIosFitness } from "react-icons/io";
+import { IoIosBed, IoIosFitness } from "react-icons/io";
 import { GiAchievement } from "react-icons/gi";
 import { RxDimensions } from "react-icons/rx";
 import { useEffect } from "react";
@@ -30,6 +30,7 @@ import checkin from "../../img/checkin.jpg"
 import checkout from "../../img/chekout.png"
 import { toast } from "react-toastify";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import BookingRoom from "../../components/BookingRoom/BookingRoom";
 
 const cx = classNames.bind(styles);
 
@@ -321,13 +322,7 @@ export const RoomTypeDetail = () => {
               <div className={cx("detail")}>
                 <div className={cx("detail-person")}>
                   <IoPersonSharp />
-                  <p>
-                    {
-                      roomTypeDetail.number_customers > 1
-                        ? `${roomTypeDetail.number_customers} persons`
-                        : `${roomTypeDetail.number_customers} person`
-                    }
-                  </p>
+                  <p>{roomTypeDetail?.number_customers} {roomTypeDetail?.number_customers === 1 ? "person" : "persons"}</p>
                 </div>
                 <div className={cx("detail-rooms")}>
                   <IoBedSharp />
@@ -444,7 +439,6 @@ export const RoomTypeDetail = () => {
 
           <Divider className={cx("seperate-line")} />
 
-
           <div className={cx("room-type-info")}>
             <div className={cx("room-type-info__left")}>
               <h1>Check-in time/Check-out time</h1>
@@ -469,7 +463,9 @@ export const RoomTypeDetail = () => {
                 </div>
               </div>
             </div>
+
             <Divider className={cx("seperate-line")} type="vertical" style={{ height: 200 }} />
+
             <div className={cx("room-type-info__right")}>
               <h1>Amenities</h1>
               <div className={cx("amenities")}>
@@ -518,6 +514,42 @@ export const RoomTypeDetail = () => {
                       style={{ color: "orange" }}
                     >
                       +24 more
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Divider className={cx("seperate-line")} />
+
+          <div className={cx("booking-room-container")}>
+            <h1>Reservations</h1>
+            <div className={cx("booking-container")}>
+              <div className={cx("booking-container__left")}>
+                <div className={cx("booking-container__left-detail")}>
+                  <BookingRoom/>
+                  <BookingRoom/>
+                </div>
+              </div>
+              <div className={cx("booking-container__right")}>
+                <div className={cx("cart-container")}>
+                  <h1>Cart</h1>
+                  <div className={cx("cart-detail")}>
+                    <div className={cx("cart-detail__top")}>
+                      <div className={cx("cart-detail__top-left")}>
+                        <IoIosBed size={30} />
+                        <h3>Total rooms currently booked</h3>
+                      </div>
+                      <div className={cx("cart-detail__top-right")}>
+                        <h3>1</h3>
+                      </div>
+                    </div>
+                    <div className={cx("cart-detail__bottom")}>
+                      <button className={cx("cart-btn")}>
+                        <BsFillCartCheckFill size={24} />
+                        <p>Book</p>
+                      </button>
                     </div>
                   </div>
                 </div>

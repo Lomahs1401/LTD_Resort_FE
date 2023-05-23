@@ -18,14 +18,13 @@ const cx = classNames.bind(styles);
 
 const BookingCard = ({
   id,
-  image,
+  image = '',
   title = '',
-  price,
-  ranking,
-  type,
-  capacity = '',
-  listRooms = '',
-  area = '',
+  price = 0,
+  ranking = 0,
+  type = '',
+  capacity = 0,
+  area = 0,
   disableFavouriteCheck,
   setReloadFavouriteItem,
 }) => {
@@ -81,7 +80,7 @@ const BookingCard = ({
           ranking: ranking,
           type: type,
           capacity: capacity,
-          listRooms: listRooms,
+          listRooms: totalRooms,
           area: area
         }));
         setToggleFavourite(true);

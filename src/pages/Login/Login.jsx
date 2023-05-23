@@ -75,7 +75,7 @@ const Login = () => {
           navigate('/find-rooms');
         }
         toast.success(`Welcome back ${resolve.data.user.username}`, {
-          position: "top-center",
+          position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
