@@ -4,10 +4,10 @@ import classNames from "classnames/bind";
 
 const cx = classNames.bind(styles);
 
-const BookingRoom = () => {
+const BookingRoom = ({ area, roomTypeId }) => {
   return (
     <div className={cx("booking-room-container")}>
-      <h1>Area A</h1>
+      <h1>{area}</h1>
       <div className={cx("booking-room-detail")}>
         <div className={cx("booking-room-detail__floor")}>
           <h3>Floor 1</h3>
