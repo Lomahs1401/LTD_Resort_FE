@@ -61,9 +61,8 @@ export const RoomTypeDetail = () => {
   const { http, user } = AuthUser();
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
   const FIREBASE_URL = `gs://ltd-resort.appspot.com/room-types/${roomTypeId}/`;
-  const [totalRooms, setTotalRooms] = useState(0);
 
-  const settings = {
+  const imageSettings = {
     dots: true,
     infinite: true,
     slidesToShow: 3,
@@ -100,12 +99,54 @@ export const RoomTypeDetail = () => {
     ]
   };
 
+  const bookingSettings = {
+    dots: true,
+    infinite: true,
+    slidesToShow: 2,
+    slidesToScroll: 2,
+    initialSlide: 0,
+    speed: 1000,
+    nextArrow: <SampleNextArrow style={{ backgroundColor: 'green' }} />,
+    prevArrow: <SamplePrevArrow style={{ backgroundColor: 'red' }} />,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          initialSlide: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  };
+
   const [isLoading, setIsLoading] = useState(false);
 
   // Fetch room type state
   const [roomTypeDetail, setRoomTypeDetail] = useState({});
-  
+  const [totalRooms, setTotalRooms] = useState(0);
 
+  const [listAreas, setListAreas] = useState([]);
+  const [totalAreas, setTotalAreas] = useState(0);
+  const [listFloors, setListFloors] = useState([]);
+  const [totalFloors, setTotalFloors] = useState(0);
+  
   // Fetch list image state
   const [imageList, setImageList] = useState([]);
   const imageRef = ref(storage, FIREBASE_URL);
@@ -261,6 +302,42 @@ export const RoomTypeDetail = () => {
         .catch((error) => {
           console.log(error);
         })
+
+      http.get(`/auth/areas`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListAreas(resolve.data.list_areas);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+
+      http.get(`/auth/areas/total`)
+        .then((resolve) => {
+          console.log(resolve);
+          setTotalAreas(resolve.data.total_areas);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+
+      http.get(`/auth/floors`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListFloors(resolve.data.list_floors);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+
+      http.get(`/auth/floors/total`)
+        .then((resolve) => {
+          console.log(resolve);
+          setTotalFloors(resolve.data.total_floors);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
     }
 
     fetchData();
@@ -360,7 +437,7 @@ export const RoomTypeDetail = () => {
           </div>
 
           <div className={cx("image-carousel")}>
-            <Slider {...settings}>
+            <Slider {...imageSettings}>
               {imageList.map((image, index) => {
                 return (
                   <div className={cx("image-container")} key={index}>
@@ -528,8 +605,18 @@ export const RoomTypeDetail = () => {
             <div className={cx("booking-container")}>
               <div className={cx("booking-container__left")}>
                 <div className={cx("booking-container__left-detail")}>
-                  <BookingRoom/>
-                  <BookingRoom/>
+                  <Slider {...bookingSettings}>
+                    {listAreas.map((area, index) => {
+                      return (
+                        <div key={index}>
+                          <BookingRoom 
+                            area={area.area_name}
+                            roomTypeId={roomTypeId} 
+                          />
+                        </div>
+                      )
+                    })}
+                  </Slider>
                 </div>
               </div>
               <div className={cx("booking-container__right")}>

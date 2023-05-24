@@ -348,9 +348,7 @@
 }
 
 .booking-room-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  width: 100%;
 
   > h1 {
     margin-block: 0px 32px;
@@ -358,27 +356,25 @@
 }
 
 .booking-container {
-  width: 90%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 auto;
-  gap: 20px;
+  float: left;
+  width: 100%;
+  position: relative;
+  margin-inline: 2%;
 
   &__left {
+    float: left;
+    width: 60%;
     padding: 2% 5%;
     border-radius: 10px;
     border: 1px solid #8DD3BB;
-
-    &-detail {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 40px;
-    }
   }
 
   &__right {
+    position: absolute;
+    top: 50%;
+    right: 4%;
+    transform: translateY(-50%);
+    float: left;
     display: flex;
     flex-direction: column;
     justify-content: center;
