@@ -1,20 +1,34 @@
-import React from 'react'
+import React,  { useState }  from "react";
 import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../../utils/theme";
 import { mockDataContacts } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import { useTheme } from "@mui/material";
-import styles from "./Contacts.module.scss";
+import { Modal } from "antd";
+import styles from "./Customer.module.scss";
 import classNames from "classnames/bind";
+import UserProfile from "../../../components/UserProfile/UserProfile";
 
 
 const cx = classNames.bind(styles);
 
-const Contacts = () => {
+const Customer = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [openModal, setOpenModal] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(null);
 
+  const handleOk = () => {
+    setOpenModal(false);
+  }
+
+  // Handle click button "X" of modal
+  const handleCancel = () => {
+    setOpenModal(false);
+  }
+
+//data columns
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "registrarId", headerName: "Registrar ID" },
@@ -58,19 +72,22 @@ const Contacts = () => {
     },
   ];
 
-  const  handleDoubleClickCell = (params) =>  {
-    const {  row } = params;
+  const { accountId, avatar, comment, username, rating, fullName, email, gender, birthDate, ID_Card, address, phone, rankingPoint } = { accountId: 1, avatar: 1, comment: 1, username: 1, rating: 1, fullName: 1, email: 1, gender: 1, birthDate: 1, ID_Card: 1, address: 1, phone: 1, rankingPoint: 11 };
 
-   
+
+  const handleDoubleClickCell = (params) => {
+    const { row } = params;
+    const { id } = row;
     console.log(row);
-    
-  }
+    setOpenModal(true);
+  };
 
+    
   return (
     <div className={cx("contact-wrapper")}>
       <Header
-        title="CONTACTS"
-        subtitle="List of Contacts for Future Reference"
+        title="CUSTOMER"
+        subtitle="List of Customer "
       />
       <Box
         m="40px 0 0 0"
@@ -111,8 +128,31 @@ const Contacts = () => {
           components={{ Toolbar: GridToolbar }}
         />
       </Box>
+      <Modal
+        title={
+          <UserProfile
+            accountId={accountId}
+            avatar={avatarUrl}
+            username={username}
+            fullName={fullName}
+            email={email}
+            gender={gender}
+            birthDate={birthDate}
+            ID_Card={ID_Card}
+            address={address}
+            phone={phone}
+            rankingPoint={rankingPoint}
+          />
+          
+        }
+        open={openModal}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+      
+      />
     </div>
   );
 };
 
-export default Contacts;
+export default Customer;

@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './Header.module.scss'
 import classNames from "classnames/bind"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBed, faMugHot, faGear, faHeart } from '@fortawesome/free-solid-svg-icons'
+import { faBed, faMugHot, faGear } from '@fortawesome/free-solid-svg-icons'
 import logo from '../../img/logo.png'
 import { Link } from 'react-router-dom'
 import AuthUser from '../../utils/AuthUser'

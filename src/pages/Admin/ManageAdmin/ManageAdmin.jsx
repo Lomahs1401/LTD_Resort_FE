@@ -3,12 +3,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../../utils/theme";
 import { mockDataInvoices } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
-import styles from "./Invoices.module.scss";
+import styles from "./ManageAdmin.module.scss";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(styles);
 
-const Invoices = () => {
+const ManageAdmin = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const columns = [
@@ -51,7 +51,7 @@ const Invoices = () => {
 
   return (
     <div className={cx("invoices-wrapper")}>
-      <Header title="INVOICES" subtitle="List of Invoice Balances" />
+      <Header title="Admin" subtitle="List of Admin" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -87,4 +87,4 @@ const Invoices = () => {
   );
 };
 
-export default Invoices;
+export default ManageAdmin;

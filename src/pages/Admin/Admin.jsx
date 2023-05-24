@@ -5,14 +5,21 @@ import { Routes, Route } from 'react-router-dom';
 import Topbar from './Topbar/Topbar';
 import Sidebar from './Sidebar/Sidebar';
 import Dashboard from './Dashboard/Dashboard';
-import Team from './Team/Team';
-import Invoices from './Invoices/Invoices';
-import Contacts from './Contacts/Contacts';
+import Staff from './Staff/Staff';
+import ViewStaff from './ViewStaff/ViewStaff';
+import CreateStaff from './CreateStaff/CreateStaff';
+import ManageAdmin from './ManageAdmin/ManageAdmin';
+import Customer from './Customer/Customer';
 import Bar from './Bar/Bar';
 import Form from './Form/Form';
 import Line from './Line/Line';
 import Pie from './Pie/Pie';
 import FAQ from './FAQ/FAQ';
+import Room from './Room/Room'
+import CreateRoom from './CreateRoom/CreateRoom'
+import Service from './Service/Service';
+import CreateService from './CreateService/CreateService';
+
 import AccordionDetails from './AccountDetail/AccountDetail';
 import Geography from './Geography/Geography';
 import Calendar from './Calendar/Calendar';
@@ -35,15 +42,24 @@ const Admin = () => {
           <Topbar setIsSidebar={setIsSidebar} />
             <Routes>
               <Route path="/" element={<Dashboard />} exact/>
-              <Route path="/team" element={<Team />} />
-              <Route path="/contacts" element={<Contacts />} />
-              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/staff" element={<Staff />} />
+              <Route path="/viewstaff" element={<ViewStaff />} />
+              <Route path="/createstaff" element={<CreateStaff />} />
+              <Route path="/customer" element={<Customer />} />
+              <Route path="/manageadmin" element={<ManageAdmin />} />
+              <Route path="/room" element={< Room />} />
+              <Route path="/createroom" element={< CreateRoom />} />
+              <Route path="/room" element={< Room />} />
+              <Route path="/service" element={< Service />} />
+              <Route path="/createservice" element={< CreateService />} />
               <Route path="/form" element={<Form />} />
               <Route path="/bar" element={<Bar />} />
               <Route path="/pie" element={<Pie />} />
               <Route path="/line" element={<Line />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/calendar" element={<Calendar />} />
+              
+
               <Route path="/test" element={< AccordionDetails />} />
               
               {/* <Route path="/geography" element={<Geography />} /> */}

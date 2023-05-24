@@ -9,6 +9,7 @@ import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import BedIcon from "@mui/icons-material/Bed";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
@@ -16,7 +17,7 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import testimonial from "../../../img/testimonial1.png"
+import testimonial from "../../../img/testimonial1.png";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -89,7 +90,7 @@ const Sidebar = () => {
               </Box>
             )}
           </MenuItem>
-          
+
           {/* USER */}
           {!isCollapsed && (
             <Box mb="25px">
@@ -133,29 +134,80 @@ const Sidebar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Data
+              Account
             </Typography>
-            {/* <Item
-              title="Manage Team"
-              to="/admin/team"
+            <Item
+              title="Manage Staff"
+              to="/admin/staff"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            /> */}
+            />
             <Item
-              title="Contacts Information"
-              to="/admin/contacts"
+              title="Create Staff"
+              to="/admin/createstaff"
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Manage Customer"
+              to="/admin/customer"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            {/* <Item
-              title="Invoices Balances"
-              to="/admin/invoices"
+            <Item
+              title="Manage Admin"
+              to="/admin/manageadmin"
               icon={<ReceiptOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            /> */}
+            />
+
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Room
+            </Typography>
+            <Item
+              title="Profile Room"
+              to="/admin/room"
+              icon={<BedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Create Room"
+              to="/admin/createroom"
+              icon={<PersonOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Service
+            </Typography>
+            <Item
+              title="Profile Service"
+              to="/admin/service"
+              icon={<BedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Create Service"
+              to="/admin/createservice"
+              icon={<PersonOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
 
             <Typography
               variant="h6"
