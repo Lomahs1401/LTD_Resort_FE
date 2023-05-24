@@ -143,9 +143,6 @@ export const RoomTypeDetail = () => {
   const [totalRooms, setTotalRooms] = useState(0);
 
   const [listAreas, setListAreas] = useState([]);
-  const [totalAreas, setTotalAreas] = useState(0);
-  const [listFloors, setListFloors] = useState([]);
-  const [totalFloors, setTotalFloors] = useState(0);
   
   // Fetch list image state
   const [imageList, setImageList] = useState([]);
@@ -307,33 +304,6 @@ export const RoomTypeDetail = () => {
         .then((resolve) => {
           console.log(resolve);
           setListAreas(resolve.data.list_areas);
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-
-      http.get(`/auth/areas/total`)
-        .then((resolve) => {
-          console.log(resolve);
-          setTotalAreas(resolve.data.total_areas);
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-
-      http.get(`/auth/floors`)
-        .then((resolve) => {
-          console.log(resolve);
-          setListFloors(resolve.data.list_floors);
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-
-      http.get(`/auth/floors/total`)
-        .then((resolve) => {
-          console.log(resolve);
-          setTotalFloors(resolve.data.total_floors);
         })
         .catch((error) => {
           console.log(error);
@@ -610,6 +580,7 @@ export const RoomTypeDetail = () => {
                       return (
                         <div key={index}>
                           <BookingRoom 
+                            id={area.id}
                             area={area.area_name}
                             roomTypeId={roomTypeId} 
                           />
