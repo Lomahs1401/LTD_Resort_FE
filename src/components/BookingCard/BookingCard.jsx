@@ -12,31 +12,32 @@ import { Link } from 'react-router-dom';
 import { ref, getDownloadURL, listAll } from "firebase/storage"
 import { storage } from '../../utils/firebase'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import Loading from '../Loading/Loading';
+import AuthUser from '../../utils/AuthUser';
 
 const cx = classNames.bind(styles);
 
 const BookingCard = ({
   id,
-  image,
+  image = '',
   title = '',
-  price,
-  ranking,
-  type,
-  capacity = '',
-  listRooms = '',
-  area = '',
+  price = 0,
+  ranking = 0,
+  type = '',
+  capacity = 0,
+  area = 0,
   disableFavouriteCheck,
   setReloadFavouriteItem,
 }) => {
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
 
   const dispatch = useDispatch();
+  const { http } = AuthUser();
 
   // Fetch image state
   const [loading, setLoading] = useState(false);
   const [firstImageURL, setFirstImageURL] = useState(null);
   const [totalImages, setTotalImages] = useState(0);
+  const [totalRooms, setTotalRooms] = useState(0);
 
   // Create a reference from a Google Cloud Storage URI
   const imageRef = ref(storage, image);
@@ -79,7 +80,7 @@ const BookingCard = ({
           ranking: ranking,
           type: type,
           capacity: capacity,
-          listRooms: listRooms,
+          listRooms: totalRooms,
           area: area
         }));
         setToggleFavourite(true);
@@ -110,10 +111,8 @@ const BookingCard = ({
     listAll(imageRef).then((response) => {
       const firstImageRef = response.items[0];
       setTotalImages(response.items.length);
-
       getDownloadURL(firstImageRef).then((url) => {
         setFirstImageURL(url);
-        setLoading(true);
       }).catch((error) => {
         console.log(error);
       })
@@ -121,6 +120,20 @@ const BookingCard = ({
       console.log(error);
     })
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (type === 'Room') {
+      http.get(`/auth/room-types/total-rooms/${id}`)
+      .then((resolve) => {
+        setTotalRooms(resolve.data.number_of_rooms);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      })
+    }
+    setLoading(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -173,7 +186,7 @@ const BookingCard = ({
                 </span>
                 <span>
                   <FaBed size={20} className={cx("middle-content__top-icon")} />
-                  {listRooms} rooms
+                  {totalRooms} rooms
                 </span>
                 <span>
                   <BsHouseCheckFill size={20} className={cx("middle-content__top-icon")} />

@@ -7,10 +7,12 @@ import { storage } from '../../utils/firebase'
 import Loading from '../Loading/Loading';
 import currency from '../../utils/currency';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 const OverviewCard = ({
+  id,
   image,
   title,
   price,
@@ -26,6 +28,16 @@ const OverviewCard = ({
 
   // Create a reference from a Google Cloud Storage URI
   const imageRef = ref(storage, image);
+
+  const navigate = useNavigate();
+
+  const handleClickBooking = () => {
+    if (type === 'Room') {
+      navigate(`/find-rooms/${id}`);
+    } else {
+      navigate(`/find-services/${id}`);
+    }
+  }
 
   useEffect(() => {
     listAll(imageRef).then((response) => {
@@ -76,7 +88,10 @@ const OverviewCard = ({
             />
             <p className="ant-rate-text">{ranking} Star {type}</p>
           </div>
-          <button className={cx("btn-booking")}>
+          <button 
+            className={cx("btn-booking")}
+            onClick={handleClickBooking}
+          >
             <p>Book {type}</p>
           </button>
         </div>

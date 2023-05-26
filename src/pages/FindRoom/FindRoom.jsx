@@ -229,6 +229,7 @@ const FindRoom = () => {
 
   useEffect(() => {
     const fetchAvatar = () => {
+      console.log(user);
       getDownloadURL(avatarRef).then(url => {
         dispatch(addAvatar(url));
       })
@@ -401,6 +402,7 @@ const FindRoom = () => {
               return (
                 <OverviewCard
                   key={overviewRoomType.id}
+                  id={overviewRoomType.id}
                   image={overviewRoomType.image}
                   title={overviewRoomType.room_type_name}
                   price={overviewRoomType.price}
@@ -690,9 +692,7 @@ const FindRoom = () => {
                   ranking={5}
                   type={'Room'}
                   capacity={roomType.number_customers}
-                  listRooms={roomType.number_rooms}
                   area={roomType.room_size}
-                  totalReviews={54}
                   setReloadFavouriteItem={setReloadFavouriteItem}
                 />
               )
