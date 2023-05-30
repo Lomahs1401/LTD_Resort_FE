@@ -4,17 +4,20 @@ import classNames from "classnames/bind";
 import { useState } from 'react';
 import AuthUser from '../../utils/AuthUser';
 import Loading from '../Loading/Loading';
-import { toast } from 'react-toastify';
 import BookmarkRoom from '../BookmarkRoom/BookmarkRoom';
 
 const cx = classNames.bind(styles);
 
-const BookingRoom = ({ areaId, areaName, roomTypeId, setReloadBookmarkRoom }) => {
+const BookingRoom = ({ areaId, areaName, roomTypeId }) => {
 
   const { http } = AuthUser();
   const [isLoading, setIsLoading] = useState(false);
   const [listFloors, setListFloors] = useState([]);
   const [listRooms, setListRooms] = useState([]);
+
+  // reload "Favourites" in header
+  const [, setReloadBookmarkRoom] = useState(false);
+
   
   useEffect(() => {
     const fetchData = () => {

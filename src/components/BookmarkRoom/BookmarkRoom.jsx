@@ -1,15 +1,26 @@
 import React, { useState } from 'react'
 import styles from './BookmarkRoom.module.scss'
 import classNames from "classnames/bind";
-import { useDispatch } from 'react-redux';
-import { bookmarkRoom } from '../../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { bookmarkRoom, unmarkRoom } from '../../redux/actions';
+import { bookmarkRoomsSelector } from '../../redux/selectors';
 
 const cx = classNames.bind(styles);
 
 const BookmarkRoom = ({ id, roomName, status, areaId, floorId, roomTypeId, setReloadBookmarkRoom }) => {
 
-  const [bookmarkRoom, setBookmarkRoom] = useState(() => {
+  const bookmarkRooms = useSelector(bookmarkRoomsSelector);
+
+  const [bookmarked, setBookmarked] = useState(() => {
     let isBookmarkedRoom = false;
+    bookmarkRooms.some((bookmarkRoom) => {
+      if (bookmarkRoom.id === id) {
+        isBookmarkedRoom = true;
+        return true;
+      } else {
+        return false;
+      }
+    })
     return isBookmarkedRoom;
   });
 
@@ -19,7 +30,7 @@ const BookmarkRoom = ({ id, roomName, status, areaId, floorId, roomTypeId, setRe
     if (status === 'BOOKED') {
       e.preventDefault();
     } else {
-      if (!bookmarkRoom) {
+      if (!bookmarked) {
         dispatch(bookmarkRoom({
           id: id,
           roomName: roomName,
@@ -28,10 +39,10 @@ const BookmarkRoom = ({ id, roomName, status, areaId, floorId, roomTypeId, setRe
           floorId: floorId,
           roomTypeId: roomTypeId
         }));
-        setBookmarkRoom(true)
+        setBookmarked(true)
       } else {
-        dispatch(remove(id));
-        setBookmarkRoom(false);
+        dispatch(unmarkRoom(id));
+        setBookmarked(false);
       }
       setReloadBookmarkRoom(true);
     }
@@ -40,8 +51,8 @@ const BookmarkRoom = ({ id, roomName, status, areaId, floorId, roomTypeId, setRe
   return (
     <div className={cx("bookmark-room-wrapper")}>
       <button
-        // style={isBookmarked && {backgroundColor: '#8DD3BB'}}
         className={status === 'BOOKED' ? cx("room-item__booked") : cx("room-item")}
+        style={bookmarked ? {backgroundColor: '#8DD3BB'} : {}}
         onClick={(e) => handleSelectRoom(e, status)}
       >
         <p>{roomName}</p>

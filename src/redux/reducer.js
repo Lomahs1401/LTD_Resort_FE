@@ -8,7 +8,7 @@ const initState = {
     avatar: localStorage.getItem('avatar') == null 
         ? '' 
         : JSON.parse(localStorage.getItem('avatar')),
-    bookmarkRoom: localStorage.getItem('bookmark_rooms') == null
+    bookmarkRooms: localStorage.getItem('bookmark_rooms') == null
         ? []
         : JSON.parse(localStorage.getItem('bookmark_rooms')),
 }
@@ -79,6 +79,29 @@ const rootReducer = (state = initState, action) => {
                 ...state,
                 avatar: action.payload,
             }
+        case 'room/bookmarkRoom':
+            localStorage.setItem('bookmark_rooms', JSON.stringify([
+                ...state.bookmarkRooms,
+                action.payload,
+            ]))
+            return {
+                ...state,
+                bookmarkRooms: [
+                    ...state.bookmarkRooms,
+                    action.payload,
+                ]    
+            }
+        case 'room/unmarkRoom':
+            const newBookmarkRooms = state.bookmarkRooms.filter((bookmarkRoom) => {
+                return bookmarkRoom.id !== action.payload;
+            });
+            
+            localStorage.setItem('bookmark_rooms', JSON.stringify(newBookmarkRooms));
+            
+            return {
+                ...state,
+                bookmarkRooms: newBookmarkRooms,
+            };
         default:
             return state;
     }
