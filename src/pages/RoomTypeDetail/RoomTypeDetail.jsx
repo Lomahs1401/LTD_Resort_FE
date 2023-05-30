@@ -152,6 +152,9 @@ export const RoomTypeDetail = () => {
   const avatar = useSelector(avatarSelector);
   const favouritesRooms = useSelector(favouritesRoomsSelector);
 
+  // reload "Favourites" in header
+  const [, setReloadBookmarkRoom] = useState(false);
+
   // Pagination state
   const pageSizeOptions = [5, 10, 20];
   const DEFAULT_CURRENT_PAGE_NUMBER = 1;
@@ -580,9 +583,10 @@ export const RoomTypeDetail = () => {
                       return (
                         <div key={index}>
                           <BookingRoom 
-                            id={area.id}
-                            area={area.area_name}
+                            areaId={area.id}
+                            areaName={area.area_name}
                             roomTypeId={roomTypeId} 
+                            setReloadBookmarkRoom={setReloadBookmarkRoom}
                           />
                         </div>
                       )

@@ -2,14 +2,9 @@ import React, { useState, useEffect } from 'react'
 import styles from './FindRoom.module.scss'
 import classNames from "classnames/bind";
 import findRooms from '../../img/FindRooms.png'
-import { BsFillCalendar2CheckFill } from 'react-icons/bs'
-import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
-import { Form, Divider, Slider, DatePicker, Select, Collapse, Checkbox, Pagination } from 'antd';
-import { FaBed, FaDollarSign, FaUser } from 'react-icons/fa';
-import { BiSearch } from "react-icons/bi"
-import BookingCard from '../../components/BookingCard/BookingCard';
-import dayjs from 'dayjs';
+import { Divider, Slider, Collapse, Checkbox, Pagination } from 'antd';
+import { FaBed, FaDollarSign } from 'react-icons/fa';
 import Header from '../../layouts/Header/Header';
 import AuthUser from '../../utils/AuthUser';
 import currency from '../../utils/currency';
@@ -21,13 +16,13 @@ import { addAvatar } from '../../redux/actions';
 import { avatarSelector } from '../../redux/selectors';
 import { toast } from 'react-toastify';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import Footer from '../../layouts/Footer/Footer';
+import BookingCard from '../../components/BookingCard/BookingCard';
 
 const { Panel } = Collapse;
 const cx = classNames.bind(styles);
 
 const FindRoom = () => {
-  const [form] = Form.useForm();
-
   const { http, user } = AuthUser();
 
   // Fetch list top 5 lowest price of room type (Overview section)
@@ -87,21 +82,6 @@ const FindRoom = () => {
       value: roomType,
     }
   })
-
-  // --------------------------     Find Room     --------------------------
-
-  const disabledDate = (current) => {
-    // Can not select days before today and today
-    return current && current < dayjs().startOf('day');
-  };
-
-  const handleSubmitFindRoom = (values) => {
-    console.log('Success:', values);
-  };
-
-  const handleSubmitFindRoomFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-  };
 
   // --------------------------     Filter Room Type     --------------------------
 
@@ -412,151 +392,6 @@ const FindRoom = () => {
               )
             })}
           </div>
-        </div>
-
-        <div className={cx("section-find-rooms")}>
-          <h1 style={{ textAlign: 'center' }}>Find your room</h1>
-          <Form
-            form={form}
-            layout='inline'
-            name='find_room_form'
-            autoComplete="off"
-            onFinish={handleSubmitFindRoom}
-            onFinishFailed={handleSubmitFindRoomFailed}
-            className={cx("find-rooms-container")}
-          >
-            <Form.Item
-              name='check_in'
-              label={
-                <div className={cx("find-rooms-item")}>
-                  <BsFillCalendar2CheckFill size={24} />
-                  <span>Check in</span>
-                </div>
-              }
-              required={false}
-              colon={false}
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select check in date'
-                }
-              ]}
-              style={{ marginBottom: 30 }}
-            >
-              <DatePicker
-                picker='date'
-                size='large'
-                placeholder='Select check in date'
-                format="YYYY-MM-DD HH:mm"
-                disabledDate={disabledDate}
-              />
-            </Form.Item>
-            <Form.Item
-              name='check_out'
-              label={
-                <div className={cx("find-rooms-item")}>
-                  <BsFillCalendar2CheckFill size={24} />
-                  <span>Check out</span>
-                </div>
-              }
-              required={false}
-              colon={false}
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select check out date'
-                }
-              ]}
-              style={{ marginBottom: 30 }}
-            >
-              <DatePicker
-                picker='date'
-                size='large'
-                placeholder='Select check out date'
-                format="YYYY-MM-DD HH:mm"
-                disabledDate={disabledDate}
-              />
-            </Form.Item>
-            <Form.Item
-              name='bedrooms'
-              label={
-                <div className={cx("find-rooms-item")}>
-                  <FaBed size={24} />
-                  <span>Bedrooms</span>
-                </div>
-              }
-              required={false}
-              colon={false}
-              style={{ marginBottom: 30 }}
-            >
-              <Select
-                allowClear
-                showSearch
-                size='large'
-                placeholder="Select bedrooms"
-                options={[
-                  {
-                    value: 'single_bedroom',
-                    label: 'Single Bedroom',
-                  },
-                  {
-                    value: 'twin_bedroom',
-                    label: 'Twin Bedroom',
-                  },
-                  {
-                    value: 'double_bedroom',
-                    label: 'Double Bedroom',
-                  },
-                  {
-                    value: 'triple_bedroom',
-                    label: 'Triple Bedroom',
-                  },
-                  {
-                    value: 'quad_bedroom',
-                    label: 'Quad Bedroom',
-                  },
-                ]}
-              />
-            </Form.Item>
-            <Form.Item
-              name='capicities'
-              label={
-                <div className={cx("find-rooms-item")}>
-                  <FaUser size={24} />
-                  <span>Capicilites</span>
-                </div>
-              }
-              required={false}
-              colon={false}
-              style={{ marginBottom: 30 }}
-            >
-              <Select
-                allowClear
-                showSearch
-                size='large'
-                placeholder="Select capicities"
-                options={[
-                  {
-                    value: '1',
-                    label: '1 Guest',
-                  },
-                  {
-                    value: '2',
-                    label: '2 Guests',
-                  },
-                  {
-                    value: '3',
-                    label: '3 Guests',
-                  },
-                ]}
-              />
-            </Form.Item>
-            <Form.Item>
-              <button className={cx("btn-search")}>
-                <BiSearch size={24} />
-              </button>
-            </Form.Item>
-          </Form>
         </div>
 
         <div className={cx("section-list-type-rooms")}>

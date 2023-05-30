@@ -8,6 +8,9 @@ const initState = {
     avatar: localStorage.getItem('avatar') == null 
         ? '' 
         : JSON.parse(localStorage.getItem('avatar')),
+    bookmarkRoom: localStorage.getItem('bookmark_rooms') == null
+        ? []
+        : JSON.parse(localStorage.getItem('bookmark_rooms')),
 }
 
 const rootReducer = (state = initState, action) => {
