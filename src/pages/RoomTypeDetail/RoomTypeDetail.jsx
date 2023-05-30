@@ -17,7 +17,7 @@ import { RxDimensions } from "react-icons/rx";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { avatarSelector, favouritesRoomsSelector } from "../../redux/selectors";
+import { avatarSelector, bookmarkRoomsSelector, favouritesRoomsSelector } from "../../redux/selectors";
 import currency from "../../utils/currency";
 import { addFavouriteRoom, removeFavouriteRoom } from "../../redux/actions";
 import Slider from "react-slick";
@@ -151,6 +151,7 @@ export const RoomTypeDetail = () => {
   const dispatch = useDispatch();
   const avatar = useSelector(avatarSelector);
   const favouritesRooms = useSelector(favouritesRoomsSelector);
+  const boormarkRooms = useSelector(bookmarkRoomsSelector);
 
   // Pagination state
   const pageSizeOptions = [5, 10, 20];
@@ -218,6 +219,10 @@ export const RoomTypeDetail = () => {
     console.log(currentPage, pageSize);
     setCurrentPage(currentPage);
     setPageSize(pageSize);
+  }
+
+  const handleClickBooking = () => {
+    document.getElementById('booking-room').scrollIntoView({behavior: 'smooth'})
   }
 
   useEffect(() => {
@@ -400,7 +405,7 @@ export const RoomTypeDetail = () => {
                   </button>
                 </div>
                 <div className={cx("button__right")}>
-                  <button>Book now</button>
+                  <button onClick={handleClickBooking}>Book now</button>
                 </div>
               </div>
             </div>
@@ -570,7 +575,7 @@ export const RoomTypeDetail = () => {
 
           <Divider className={cx("seperate-line")} />
 
-          <div className={cx("booking-room-container")}>
+          <div id="booking-room" className={cx("booking-room-container")}>
             <h1>Reservations</h1>
             <div className={cx("booking-container")}>
               <div className={cx("booking-container__left")}>
@@ -580,8 +585,8 @@ export const RoomTypeDetail = () => {
                       return (
                         <div key={index}>
                           <BookingRoom 
-                            id={area.id}
-                            area={area.area_name}
+                            areaId={area.id}
+                            areaName={area.area_name}
                             roomTypeId={roomTypeId} 
                           />
                         </div>
@@ -599,8 +604,9 @@ export const RoomTypeDetail = () => {
                         <IoIosBed size={30} />
                         <h3>Total rooms currently booked</h3>
                       </div>
+                      
                       <div className={cx("cart-detail__top-right")}>
-                        <h3>1</h3>
+                        <h3>{boormarkRooms.length}</h3>
                       </div>
                     </div>
                     <div className={cx("cart-detail__bottom")}>
