@@ -15,7 +15,7 @@ import { IoIosBed, IoIosFitness } from "react-icons/io";
 import { GiAchievement } from "react-icons/gi";
 import { RxDimensions } from "react-icons/rx";
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { avatarSelector, bookmarkRoomsSelector, favouritesRoomsSelector } from "../../redux/selectors";
 import currency from "../../utils/currency";
@@ -31,6 +31,7 @@ import checkout from "../../img/chekout.png"
 import { toast } from "react-toastify";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import BookingRoom from "../../components/BookingRoom/BookingRoom";
+import Swal from "sweetalert2";
 
 const cx = classNames.bind(styles);
 
@@ -148,10 +149,13 @@ export const RoomTypeDetail = () => {
   const [imageList, setImageList] = useState([]);
   const imageRef = ref(storage, FIREBASE_URL);
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  
+  // Selector
   const avatar = useSelector(avatarSelector);
   const favouritesRooms = useSelector(favouritesRoomsSelector);
-  const boormarkRooms = useSelector(bookmarkRoomsSelector);
+  const bookmarkRooms = useSelector(bookmarkRoomsSelector);
 
   // Pagination state
   const pageSizeOptions = [5, 10, 20];
@@ -221,8 +225,21 @@ export const RoomTypeDetail = () => {
     setPageSize(pageSize);
   }
 
-  const handleClickBooking = () => {
+  const handleClickBookingNow = () => {
     document.getElementById('booking-room').scrollIntoView({behavior: 'smooth'})
+  }
+
+  const handleClickBookingRoom = () => {
+    if (bookmarkRooms.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'No room chosen',
+        text: 'You haven\'t selected any room yet!',
+      })
+    } else {
+      // dispatch(addRoomTypes(roomTypeDetail))
+      navigate(`/booking/${roomTypeId}`);
+    }
   }
 
   useEffect(() => {
@@ -405,7 +422,7 @@ export const RoomTypeDetail = () => {
                   </button>
                 </div>
                 <div className={cx("button__right")}>
-                  <button onClick={handleClickBooking}>Book now</button>
+                  <button onClick={handleClickBookingNow}>Book now</button>
                 </div>
               </div>
             </div>
@@ -587,7 +604,15 @@ export const RoomTypeDetail = () => {
                           <BookingRoom 
                             areaId={area.id}
                             areaName={area.area_name}
-                            roomTypeId={roomTypeId} 
+                            roomTypeId={parseInt(roomTypeId)} 
+                            roomTypeName={roomTypeDetail.room_type_name}
+                            roomSize={roomTypeDetail.room_size}
+                            totalRooms={totalRooms}
+                            numberCustomers={roomTypeDetail.number_customers}
+                            description={roomTypeDetail.description}
+                            image={roomTypeDetail.image}
+                            price={roomTypeDetail.price}
+                            pointRanking={roomTypeDetail.point_ranking}
                           />
                         </div>
                       )
@@ -606,11 +631,14 @@ export const RoomTypeDetail = () => {
                       </div>
                       
                       <div className={cx("cart-detail__top-right")}>
-                        <h3>{boormarkRooms.length}</h3>
+                        <h3>{bookmarkRooms.length}</h3>
                       </div>
                     </div>
                     <div className={cx("cart-detail__bottom")}>
-                      <button className={cx("cart-btn")}>
+                      <button 
+                        className={cx("cart-btn")}
+                        onClick={handleClickBookingRoom}
+                      >
                         <BsFillCartCheckFill size={24} />
                         <p>Book</p>
                       </button>
