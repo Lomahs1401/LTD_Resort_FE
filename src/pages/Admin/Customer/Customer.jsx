@@ -126,6 +126,8 @@ const Customer = () => {
           rows={mockDataContacts}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
+          className={cx("table")}
+
         />
       </Box>
       <Modal

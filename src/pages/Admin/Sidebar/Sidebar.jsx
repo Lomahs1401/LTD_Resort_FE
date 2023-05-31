@@ -10,7 +10,10 @@ import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import BedIcon from "@mui/icons-material/Bed";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
+import RoomServiceIcon from "@mui/icons-material/RoomService";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
@@ -143,13 +146,13 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
+            {/* <Item
               title="Create Staff"
               to="/admin/createstaff"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
             <Item
               title="Manage Customer"
               to="/admin/customer"
@@ -173,16 +176,37 @@ const Sidebar = () => {
               Room
             </Typography>
             <Item
-              title="Profile Room"
+              title="Room"
               to="/admin/room"
               icon={<BedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Create Room"
-              to="/admin/createroom"
-              icon={<PersonOutlinedIcon />}
+              title="Room Area"
+              to="/admin/roomarea"
+              icon={<LocationOnIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Room Floor"
+              to="/admin/roomfloor"
+              icon={<ArrowUpwardIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Room Type"
+              to="/admin/roomtype"
+              icon={<BedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Equipment"
+              to="/admin/equipment"
+              icon={<RoomServiceIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -195,19 +219,27 @@ const Sidebar = () => {
               Service
             </Typography>
             <Item
-              title="Profile Service"
+              title="Service"
               to="/admin/service"
-              icon={<BedIcon />}
+              icon={<RoomServiceIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
+              title="Service Type"
+              to="/admin/servicetype"
+              icon={<RoomServiceIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+
+            {/* <Item
               title="Create Service"
               to="/admin/createservice"
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
 
             <Typography
               variant="h6"

@@ -6,22 +6,22 @@ import {
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
+import { Button } from "@mui/material";
 import { tokens } from "../../../utils/theme";
-import { mockDataService, mockDataServiceType } from "../../../data/mockData";
+import { mockDataEquipment } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
-import { useTheme, Button } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { Form, Input, Modal, Select } from "antd";
 import { GrAdd } from "react-icons/gr";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import Draggable from "react-draggable";
-import styles from "./Service.module.scss";
+import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import styles from "./Equipment.module.scss";
 import classNames from "classnames/bind";
-import UserProfile from "../../../components/UserProfile/UserProfile";
 
 const cx = classNames.bind(styles);
 
-const Service = () => {
-  const Layout = {
+const Equipment = () => {
+  const layout = {
     labelCol: {
       span: 6,
     },
@@ -34,55 +34,41 @@ const Service = () => {
   const [openModal, setOpenModal] = useState(false);
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
-  const [avatarUrl, setAvatarUrl] = useState(null);
 
   function CustomToolbar() {
     return (
       <GridToolbarContainer>
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
-        {/* <GridToolbarDensitySelector />
-        <GridToolbarExport /> */}
         <Button startIcon={<GrAdd />} onClick={handleCreate}>
           Create
         </Button>
       </GridToolbarContainer>
     );
   }
-
-  const getTypeName = (typeId) => {
-    // Gọi hàm hoặc thực hiện các xử lý tìm tên area từ id area
-    // Ví dụ:
-    const typeName = mockDataServiceType.find(
-      (type) => type.id === typeId
-    )?.type_name;
-    return typeName || "";
-  };
-
   //data columns
   const columns = [
-    { field: "id", headerName: "ID" },
-    { field: "service_name", headerName: "Service", flex: 0.5 },
+    { field: "id", headerName: "ID", flex: 0.5 },
+
     {
-      field: "price",
-      headerName: "Price",
-      flex: 0.5,
+      field: "equipment_name",
+      headerName: "Name",
+      flex: 1,
       cellClassName: "name-column--cell",
     },
     {
-      field: "point_ranking",
-      headerName: "Point",
-      type: "number",
-      headerAlign: "left",
-      align: "left",
-      flex: 0.5,
+      field: "price",
+      headerName: "Price",
+      flex: 1,
+      cellClassName: "name-column--cell",
     },
     {
-      field: "id_type",
-      headerName: "Type",
+      field: "number",
+      headerName: "Number",
       flex: 1,
-      valueFormatter: (params) => getTypeName(params.value),
+      cellClassName: "name-column--cell",
     },
+
     {
       field: "accessLevel",
       headerName: "Access Level",
@@ -110,6 +96,49 @@ const Service = () => {
     },
   ];
 
+  const handleCreate = () => {
+    console.log("create");
+    setOpenModal(true);
+    form.setFieldValue("name", "");
+    form.setFieldValue("description", "");
+    form.setFieldValue("number", "");
+    form.setFieldValue("price", "");
+    form.setFieldValue("image", "");
+    setdisabledCreate(false);
+
+    setValues({});
+  };
+
+  const handleEdit = (params) => {
+    setdisabledCreate(false);
+    const { row } = params;
+    form.setFieldValue("name", row.equipment_name);
+    form.setFieldValue("description", row.description);
+    form.setFieldValue("number", row.number);
+    form.setFieldValue("price", row.price);
+    form.setFieldValue("image", row.image);
+
+    setOpenModal(true);
+  };
+
+  const handleDelete = (params) => {
+    setOpenModal(true);
+  };
+
+  const handleDoubleClickCell = (params) => {
+    const { row } = params;
+    setdisabledCreate(true);
+    console.log(row);
+    setValues(row);
+    form.setFieldValue("name", row.equipment_name);
+    form.setFieldValue("description", row.description);
+    form.setFieldValue("number", row.number);
+    form.setFieldValue("price", row.price);
+    form.setFieldValue("image", row.image);
+
+    setOpenModal(true);
+  };
+
   const handleOk = () => {
     setOpenModal(false);
   };
@@ -117,55 +146,6 @@ const Service = () => {
   // Handle click button "X" of modal
   const handleCancel = () => {
     setOpenModal(false);
-  };
-
-  const handleCreate = () => {
-    console.log("create");
-    setOpenModal(true);
-    form.setFieldValue("name", "");
-    form.setFieldValue("description", "");
-    form.setFieldValue("price", "");
-    form.setFieldValue("status", null);
-    form.setFieldValue("point","");
-    form.setFieldValue("type",null);
-    setdisabledCreate(false);
-    setValues({});
-  };
-
-  const handleDoubleClickCell = (params) => {
-    const { row } = params;
-    const { id } = row;
-    console.log(row);
-    form.setFieldValue("name", row.service_name);
-    form.setFieldValue("description", row.description);
-    form.setFieldValue("price", row.price);
-    form.setFieldValue("status", row.status);
-    form.setFieldValue("point", row.point_ranking);
-    form.setFieldValue("type", row.id_type);
-    setdisabledCreate(true);
-
-    setOpenModal(true);
-  };
-
-  const handleEdit = (params) => {
-    setdisabledCreate(false);
-    const { row } = params;
-    console.log(row);
-    setValues(row);
-    form.setFieldValue("name", row.service_name);
-    form.setFieldValue("description", row.description);
-    form.setFieldValue("price", row.price);
-    form.setFieldValue("status", row.status);
-    form.setFieldValue("point", row.point_ranking);
-    form.setFieldValue("type", row.id_type);
-    setdisabledCreate(false);
-    setOpenModal(true);
-  };
-
-  const handleDelete = (params) => {
-    console.log(params);
-    console.log("aaa");
-    setOpenModal(true);
   };
   // Handle add new info
   const handleAdd = () => {
@@ -175,7 +155,6 @@ const Service = () => {
   const handleSumbit = () => {
     console.log("Sumbit");
   };
-
   // Successful case
   const onFinish = (values) => {
     console.log("Success:", values);
@@ -213,7 +192,7 @@ const Service = () => {
 
   return (
     <div className={cx("contact-wrapper")}>
-      <Header title="SERVICE" subtitle="List of Service" />
+      <Header title="EQUIPMENT" subtitle="List of Equipment" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -248,12 +227,13 @@ const Service = () => {
       >
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataService}
+          rows={mockDataEquipment}
           columns={columns}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
 
         />
+        
       </Box>
       <Modal
         title={
@@ -271,7 +251,7 @@ const Service = () => {
               setDisabled(true);
             }}
           >
-            Service Room Info
+            Equipment Info
           </div>
         }
         open={openModal}
@@ -289,7 +269,7 @@ const Service = () => {
         )}
       >
         <Form
-          {...Layout}
+          {...layout}
           form={form}
           layout="horizontal"
           name="profile_form"
@@ -301,33 +281,50 @@ const Service = () => {
           onFinishFailed={onFinishFailed}
           className={cx("modal-form")}
           initialValues={{
-            name: values?.service_name,
+            name: values?.equipment_name,
+            number: values?.number,
             description: values?.description,
             price: values?.price,
-            status: values?.status,
-            point: values?.point_ranking,
-            type: values?.id_type,
+            image: values?.image,
           }}
         >
-          <div className={cx("service-attributes")}>
+          <div >
             <Form.Item
               name="name"
-              label="Name"
+              label="Equipment Name"
               rules={[
                 {
                   required: true,
-                  message: "Name Service is required!",
+                  message: "Equipment name is required!",
                 },
               ]}
               hasFeedback
             >
               <Input
-                placeholder={"Please fill floor service"}
+                placeholder={"Please fill the equipment name"}
                 disabled={disabledCreate}
               />
             </Form.Item>
           </div>
-          <div className={cx("service-attributes")}>
+          <div >
+            <Form.Item
+              name="number"
+              label="Number"
+              rules={[
+                {
+                  required: true,
+                  message: "Number is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill the number"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+          <div >
             <Form.Item
               name="price"
               label="Price"
@@ -345,25 +342,7 @@ const Service = () => {
               />
             </Form.Item>
           </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="point"
-              label="Point Ranking"
-              rules={[
-                {
-                  required: true,
-                  message: "Point Rankingis required!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input
-                placeholder={"Please fill the point"}
-                disabled={disabledCreate}
-              />
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
+          <div >
             <Form.Item
               name="description"
               label="Description"
@@ -376,55 +355,30 @@ const Service = () => {
               hasFeedback
             >
               <Input
-                placeholder={"Please write the description"}
+                placeholder={"Please fill the Describe"}
                 disabled={disabledCreate}
               />
             </Form.Item>
           </div>
-          <div className={cx("service-attributes")}>
+          <div >
             <Form.Item
-              name="status"
-              label="Status"
-              hasFeedback
+              name="image"
+              label="Image"
               rules={[
                 {
                   required: true,
-                  message: "Status is required!",
+                  message: "Imageis required!",
                 },
               ]}
-            >
-              <Select
-                placeholder="Please select Status"
-                disabled={disabledCreate}
-              >
-                <Select.Option value={true}> True</Select.Option>
-                <Select.Option value={false}> False</Select.Option>
-
-              </Select>
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="type"
-              label="Type"
               hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Service Type is required!",
-                },
-              ]}
             >
-              <Select
-                placeholder="Please select service type"
-                options={mockDataServiceType.map((ele) => ({
-                  label: ele.type_name,
-                  value: ele.id,
-                }))}
+              <Input
+                placeholder={"Please fill the Image "}
                 disabled={disabledCreate}
-              ></Select>
+              />
             </Form.Item>
           </div>
+       
 
           <Form.Item
             wrapperCol={24}
@@ -454,4 +408,4 @@ const Service = () => {
   );
 };
 
-export default Service;
+export default Equipment;

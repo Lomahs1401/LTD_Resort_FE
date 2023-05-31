@@ -1,5 +1,5 @@
-import React, { useRef, useHistory, useState, useMemo } from "react";
-import { Box, Typography, useTheme, Button } from "@mui/material";
+import React, { useMemo, useState, useEffect, useRef } from "react";
+import { Box, useTheme, Button } from "@mui/material";
 import {
   DataGrid,
   GridToolbarContainer,
@@ -8,37 +8,39 @@ import {
   GridToolbarExport,
   GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
+import { DatePicker, Form, Input, Modal, Select } from "antd";
 import dayjs from "dayjs";
 import { tokens } from "../../../utils/theme";
 import { mockDataTeam } from "../../../data/mockData";
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../../components/Header/Header";
 import { AiFillEdit, AiFillDelete, AiOutlineUserAdd } from "react-icons/ai";
-import { DatePicker, Form, Input, Modal, Select } from "antd";
+
 import styles from "./Staff.module.scss";
 import classNames from "classnames/bind";
 import { useNavigate } from "react-router-dom";
-import Detail from "./components/Detail";
+import { FaUser } from "react-icons/fa";
+import Draggable from "react-draggable";
 
 const cx = classNames.bind(styles);
 
-const Team = () => {
-  //test
-  // const [itemShow, setIemShow] = useState(0);
-  // const [dataDetail, setDataDetail] = useState({});
+const Staff = () => {
+  const staffInfoLayout = {
+    labelCol: {
+      span: 6,
+    },
+    wrapperCol: {
+      span: 18,
+    },
+  };
 
   const [openModalStaff, setOpenModalStaff] = useState(false);
-  const [disabled, setDisabled] = useState(false);
-  const [value, setValue] = useState(null); // Giá trị ban đầu là rỗng
-  const [form] = Form.useForm();
+  const [values, setValues] = useState({});
 
-  // const gridRef = useRef(null);
   const dateFormat = "DD/MM/YYYY";
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [form] = Form.useForm();
 
   function CustomToolbar() {
     return (
@@ -55,75 +57,111 @@ const Team = () => {
   }
 
   const handleSelectBirthDate = (date, dateString) => {
-    form.setFieldValue("birthDate", date);
+    form.setFieldValue("birthday", date);
   };
+
   const handleSelectdayStart = (date, dateString) => {
     form.setFieldValue("dayStart", date);
   };
+
   const handleSelectdayQuit = (date, dateString) => {
     form.setFieldValue("dayQuit", date);
   };
 
   const handleCreate = () => {
     console.log("create");
+    setdisabledCreate(false);
     setOpenModalStaff(true);
-    // form.resetFields();
+    form.setFieldValue("fullName", "");
+    form.setFieldValue("gender", "");
+    // form.setFieldValue('birthDate', row.birthday);
+    form.setFieldValue("phone", "");
+    form.setFieldValue("ID_Card", "");
+    form.setFieldValue("address", "");
+    form.setFieldValue("accountbank", "");
+    form.setFieldValue("namebank", "");
+    // form.setFieldValue('dayStart', row.dayStart);
+    // form.setFieldValue('dayQuit', row.dayQuit);
+    form.setFieldValue("position", "");
+    setValues();
   };
 
   const handleEdit = (params) => {
     console.log(params);
-    console.log("params");
+    setdisabledCreate(false);
+    const { row } = params;
+    form.setFieldValue("fullName", row.full_name);
+    form.setFieldValue("gender", row.gender);
+    // form.setFieldValue('birthDate', row.birthday);
+    form.setFieldValue("phone", row.phone);
+    form.setFieldValue("ID_Card", row.CMND);
+    form.setFieldValue("address", row.address);
+    form.setFieldValue("accountbank", row.account_bank);
+    form.setFieldValue("namebank", row.name_bank);
+    // form.setFieldValue('dayStart', row.dayStart);
+    // form.setFieldValue('dayQuit', row.dayQuit);
+    form.setFieldValue("position", row.position);
+    setOpenModalStaff(true);
   };
+
   const handleDelete = (params) => {
     console.log(params);
     console.log("aaa");
-  };
-  const handleDoubleClickCell = (params) => {
-    // const { row } = params;
-    // // form.resetFields();
-    // console.log(row, "open");
-    console.log(params.row, "open");
-
-    // setValue(params);
     setOpenModalStaff(true);
-    
-    // test
-    // setIemShow(id);
-    // setDataDetail(row);
+  };
+
+  const handleDoubleClickCell = (params) => {
+    setdisabledCreate(true);
+    const { row } = params;
+    form.setFieldValue("fullName", row.full_name);
+    form.setFieldValue("gender", row.gender);
+    // form.setFieldValue('birthDate', row.birthday);
+    form.setFieldValue("phone", row.phone);
+    form.setFieldValue("ID_Card", row.CMND);
+    form.setFieldValue("address", row.address);
+    form.setFieldValue("accountbank", row.account_bank);
+    form.setFieldValue("namebank", row.name_bank);
+    // form.setFieldValue('dayStart', row.dayStart);
+    // form.setFieldValue('dayQuit', row.dayQuit);
+    form.setFieldValue("position", row.position);
+    setOpenModalStaff(true);
+    console.log(row);
   };
 
   const handleOk = () => {
-    // form.resetFields();
     setOpenModalStaff(false);
+    console.log("aa");
   };
 
   // Handle click button "X" of modal
   const handleCancel = () => {
-    console.log("Cancel");
-    setValue(null);
-    // form.resetFields();
+    setOpenModalStaff(false);
+  };
 
-    setOpenModalStaff(false);
+  const handleAdd = () => {
+    console.log("Add");
   };
-  const handleClose = () => {
-    console.log("Close");
-    setOpenModalStaff(false);
-    // form.resetFields();
+
+  const handleSumbit = () => {
+    console.log("Sumbit");
   };
+
   const onFinish = (values) => {
     console.log("Success:", values);
   };
+
   // Failed case
   const onFinishFailed = (error) => {
     console.log("Failed:", error);
   };
+
   const columns = [
     {
       field: "id",
       headerName: "ID",
     },
     {
-      field: "full_Name",
+      field: "full_name",
       headerName: "Name",
       flex: 1,
       cellClassName: "name-column--cell",
@@ -172,286 +210,36 @@ const Team = () => {
     },
   ];
 
-  // test
-  // const renderView = useMemo(() => {
-  //   console.log("id", itemShow);
-  //   if (itemShow !== 0) {
-  //     return <Detail data={dataDetail} setIemShow={setIemShow} />;
-  //   } else {
-  //     return (
-  //       <DataGrid
-  //         onCellDoubleClick={handleDoubleClickCell}
-  //         checkboxSelection
-  //         ref={gridRef}
-  //         rows={mockDataTeam}
-  //         columns={columns}
-  //         components={{ Toolbar: CustomToolbar }}
-  //       />
-  //     );
-  //   }
-  // }, [itemShow]);
+  // ---------------------------      Modal Draggable      ---------------------------
+  const draggleRef = useRef(null);
+  const [disabled, setDisabled] = useState(false);
+  const [disabledCreate, setdisabledCreate] = useState(false);
+  const [bounds, setBounds] = useState({
+    left: 0,
+    top: 0,
+    bottom: 0,
+    right: 0,
+  });
 
-  //   const view = useMemo(() => {
-  //     console.log(1231, value)
-  //     return(
-  // <Form
-  //           // {...addAppointmentFormLayout}
-  //           form={form}
-  //           layout="horizontal"
-  //           name="profile_form"
-  //           labelAlign="right"
-  //           labelWrap="true"
-  //           size="large"
-  //           autoComplete="off"
-  //           onFinish={onFinish}
-  //           onFinishFailed={onFinishFailed}
-  //           className={cx("modal-form")}
-  //           initialValues={{
-  //             fullName: value?.name,
-  //             gender: value?.gender,
-  //             birthDate: value?.birthDate ? dayjs(value?.birthday) : dayjs(),
-  //             ID_Card: value?.CMND,
-  //             age: value.age,
-  //             address: value?.address,
-  //             phone: value?.phone,
-  //             accountbank: value?.account_bank,
-  //             namebank: value?.name_bank,
-  //             dayStart: value?.dayStart ? dayjs(value?.dayStart) : dayjs(),
-  //             dayQuit: value?.dayQuit ? dayjs(value?.dayQuit) : dayjs(),
-  //             position: value?.position,
-  //           }}
-  //         >
-  //           <Form.Item
-  //             name="age"
-  //             label="age"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             hasFeedback
-  //           >
-  //             <Input/>
-  //           </Form.Item>
+  const onStart = (_event, uiData) => {
+    const { clientWidth, clientHeight } = window.document.documentElement;
+    const targetRect = draggleRef.current?.getBoundingClientRect();
+    if (!targetRect) {
+      return;
+    }
+    setBounds({
+      left: -targetRect.left + uiData.x,
+      right: clientWidth - (targetRect.right - uiData.x),
+      top: -targetRect.top + uiData.y,
+      bottom: clientHeight - (targetRect.bottom - uiData.y),
+    });
+  };
 
-  //           <Form.Item
-  //             name="ame"
-  //             label="Name"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "Full name is required!",
-  //               },
-  //             ]}
-  //             hasFeedback
-  //           >
-  //             <Input placeholder={"Please fill full name"} />
-  //           </Form.Item>
-  //           <Form.Item
-  //             name="gender"
-  //             label="Gender"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             hasFeedback
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "Gender is required!",
-  //               },
-  //             ]}
-  //           >
-  //             <Select placeholder="Please select gender">
-  //               <Select.Option value="Male">Male</Select.Option>
-  //               <Select.Option value="Female">Female</Select.Option>
-  //               <Select.Option value="Other">Other</Select.Option>
-  //             </Select>
-  //           </Form.Item>
-  //           <Form.Item
-  //             label="Birth Date"
-  //             name="birthDate"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "Birth date is required!",
-  //               },
-  //             ]}
-  //             hasFeedback
-  //           >
-  //             <DatePicker
-  //               placeholder="Select date"
-  //               format={dateFormat}
-  //               onChange={handleSelectBirthDate}
-  //             />
-  //           </Form.Item>
-  //           <Form.Item
-  //             name="ID_Card"
-  //             label="ID Card"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "ID Card is required!",
-  //               },
-  //             ]}
-  //             hasFeedback
-  //           >
-  //             <Input placeholder="201801234" />
-  //           </Form.Item>
-  //           <Form.Item
-  //             name="address"
-  //             label="Address"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "Address is required!",
-  //               },
-  //             ]}
-  //             hasFeedback
-  //           >
-  //             <Input placeholder="Đà Nẵng" />
-  //           </Form.Item>
-  //           <Form.Item
-  //             name="phone"
-  //             label="Phone"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "Phone is required!",
-  //               },
-  //             ]}
-  //             hasFeedback
-  //           >
-  //             <Input placeholder="0905000001" />
-  //           </Form.Item>
-  //           <Form.Item
-  //             name="accountbank"
-  //             label="Account Bank"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "Account bank is required!",
-  //               },
-  //             ]}
-  //             hasFeedback
-  //           >
-  //             <Input placeholder={value?.account_bank} />
-  //           </Form.Item>
-  //           <Form.Item
-  //             name="namebank"
-  //             label="Name Bank"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "Bank name is required!",
-  //               },
-  //             ]}
-  //             hasFeedback
-  //           >
-  //             <Input placeholder={value?.name_bank} />
-  //           </Form.Item>
-  //           <Form.Item
-  //             label="Day Start"
-  //             name="dayStart"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "Day Start is required!",
-  //               },
-  //             ]}
-  //             hasFeedback
-  //           >
-  //             <DatePicker
-  //               placeholder="Select date"
-  //               format={dateFormat}
-  //               onChange={handleSelectdayStart}
-  //             />
-  //           </Form.Item>
-  //           <Form.Item
-  //             label="Day Quit"
-  //             name="dayQuit"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "Day quit is required!",
-  //               },
-  //             ]}
-  //             hasFeedback
-  //           >
-  //             <DatePicker
-  //               placeholder="Select date"
-  //               format={dateFormat}
-  //               onChange={handleSelectdayQuit}
-  //             />
-  //           </Form.Item>
-  //           <Form.Item
-  //             name="position"
-  //             label="Position"
-  //             labelAlign="right"
-  //             labelCol={{ span: 2 }}
-  //             hasFeedback
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: "Position is required!",
-  //               },
-  //             ]}
-  //           >
-  //             <Select placeholder="Please select Position">
-  //               <Select.Option value="Boss">Boss</Select.Option>
-  //               <Select.Option value="Freshman">Freshman</Select.Option>
-  //               <Select.Option value="Staff">Staff</Select.Option>
-  //             </Select>
-  //           </Form.Item>
-  //           <Form.Item wrapperCol={24}>
-  //             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-  //               <Button type="primary" htmlType="submit">
-  //                 Submit
-  //               </Button>
-  //             </div>
-  //           </Form.Item>
-  //         </Form>
-  //     )
-  //   }, [value])
-  
-
-
-
-
-  // form.setFieldValue('fullName', value?.full_name)
-// const  initialValues={{
-//     fullName: value?.full_Name,
-//     gender: value?.gender,
-//     birthDate: value?.birthDate ? dayjs(value?.birthday) : dayjs(),
-//     ID_Card: value?.CMND,
-//     age: value?.age,
-//     address: value?.address,
-//     phone: value?.phone,
-//     accountbank: value?.account_bank,
-//     namebank: value?.name_bank,
-//     dayStart: value?.dayStart ? dayjs(value?.dayStart) : dayjs(),
-//     dayQuit: value?.dayQuit ? dayjs(value?.dayQuit) : dayjs(),
-//     position: value?.position,
-//   }}
-
-form.setFieldValue('fullName', value?.full_name)
-{console.log(value)}
+  useEffect(() => {
+    // form.setFieldsValue(values);
+  }, [values, form]);
 
   return (
-    
     <div className={cx("team-wrapper")}>
       <Header title="Staff" subtitle="Managing the Staff Members" />
       <Box
@@ -483,14 +271,13 @@ form.setFieldValue('fullName', value?.full_name)
         }}
       >
         {
-          // renderView
           <DataGrid
             onCellDoubleClick={handleDoubleClickCell}
             checkboxSelection
-            // ref={gridRef}
             rows={mockDataTeam}
             columns={columns}
             components={{ Toolbar: CustomToolbar }}
+            className={cx("table")}
           />
         }
       </Box>
@@ -510,47 +297,55 @@ form.setFieldValue('fullName', value?.full_name)
               setDisabled(true);
             }}
           >
-            Create
+            Staff Info
+            <FaUser style={{ marginLeft: 16 }} />
           </div>
         }
         open={openModalStaff}
         onOk={handleOk}
         onCancel={handleCancel}
-        // afterClose={handleClose}
         footer={null}
+        modalRender={(modal) => (
+          <Draggable
+            disabled={disabled}
+            bounds={bounds}
+            onStart={(event, uiData) => onStart(event, uiData)}
+          >
+            <div ref={draggleRef}>{modal}</div>
+          </Draggable>
+        )}
       >
         <Form
-          // {...addAppointmentFormLayout}
+          {...staffInfoLayout}
           form={form}
           layout="horizontal"
-          name="profile_form"
+          name="staff_form"
           labelAlign="right"
           labelWrap="true"
-          size="large"
+          size="middle"
           autoComplete="off"
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           className={cx("modal-form")}
-          
-          
+          initialValues={{
+            fullName: values?.full_name,
+            gender: values?.gender,
+            birthDate: values?.birthday ? dayjs(values?.birthday) : dayjs(),
+            ID_Card: values?.CMND,
+            address: values?.address,
+            phone: values?.phone,
+            accountbank: values?.account_bank,
+            namebank: values?.name_bank,
+            dayStart: values?.dayStart ? dayjs(values?.dayStart) : dayjs(),
+            dayQuit: values?.dayQuit ? dayjs(values?.dayQuit) : dayjs(),
+            position: values?.position,
+          }}
         >
-          {console.log(value)}
-          <Form.Item
-            name="age"
-            label="age"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
-            hasFeedback
-          >
-
-            <Input />
-          </Form.Item>
+          {console.log(values)}
 
           <Form.Item
             name="fullName"
             label="Full Name"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             rules={[
               {
                 required: true,
@@ -559,14 +354,14 @@ form.setFieldValue('fullName', value?.full_name)
             ]}
             hasFeedback
           >
-
-            <Input placeholder={"Please fill full name"} value={value?.full_Name}/>
+            <Input
+              placeholder={"Please fill full name"}
+              disabled={disabledCreate}
+            />
           </Form.Item>
           <Form.Item
             name="gender"
             label="Gender"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             hasFeedback
             rules={[
               {
@@ -575,7 +370,10 @@ form.setFieldValue('fullName', value?.full_name)
               },
             ]}
           >
-            <Select placeholder="Please select gender">
+            <Select
+              placeholder="Please select gender"
+              disabled={disabledCreate}
+            >
               <Select.Option value="Male">Male</Select.Option>
               <Select.Option value="Female">Female</Select.Option>
               <Select.Option value="Other">Other</Select.Option>
@@ -584,8 +382,6 @@ form.setFieldValue('fullName', value?.full_name)
           <Form.Item
             label="Birth Date"
             name="birthDate"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             rules={[
               {
                 required: true,
@@ -598,13 +394,12 @@ form.setFieldValue('fullName', value?.full_name)
               placeholder="Select date"
               format={dateFormat}
               onChange={handleSelectBirthDate}
+              disabled={disabledCreate}
             />
           </Form.Item>
           <Form.Item
             name="ID_Card"
             label="ID Card"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             rules={[
               {
                 required: true,
@@ -613,13 +408,11 @@ form.setFieldValue('fullName', value?.full_name)
             ]}
             hasFeedback
           >
-            <Input placeholder="201801234" />
+            <Input placeholder="201801234" disabled={disabledCreate} />
           </Form.Item>
           <Form.Item
             name="address"
             label="Address"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             rules={[
               {
                 required: true,
@@ -628,13 +421,11 @@ form.setFieldValue('fullName', value?.full_name)
             ]}
             hasFeedback
           >
-            <Input placeholder="Đà Nẵng" />
+            <Input placeholder="Đà Nẵng" disabled={disabledCreate} />
           </Form.Item>
           <Form.Item
             name="phone"
             label="Phone"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             rules={[
               {
                 required: true,
@@ -643,13 +434,11 @@ form.setFieldValue('fullName', value?.full_name)
             ]}
             hasFeedback
           >
-            <Input placeholder="0905000001" />
+            <Input placeholder="0905000001" disabled={disabledCreate} />
           </Form.Item>
           <Form.Item
             name="accountbank"
             label="Account Bank"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             rules={[
               {
                 required: true,
@@ -658,13 +447,14 @@ form.setFieldValue('fullName', value?.full_name)
             ]}
             hasFeedback
           >
-            <Input placeholder={value?.account_bank} />
+            <Input
+              placeholder={values?.account_bank}
+              disabled={disabledCreate}
+            />
           </Form.Item>
           <Form.Item
             name="namebank"
             label="Name Bank"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             rules={[
               {
                 required: true,
@@ -673,13 +463,11 @@ form.setFieldValue('fullName', value?.full_name)
             ]}
             hasFeedback
           >
-            <Input placeholder={value?.name_bank} />
+            <Input placeholder={values?.name_bank} disabled={disabledCreate} />
           </Form.Item>
           <Form.Item
             label="Day Start"
             name="dayStart"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             rules={[
               {
                 required: true,
@@ -692,13 +480,12 @@ form.setFieldValue('fullName', value?.full_name)
               placeholder="Select date"
               format={dateFormat}
               onChange={handleSelectdayStart}
+              disabled={disabledCreate}
             />
           </Form.Item>
           <Form.Item
             label="Day Quit"
             name="dayQuit"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             rules={[
               {
                 required: true,
@@ -711,13 +498,12 @@ form.setFieldValue('fullName', value?.full_name)
               placeholder="Select date"
               format={dateFormat}
               onChange={handleSelectdayQuit}
+              disabled={disabledCreate}
             />
           </Form.Item>
           <Form.Item
             name="position"
             label="Position"
-            labelAlign="right"
-            labelCol={{ span: 2 }}
             hasFeedback
             rules={[
               {
@@ -726,17 +512,29 @@ form.setFieldValue('fullName', value?.full_name)
               },
             ]}
           >
-            <Select placeholder="Please select Position">
+            <Select
+              placeholder="Please select Position"
+              disabled={disabledCreate}
+            >
               <Select.Option value="Boss">Boss</Select.Option>
               <Select.Option value="Freshman">Freshman</Select.Option>
               <Select.Option value="Staff">Staff</Select.Option>
             </Select>
           </Form.Item>
+
           <Form.Item wrapperCol={24}>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
+              {disabledCreate ? (
+                <Button type="primary" disabled></Button>
+              ) : form.getFieldValue("gender") == "" ? (
+                <Button type="primary" onClick={handleAdd}>
+                  Add
+                </Button>
+              ) : (
+                <Button type="primary" onClick={handleSumbit}>
+                  Edit
+                </Button>
+              )}
             </div>
           </Form.Item>
         </Form>
@@ -745,4 +543,4 @@ form.setFieldValue('fullName', value?.full_name)
   );
 };
 
-export default Team;
+export default Staff;

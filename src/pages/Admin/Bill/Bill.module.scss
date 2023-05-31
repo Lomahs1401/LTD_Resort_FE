@@ -4,9 +4,15 @@
 .modal-form {
   max-width: 600px;
 }
+.form-attributes{
+ 
+  &__item{
+    margin: 0;
+  }
+}
 .input:disabled {
   font-weight: 700 !important;
 }
 .table {
-  font-size: larger !important;
+    font-size: larger !important;
 }
