@@ -11,6 +11,9 @@ const initState = {
     bookmarkRooms: localStorage.getItem('bookmark_rooms') == null
         ? []
         : JSON.parse(localStorage.getItem('bookmark_rooms')),
+    roomTypes: localStorage.getItem('room_types') == null
+        ? []
+        : JSON.parse(localStorage.getItem('room_types')),
 }
 
 const rootReducer = (state = initState, action) => {
@@ -102,6 +105,30 @@ const rootReducer = (state = initState, action) => {
                 ...state,
                 bookmarkRooms: newBookmarkRooms,
             };
+        case 'roomType/addRoomType':
+            localStorage.setItem('room_types', JSON.stringify([
+                ...state.roomTypes,
+                action.payload,
+            ]))
+            return {
+                ...state,
+                roomTypes: [
+                    ...state.roomTypes,
+                    action.payload,
+                ]    
+            }
+        case 'roomType/removeRoomType':
+            const newRoomTypes = state.roomTypes.filter((roomType) => {
+                return roomType.id !== action.payload;
+            });
+            
+            localStorage.setItem('room_types', JSON.stringify(newRoomTypes));
+            
+            return {
+                ...state,
+                roomTypes: newRoomTypes,
+            };
+
         default:
             return state;
     }
