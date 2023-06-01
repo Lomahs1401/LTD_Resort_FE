@@ -80,7 +80,6 @@ const BookingCard = ({
           ranking: ranking,
           type: type,
           capacity: capacity,
-          listRooms: totalRooms,
           area: area
         }));
         setToggleFavourite(true);
