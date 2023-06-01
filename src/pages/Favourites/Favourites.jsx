@@ -86,9 +86,7 @@ function Favourites() {
                         ranking={favouriteRoom.ranking}
                         type={favouriteRoom.type}
                         capacity={favouriteRoom.capacity}
-                        listRooms={favouriteRoom.listRooms}
                         area={favouriteRoom.area}
-                        totalReviews={54}
                         disableFavouriteCheck={true}
                       />
                     )
@@ -120,7 +118,6 @@ function Favourites() {
                         price={favouriteService.price}
                         ranking={favouriteService.ranking}
                         type={favouriteService.type}
-                        totalReviews={54}
                         disableFavouriteCheck={true}
                       />
                     )
