@@ -18,10 +18,12 @@ import styles from "./Staff.module.scss";
 import classNames from "classnames/bind";
 import { FaUser } from "react-icons/fa";
 import Draggable from "react-draggable";
-import moment from 'moment';
+import AuthUser from "../../../utils/AuthUser";
+
 const cx = classNames.bind(styles);
 
 const Staff = () => {
+  const {http} = AuthUser();
   const staffInfoLayout = {
     labelCol: {
       span: 6,
@@ -33,6 +35,7 @@ const Staff = () => {
 
   const [openModalStaff, setOpenModalStaff] = useState(false);
   const [values, setValues] = useState({});
+  const [listStaff, setListStaff] = useState([]);
 
   const dateFormat = "YYYY-MM-DD";
   const theme = useTheme();
@@ -90,7 +93,7 @@ const Staff = () => {
     form.setFieldValue("fullName", row.full_name);
     form.setFieldValue("gender", row.gender);
 
-    form.setFieldValue("birthDate",null);
+    form.setFieldValue("birthDate", null);
     form.setFieldValue("phone", row.phone);
     form.setFieldValue("ID_Card", row.CMND);
     form.setFieldValue("address", row.address);
@@ -232,10 +235,24 @@ const Staff = () => {
       bottom: clientHeight - (targetRect.bottom - uiData.y),
     });
   };
+  // api
 
-  useEffect(() => {
-    // form.setFieldsValue(values);
-  }, [values, form]);
+  // useEffect(() => {
+
+  //   const fetchData = () =>{
+  //     http.get('/admin/list-customer')
+  //     .then((resolve) => {
+  //       console.log(resolve);
+  //       setListStaff(resolve.data.list_customers);
+  //     })
+  //     .catch((reject) => {
+  //       console.log(reject);
+  //     })
+  //   }
+  //   // form.setFieldsValue(values);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+    
+  // }, []);
 
   return (
     <div className={cx("team-wrapper")}>

@@ -8,7 +8,7 @@ import Dashboard from "./Dashboard/Dashboard";
 import Staff from "./Staff/Staff";
 import ViewStaff from "./ViewStaff/ViewStaff";
 import CreateStaff from "./CreateStaff/CreateStaff";
-import ManageAdmin from "./ManageAdmin/ManageAdmin";
+import ManageAdmin from "./ManageAdmin/ManageAdmin"
 import Customer from "./Customer/Customer";
 import Bill from "./Bill/Bill";
 import Bar from "./Bar/Bar";
