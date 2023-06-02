@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import styles from './BookingProgress.module.scss'
 import classNames from "classnames/bind";
 import { useSelector } from 'react-redux';
@@ -21,15 +21,27 @@ const cx = classNames.bind(styles)
 const BookingProgress = () => {
   
   const { roomTypeId } = useParams();
-  const { http, user } = AuthUser();
+  const { user } = AuthUser();
   const avatar = useSelector(avatarSelector);
   const [current, setCurrent] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState([]);
+
+  const handleStepCompletion = () => {
+    if (!completedSteps.includes(current)) {
+      setCompletedSteps([...completedSteps, current]); // Thêm chỉ số của step hiện tại vào danh sách bước đã hoàn thành
+    }
+  };
 
   const items = [
     {
       title: 'Step 1',
-      subTitle: 'Booking Time',
-      content: <Step1 />,
+      subTitle: 'Reservation Time',
+      content: <Step1 
+        itemsLength={3}
+        current={current} 
+        setCurrent={setCurrent} 
+        handleStepCompletion={handleStepCompletion}
+      />,
       icon: <BsBuildingFillCheck />,
     },
     {
@@ -48,12 +60,9 @@ const BookingProgress = () => {
 
   const onChange = (value) => {
     setCurrent(value);
+    // Set disabled state for previous steps
+    // setCompletedSteps((prevCompletedSteps) => prevCompletedSteps.slice(0, value));
   };
-
-  useEffect(() => {
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <div className={cx("booking-room-wrapper")}>
@@ -68,8 +77,12 @@ const BookingProgress = () => {
         </Link>
         <Steps
           current={current}
-          items={items}
+          items={items.map((item, index) => ({
+            ...item,
+            disabled: index !== current, // Chỉ disable các step item khác với step hiện tại
+          }))}
           type="navigation"
+          direction='horizontal'
           onChange={onChange}
         />
         <div className={cx("content")}>{items[current].content}</div>
