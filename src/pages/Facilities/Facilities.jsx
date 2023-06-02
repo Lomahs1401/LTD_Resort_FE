@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './Facilities.module.scss'
 import classNames from "classnames/bind";
 import facilities from '../../img/facilities.jpg'
-import poolside_bar from '../../img/poolside_bar.jpg'
+import restaurants from '../../img/restaurants.jpg'
 import testimonial1 from '../../img/testimonial1.png'
 import { BsFillCalendarCheckFill } from 'react-icons/bs'
 import { ImQuotesLeft } from 'react-icons/im'
@@ -100,7 +100,7 @@ const Facilities = () => {
         </p>
         <div className={cx("section-overview__content")}>
           <div className={cx("content-left")}>
-            <img src={poolside_bar} alt="Room" className={cx("content-img")} />
+            <img src={restaurants} alt="Room" className={cx("content-img")} />
           </div>
           <div className={cx("content-right")}>
             <h1 className={cx("content-right__title")}>Luxury redefined</h1>

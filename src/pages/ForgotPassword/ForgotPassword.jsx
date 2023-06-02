@@ -5,6 +5,9 @@ import logo from '../../img/logo.png'
 import facebookIcon from '../../img/facebook.png'
 import googleIcon from '../../img/google.png'
 import gif_cat from '../../img/cat.gif'
+import carousel1 from '../../img/carousel1.png'
+import carousel2 from '../../img/carousel2.png'
+import carousel3 from '../../img/carousel3.png'
 import { Form, Button, Input, Divider, Modal, message } from 'antd'
 import ImageSlider from '../../components/ImageSlider/ImageSlider';
 import { BiArrowBack } from 'react-icons/bi'
@@ -15,9 +18,9 @@ const cx = classNames.bind(styles);
 const Login = () => {
 
   const slides = [
-    { url: 'http://localhost:3000/img/carousel1.png', title: 'Carousel 1' },
-    { url: 'http://localhost:3000/img/carousel2.png', title: 'Carousel 2' },
-    { url: 'http://localhost:3000/img/carousel3.png', title: 'Carousel 3' },
+    { url: carousel1, title: 'Carousel 1' },
+    { url: carousel2, title: 'Carousel 2' },
+    { url: carousel3, title: 'Carousel 3' },
   ]
 
   const forgotPasswormFormLayout = {

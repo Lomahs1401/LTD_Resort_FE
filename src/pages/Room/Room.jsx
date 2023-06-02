@@ -132,8 +132,6 @@ const Room = () => {
         </div>
       </div>
 
-      
-
       <Footer />
 
     </div>

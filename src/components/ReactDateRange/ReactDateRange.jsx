@@ -1,35 +1,27 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styles from './ReactDateRange.module.scss'
 import classNames from "classnames/bind";
 import { DateRange } from 'react-date-range';
-import { addDays, format } from "date-fns"
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
+import * as locales from 'react-date-range/dist/locale';
 
 const cx = classNames.bind(styles);
 
-const ReactDateRange = () => {
+const ReactDateRange = ({ locale, rangeDate, setRangeDate }) => {
 
-  const [rangeDate, setRangeDate] = useState([{
-    startDate: new Date(),
-    endDate: addDays(new Date(), 7), 
-    key: "selection"
-  }]);
+  const minDate = new Date();
 
   return (
-    <div className={cx("calendar-wrapper")}>
-      <input 
-        value={`${format(rangeDate[0].startDate, "dd-MM-yyyy")} to ${format(rangeDate[0].endDate, "dd-MM-yyyy")}`} 
-        readOnly 
-      />
+    <div className={cx("date-range-wrapper")}>
       <DateRange
-        onChange={(item) => setRangeDate([item.selection])}
-        editableDateInputs
-        moveRangeOnFirstSelection 
-        ranges={rangeDate}
-        months={2}
-        direction='horizontal'
         className={cx("date-range-component")}
+        direction='horizontal'
+        fixedHeight={true}
+        locale={locales[locale]}
+        months={2}
+        moveRangeOnFirstSelection 
+        minDate={minDate}
+        ranges={rangeDate}
+        onChange={(item) => setRangeDate([item.selection])}
       />
     </div>
   )
