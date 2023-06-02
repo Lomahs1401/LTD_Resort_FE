@@ -135,3 +135,24 @@ export const removeRoomType = (data) => {
         payload: data,
     }
 }
+
+export const addCheckinDate = (data) => {
+    return {
+        type: 'checkinDate/addCheckinDate',
+        payload: data,
+    }
+}
+
+export const addCheckoutDate = (data) => {
+    return {
+        type: 'checkoutDate/addCheckoutDate',
+        payload: data,
+    }
+}
+
+export const nextProgressStep = (data) => {
+    return {
+        type: 'progressStep/nextProgressStep',
+        payload: data,
+    }
+}

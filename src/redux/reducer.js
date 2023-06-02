@@ -14,6 +14,15 @@ const initState = {
     roomTypes: localStorage.getItem('room_types') == null
         ? []
         : JSON.parse(localStorage.getItem('room_types')),
+    checkinDate: localStorage.getItem('checkin_date') == null
+        ? new Date()
+        : JSON.parse(localStorage.getItem('checkin_date')),
+    checkoutDate: localStorage.getItem('checkout_date') == null
+        ? new Date()
+        : JSON.parse(localStorage.getItem('checkout_date')),
+    progressStep: localStorage.getItem('progress_step') == null
+        ? 0
+        : JSON.parse(localStorage.getItem('progress_step'))
 }
 
 const rootReducer = (state = initState, action) => {
@@ -128,7 +137,24 @@ const rootReducer = (state = initState, action) => {
                 ...state,
                 roomTypes: newRoomTypes,
             };
-
+        case 'checkinDate/addCheckinDate':
+            localStorage.setItem('checkin_date', JSON.stringify(action.payload))
+            return {
+                ...state,
+                checkinDate: action.payload,   
+            }
+        case 'checkoutDate/addCheckoutDate':
+            localStorage.setItem('checkout_date', JSON.stringify(action.payload))
+            return {
+                ...state,
+                checkoutDate: action.payload,
+            }
+        case 'progressStep/nextProgressStep':
+            localStorage.setItem('progress_step', JSON.stringify(action.payload))
+            return {
+                ...state,
+                progressStep: action.payload,
+            }
         default:
             return state;
     }

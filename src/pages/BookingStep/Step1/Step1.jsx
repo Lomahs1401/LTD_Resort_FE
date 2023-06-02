@@ -7,6 +7,12 @@ import ReactDefinedRange from '../../../components/ReactDefinedRange/ReactDefine
 import ReactDateRange from '../../../components/ReactDateRange/ReactDateRange';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
+import booking_logo from '../../../img/booknow.png' 
+import checkin from "../../../img/checkin.jpg"
+import checkout from "../../../img/chekout.png"
+import { BsFillCheckCircleFill } from 'react-icons/bs'
+import { useDispatch } from 'react-redux';
+import { addCheckinDate, addCheckoutDate, nextProgressStep } from '../../../redux/actions';
 
 const cx = classNames.bind(styles);
 
@@ -62,6 +68,7 @@ const nameMapper = {
 const Step1 = ({ itemsLength, current, setCurrent, handleStepCompletion }) => {
 
   const [locale, setLocale] = useState('enUS');
+  const dispatch = useDispatch();
 
   const [rangeDate, setRangeDate] = useState([{
     startDate: new Date(),
@@ -85,20 +92,26 @@ const Step1 = ({ itemsLength, current, setCurrent, handleStepCompletion }) => {
       return; // Nếu đang ở step cuối cùng, không thực hiện gì
     }
     setCurrent(current + 1);
+    dispatch(nextProgressStep(current + 1));
   };
 
   const handleBooking = () => {
     handleStepCompletion();
     next();
+    dispatch(addCheckinDate(format(rangeDate[0].startDate, "dd/MM/yyyy")))
+    dispatch(addCheckoutDate(format(rangeDate[0].endDate, "dd/MM/yyyy")))
   }
 
   return (
     <div className={cx("booking-step-wrapper")}>
-      <h1>Choose a booking period</h1>
+      <div className={cx("booking-title")}>
+        <img src={booking_logo} alt='Booking icon'/>
+        <h1>Choose Reservation Date</h1>
+      </div>
       <div className={cx("locale-date-range")}>
         <Select
           showSearch
-          placeholder="Select language"
+          placeholder="Select Language"
           optionFilterProp="children"
           filterOption={(input, option) =>
             (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
@@ -116,23 +129,27 @@ const Step1 = ({ itemsLength, current, setCurrent, handleStepCompletion }) => {
         </div>
         <div className={cx("date-range-wrapper__right")}>
           <div className={cx("checkin-time")}>
-            <h1>Checkin Date</h1>
-            <h3>
-              Start Date: {format(rangeDate[0].startDate, "dd/MM/yyyy")}
-            </h3>
+            <div className={cx("checkin-time__title")}>
+              <img src={checkin} alt="checkin" />
+              <h1>Check-in Date</h1>
+            </div>
+            <div className={cx("checkin-time__data")}>
+              <h3>Start Date: <span>{format(rangeDate[0].startDate, "dd/MM/yyyy")}</span></h3>
+            </div>
           </div>
           <div className={cx("checkout-time")}>
-            <h1>Checkout Date</h1>
-            <h3>
-              End Date: {format(rangeDate[0].endDate, "dd/MM/yyyy")}
-            </h3>
+            <div className={cx("checkout-time__title")}>
+              <img src={checkout} alt="checkout" />
+              <h1>Check-out Date</h1>
+            </div>
+            <div className={cx("checkout-time__data")}>
+              <h3>End Date: <span>{format(rangeDate[0].endDate, "dd/MM/yyyy")}</span></h3>
+            </div>
           </div>
           <div className={cx("booking")}>
-            <button 
-              className={cx("btn-booking")}
-              onClick={handleBooking}
-            >
-              <p>Booking</p>
+            <button className={cx("btn-booking")} onClick={handleBooking}>
+              <BsFillCheckCircleFill size={20} />
+              <p>Confirm Reservation Date</p>
             </button>
           </div>
         </div>
