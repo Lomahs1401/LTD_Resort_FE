@@ -38,6 +38,7 @@ function Favourites() {
                 toggleState === 1
                   ? cx("tabs__active")
                   : cx("tabs")
+              }
               onClick={() => toggleTab(1)}
             >
               <div>
