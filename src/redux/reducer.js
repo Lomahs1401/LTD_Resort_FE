@@ -8,6 +8,12 @@ const initState = {
     avatar: localStorage.getItem('avatar') == null 
         ? '' 
         : JSON.parse(localStorage.getItem('avatar')),
+    bookmarkRooms: localStorage.getItem('bookmark_rooms') == null
+        ? []
+        : JSON.parse(localStorage.getItem('bookmark_rooms')),
+    roomTypes: localStorage.getItem('room_types') == null
+        ? []
+        : JSON.parse(localStorage.getItem('room_types')),
 }
 
 const rootReducer = (state = initState, action) => {
@@ -76,6 +82,53 @@ const rootReducer = (state = initState, action) => {
                 ...state,
                 avatar: action.payload,
             }
+        case 'room/bookmarkRoom':
+            localStorage.setItem('bookmark_rooms', JSON.stringify([
+                ...state.bookmarkRooms,
+                action.payload,
+            ]))
+            return {
+                ...state,
+                bookmarkRooms: [
+                    ...state.bookmarkRooms,
+                    action.payload,
+                ]    
+            }
+        case 'room/unmarkRoom':
+            const newBookmarkRooms = state.bookmarkRooms.filter((bookmarkRoom) => {
+                return bookmarkRoom.id !== action.payload;
+            });
+            
+            localStorage.setItem('bookmark_rooms', JSON.stringify(newBookmarkRooms));
+            
+            return {
+                ...state,
+                bookmarkRooms: newBookmarkRooms,
+            };
+        case 'roomType/addRoomType':
+            localStorage.setItem('room_types', JSON.stringify([
+                ...state.roomTypes,
+                action.payload,
+            ]))
+            return {
+                ...state,
+                roomTypes: [
+                    ...state.roomTypes,
+                    action.payload,
+                ]    
+            }
+        case 'roomType/removeRoomType':
+            const newRoomTypes = state.roomTypes.filter((roomType) => {
+                return roomType.id !== action.payload;
+            });
+            
+            localStorage.setItem('room_types', JSON.stringify(newRoomTypes));
+            
+            return {
+                ...state,
+                roomTypes: newRoomTypes,
+            };
+
         default:
             return state;
     }

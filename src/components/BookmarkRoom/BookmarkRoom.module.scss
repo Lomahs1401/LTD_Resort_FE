@@ -1,0 +1,30 @@
+.bookmark-room-wrapper {
+
+    .room-item {
+        > p {
+            font-weight: 600;
+            font-size: 18px;
+            margin-inline: 4px;
+        }
+
+        border-radius: 10px;
+        transition: 0.3s;
+
+        &:hover {
+            cursor: pointer;
+            background-color: #e3dada;
+        }
+
+        &__booked {
+            > p {
+                font-weight: 600;
+                font-size: 18px;
+                margin-inline: 4px;
+            }
+
+            border-radius: 10px;
+            background-color: #ff8682;
+            transition: 0.3s;
+        }
+    }
+}

@@ -1,0 +1,57 @@
+.booking-room-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border-radius: 10px;
+    border: 1px solid #8DD3BB;
+    box-shadow: rgba(149, 157, 165, 0.7) 4px 8px 16px;
+    margin-inline: 2%;
+
+    > h1 {
+        width: 100%;
+        text-align: center;
+        vertical-align: middle;
+        padding-block: 8px;
+        margin-block: 0;
+        border-bottom: 1px solid #8DD3BB;
+        background-color: #8DD3BB;
+    }
+}
+
+.booking-room-detail {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 16px 20px 12px;
+
+    &__floor {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #8DD3BB;
+
+        > h3 {
+            margin: 16px 24px;
+            font-size: 20px;
+        }
+
+        &:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+    }
+
+    &__room {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+}
+

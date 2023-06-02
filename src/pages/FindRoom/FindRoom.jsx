@@ -2,19 +2,9 @@ import React, { useState, useEffect } from 'react'
 import styles from './FindRoom.module.scss'
 import classNames from "classnames/bind";
 import findRooms from '../../img/FindRooms.png'
-import overviewRoom1 from '../../img/overviewRoom1.png'
-import overviewRoom2 from '../../img/overviewRoom2.png'
-import overviewRoom3 from '../../img/overviewRoom3.png'
-import overviewRoom4 from '../../img/overviewRoom4.png'
-import overviewRoom5 from '../../img/overviewRoom5.png'
-import { BsFillCalendar2CheckFill } from 'react-icons/bs'
-import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
-import { Form, Divider, Slider, DatePicker, Select, Collapse, Checkbox, Pagination } from 'antd';
-import { FaBed, FaDollarSign, FaUser } from 'react-icons/fa';
-import { BiSearch } from "react-icons/bi"
-import BookingCard from '../../components/BookingCard/BookingCard';
-import dayjs from 'dayjs';
+import { Divider, Slider, Collapse, Checkbox, Pagination } from 'antd';
+import { FaBed, FaDollarSign } from 'react-icons/fa';
 import Header from '../../layouts/Header/Header';
 import AuthUser from '../../utils/AuthUser';
 import currency from '../../utils/currency';
@@ -25,21 +15,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addAvatar } from '../../redux/actions';
 import { avatarSelector } from '../../redux/selectors';
 import { toast } from 'react-toastify';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import Footer from '../../layouts/Footer/Footer';
+import BookingCard from '../../components/BookingCard/BookingCard';
 
 const { Panel } = Collapse;
 const cx = classNames.bind(styles);
 
 const FindRoom = () => {
-  const [form] = Form.useForm();
-
   const { http, user } = AuthUser();
 
-  // Fetch list room types state
-  const [listRoomTypes, setListRoomTypes] = useState([]);
+  // Fetch list top 5 lowest price of room type (Overview section)
+  const [listOverviewRoomTypes, setListOverviewRoomTypes] = useState([]);
 
   // Fetch avatar state
   const [loading, setLoading] = useState(false);
-  
+
   // Create a reference from a Google Cloud Storage URI
   const avatar = useSelector(avatarSelector);
   const avatarRef = ref(storage, avatar ? avatar : user.avatar);
@@ -59,11 +50,13 @@ const FindRoom = () => {
   const [roomTypes, setRoomTypes] = useState([]);
 
   // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const POST_PER_PAGE = 4;
-  const lastPostIndex = currentPage * POST_PER_PAGE;
-  const firstPostIndex = lastPostIndex - POST_PER_PAGE;
-  const currentPost = listRoomTypes.slice(firstPostIndex, lastPostIndex);
+  const pageSizeOptions = [3, 4, 5];
+  const DEFAULT_CURRENT_PAGE_NUMBER = 1;
+  const DEFAULT_PAGE_SIZE_NUMBER = 4;
+  const [listRoomTypes, setListRoomTypes] = useState([]); // Fetch list room types state
+  const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE_NUMBER);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_NUMBER);
+  const [totalRoomTypes, setTotalRoomTypes] = useState(0);
 
   // reload "Favourites" in header
   const [, setReloadFavouriteItem] = useState(false);
@@ -74,6 +67,7 @@ const FindRoom = () => {
   const [filterRoomSize, setFilterRoomSize] = useState(0);
   const [filterBedroomType, setFilterBedroomType] = useState([]);
   const [filterRoomType, setFilterRoomType] = useState([]);
+  const [listFilterRoomTypes, setListFilterRoomTypes] = useState([]);
 
   const bedroomTypeOptions = bedroomTypes.map((bedroomType) => {
     return {
@@ -88,21 +82,6 @@ const FindRoom = () => {
       value: roomType,
     }
   })
-
-  // --------------------------     Find Room     --------------------------
-
-  const disabledDate = (current) => {
-    // Can not select days before today and today
-    return current && current < dayjs().startOf('day');
-  };
-
-  const handleSubmitFindRoom = (values) => {
-    console.log('Success:', values);
-  };
-
-  const handleSubmitFindRoomFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-  };
 
   // --------------------------     Filter Room Type     --------------------------
 
@@ -133,7 +112,7 @@ const FindRoom = () => {
         formData.append('bedroom_type[]', bedroomType);
       })
     } else {
-        formData.append('bedroom_type[]', []);
+      formData.append('bedroom_type[]', []);
     }
 
     if (filterRoomType.length !== 0) {
@@ -144,14 +123,17 @@ const FindRoom = () => {
       formData.append('room_type[]', []);
     }
 
+    console.log(filterRoomType);
+
     if (
-      (filterPrice === 0 || filterPrice === lowestPrice) && 
+      (filterPrice === 0 || filterPrice === lowestPrice) &&
       (filterRoomSize === 0 || filterRoomSize === smallestRoomSize) &&
       (filterBedroomType.length === 0) && (filterRoomType.length === 0)
     ) {
       http.get('/auth/room-types')
         .then((resolve) => {
-          setListRoomTypes(resolve.data.list_room_types);
+          setListFilterRoomTypes([]);
+          setTotalRoomTypes(resolve.data.list_room_types.length)
           setCurrentPage(1);
           toast.success('Filter successfully!', {
             position: "top-right",
@@ -180,7 +162,8 @@ const FindRoom = () => {
     } else {
       http.post('/auth/room-types/filter', formData)
         .then((resolve) => {
-          setListRoomTypes(resolve.data.list_filter_room_type)
+          console.log(resolve);
+          setListFilterRoomTypes(resolve.data.list_filter_room_type);
           setCurrentPage(1);
           toast.success('Filter successfully!', {
             position: "top-right",
@@ -211,14 +194,22 @@ const FindRoom = () => {
 
   // --------------------------     Paginate     --------------------------
 
-  const handleClickPaginate = (page) => {
+  const handleClickPaginate = (page, pageSize) => {
+    console.log(page, pageSize);
     setCurrentPage(page);
+  }
+
+  const handleShowSizeChange = (currentPage, pageSize) => {
+    console.log(currentPage, pageSize);
+    setCurrentPage(currentPage);
+    setPageSize(pageSize);
   }
 
   // --------------------------     Fetch API     --------------------------
 
   useEffect(() => {
     const fetchAvatar = () => {
+      console.log(user);
       getDownloadURL(avatarRef).then(url => {
         dispatch(addAvatar(url));
       })
@@ -226,72 +217,129 @@ const FindRoom = () => {
 
     fetchAvatar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [avatar])
+  }, [])
 
   useEffect(() => {
     const fetchData = () => {
-      http.get('/auth/room-types')
+      http.get('/auth/room-types/total')
         .then((resolve) => {
-          console.log(resolve);
-          setListRoomTypes(resolve.data.list_room_types);
+          console.log('Total Room Types: ', resolve);
+          setTotalRoomTypes(resolve.data.total_room_types);
         })
         .catch((reject) => {
           console.log(reject);
         })
-  
+
+      http.get('/auth/room-types/list-lowest-price')
+        .then((resolve) => {
+          console.log('List Lowest Price: ', resolve);
+          setListOverviewRoomTypes(resolve.data.list_lowest_price);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
+
       http.get('/auth/room-types/lowest-price')
         .then((resolve) => {
+          console.log('Lowest Price: ', resolve)
           setLowestPrice(resolve.data.lowest_price);
+          setFilterPrice(resolve.data.lowest_price);
         })
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/highest-price')
         .then((resolve) => {
+          console.log('Highest Price: ', resolve)
           setHighestPrice(resolve.data.highest_price);
         })
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/smallest-size')
         .then((resolve) => {
+          console.log('Smallest Room Size: ', resolve)
           setSmallestRoomSize(resolve.data.smallest_room_size);
+          setFilterRoomSize(resolve.data.smallest_room_size);
         })
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/biggest-size')
         .then((resolve) => {
+          console.log('Biggest Room Size: ', resolve)
           setBiggestRoomSize(resolve.data.biggest_room_size);
         })
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/bedroom-names')
         .then((resolve) => {
+          console.log('Bedroom Type Names: ', resolve)
           setBedRoomTypes(resolve.data.bedroom_type_names);
         })
         .catch((reject) => {
           console.log(reject);
         })
-  
+
       http.get('/auth/room-types/room-names')
         .then((resolve) => {
+          console.log('Room Type Names: ', resolve)
           setRoomTypes(resolve.data.room_type_names);
         })
         .catch((reject) => {
           console.log(reject);
         })
     }
-      
+
     fetchData();
     setLoading(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    const fetchData = () => {
+      if (listFilterRoomTypes.length === 0) {
+        if (
+          filterPrice !== lowestPrice || 
+          filterRoomSize !== smallestRoomSize ||
+          filterBedroomType.length !== 0 || 
+          filterRoomType.length !== 0
+        ) {
+          setListRoomTypes([]);
+          setTotalRoomTypes(0);
+        } else {
+          http.post(`/auth/room-types/paginate/${currentPage}/${pageSize}`, {
+            list_filter_room_types: listFilterRoomTypes
+          })
+            .then((resolve) => {
+              setListRoomTypes(resolve.data.list_room_types);
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+        }
+      } else {
+        http.post(`/auth/room-types/paginate/${currentPage}/${pageSize}`, {
+          list_filter_room_types: listFilterRoomTypes
+        })
+          .then((resolve) => {
+            setListRoomTypes(resolve.data.list_room_types);
+            setTotalRoomTypes(listFilterRoomTypes.length);
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+      }
+    }
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, pageSize, listFilterRoomTypes])
 
   if (!loading) {
     return (
@@ -313,10 +361,12 @@ const FindRoom = () => {
             </div>
           </nav>
           <div className={cx("image-container")}>
-            <img
+            <LazyLoadImage
+              key={findRooms}
               src={findRooms}
-              alt="Pool outside"
-              className={cx("header-image")}
+              alt='Pool outside'
+              effect='blur'
+              placeholderSrc={findRooms}
             />
           </div>
         </div>
@@ -328,193 +378,20 @@ const FindRoom = () => {
 
         <div className={cx("section-overview")}>
           <div className={cx("section-overview__list-rooms")}>
-            <OverviewCard
-              image={overviewRoom1}
-              bedroomType={'Single Bedroom'}
-              roomType={'Superior Room'}
-              price={'700.000 VND'}
-              ranking={5}
-              type={'Room'}
-              description={'Book room'}
-            />
-            <OverviewCard
-              image={overviewRoom2}
-              bedroomType={'Twin Bedroom'}
-              roomType={'Superior Room'}
-              price={'600.000 VND'}
-              ranking={5}
-              description={'Book room'}
-            />
-            <OverviewCard
-              image={overviewRoom3}
-              bedroomType={'Double Bedroom'}
-              roomType={'Superior Room'}
-              price={'700.000 VND'}
-              ranking={5}
-              description={'Book room'}
-            />
-            <OverviewCard
-              image={overviewRoom4}
-              bedroomType={'Triple Bedroom'}
-              roomType={'Superior Room'}
-              price={'700.000 VND'}
-              ranking={5}
-              description={'Book room'}
-            />
-            <OverviewCard
-              image={overviewRoom5}
-              bedroomType={'Quad Bedroom'}
-              roomType={'Superior Room'}
-              price={'700.000 VND'}
-              ranking={5}
-              description={'Book room'}
-            />
+            {listOverviewRoomTypes.map((overviewRoomType) => {
+              return (
+                <OverviewCard
+                  key={overviewRoomType.id}
+                  id={overviewRoomType.id}
+                  image={overviewRoomType.image}
+                  title={overviewRoomType.room_type_name}
+                  price={overviewRoomType.price}
+                  ranking={5}
+                  type={'Room'}
+                />
+              )
+            })}
           </div>
-        </div>
-
-        <div className={cx("section-find-rooms")}>
-          <h1 style={{ textAlign: 'center' }}>Find your room</h1>
-          <Form
-            form={form}
-            layout='inline'
-            name='find_room_form'
-            autoComplete="off"
-            onFinish={handleSubmitFindRoom}
-            onFinishFailed={handleSubmitFindRoomFailed}
-            className={cx("find-rooms-container")}
-          >
-            <Form.Item
-              name='check_in'
-              label={
-                <div className={cx("find-rooms-item")}>
-                  <BsFillCalendar2CheckFill size={24} />
-                  <span>Check in</span>
-                </div>
-              }
-              required={false}
-              colon={false}
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select check in date'
-                }
-              ]}
-              style={{ marginBottom: 30 }}
-            >
-              <DatePicker
-                picker='date'
-                size='large'
-                placeholder='Select check in date'
-                format="YYYY-MM-DD HH:mm"
-                disabledDate={disabledDate}
-              />
-            </Form.Item>
-            <Form.Item
-              name='check_out'
-              label={
-                <div className={cx("find-rooms-item")}>
-                  <BsFillCalendar2CheckFill size={24} />
-                  <span>Check out</span>
-                </div>
-              }
-              required={false}
-              colon={false}
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select check out date'
-                }
-              ]}
-              style={{ marginBottom: 30 }}
-            >
-              <DatePicker
-                picker='date'
-                size='large'
-                placeholder='Select check out date'
-                format="YYYY-MM-DD HH:mm"
-                disabledDate={disabledDate}
-              />
-            </Form.Item>
-            <Form.Item
-              name='bedrooms'
-              label={
-                <div className={cx("find-rooms-item")}>
-                  <FaBed size={24} />
-                  <span>Bedrooms</span>
-                </div>
-              }
-              required={false}
-              colon={false}
-              style={{ marginBottom: 30 }}
-            >
-              <Select
-                allowClear
-                showSearch
-                size='large'
-                placeholder="Select bedrooms"
-                options={[
-                  {
-                    value: 'single_bedroom',
-                    label: 'Single Bedroom',
-                  },
-                  {
-                    value: 'twin_bedroom',
-                    label: 'Twin Bedroom',
-                  },
-                  {
-                    value: 'double_bedroom',
-                    label: 'Double Bedroom',
-                  },
-                  {
-                    value: 'triple_bedroom',
-                    label: 'Triple Bedroom',
-                  },
-                  {
-                    value: 'quad_bedroom',
-                    label: 'Quad Bedroom',
-                  },
-                ]}
-              />
-            </Form.Item>
-            <Form.Item
-              name='capicities'
-              label={
-                <div className={cx("find-rooms-item")}>
-                  <FaUser size={24} />
-                  <span>Capicilites</span>
-                </div>
-              }
-              required={false}
-              colon={false}
-              style={{ marginBottom: 30 }}
-            >
-              <Select
-                allowClear
-                showSearch
-                size='large'
-                placeholder="Select capicities"
-                options={[
-                  {
-                    value: '1',
-                    label: '1 Guest',
-                  },
-                  {
-                    value: '2',
-                    label: '2 Guests',
-                  },
-                  {
-                    value: '3',
-                    label: '3 Guests',
-                  },
-                ]}
-              />
-            </Form.Item>
-            <Form.Item>
-              <button className={cx("btn-search")}>
-                <BiSearch size={24} />
-              </button>
-            </Form.Item>
-          </Form>
         </div>
 
         <div className={cx("section-list-type-rooms")}>
@@ -624,14 +501,22 @@ const FindRoom = () => {
           <div className={cx("list-rooms-container")}>
             <h2>List Type Rooms</h2>
             <div className={cx("list-rooms-container__result")}>
-              {
-                listRoomTypes.length < POST_PER_PAGE 
-                  ? `Showing ${listRoomTypes.length} of `
-                  : `Showing ${firstPostIndex + currentPost.length} of `
-              }
-              <span>{listRoomTypes.length} type rooms</span>
+              {(() => {
+                if (totalRoomTypes <= pageSize) {
+                  return `Showing ${totalRoomTypes} of `
+
+                } else {
+                  if (pageSize * currentPage <= totalRoomTypes) {
+                    return `Showing ${pageSize * currentPage} of `
+                  } else {
+                    const total = pageSize * currentPage;
+                    return `Showing ${total - (total - totalRoomTypes)} of `
+                  }
+                }
+              })()}
+              <span>{totalRoomTypes} type rooms</span>
             </div>
-            {currentPost.map((roomType) => {
+            {listRoomTypes.map((roomType) => {
               return (
                 <BookingCard
                   key={roomType.id}
@@ -642,21 +527,23 @@ const FindRoom = () => {
                   ranking={5}
                   type={'Room'}
                   capacity={roomType.number_customers}
-                  listRooms={roomType.number_rooms}
                   area={roomType.room_size}
-                  totalReviews={54}
                   setReloadFavouriteItem={setReloadFavouriteItem}
                 />
               )
             })}
             <div className={cx("list-room-pagination")}>
               <Pagination
-                showQuickJumper
                 current={currentPage}
-                defaultCurrent={currentPage}
-                pageSize={POST_PER_PAGE}
-                total={listRoomTypes.length}
+                defaultCurrent={DEFAULT_CURRENT_PAGE_NUMBER}
+                defaultPageSize={DEFAULT_PAGE_SIZE_NUMBER}
+                hideOnSinglePage
+                total={totalRoomTypes}
+                pageSizeOptions={pageSizeOptions}
+                showQuickJumper
+                showSizeChanger
                 onChange={handleClickPaginate}
+                onShowSizeChange={handleShowSizeChange}
               />
             </div>
           </div>

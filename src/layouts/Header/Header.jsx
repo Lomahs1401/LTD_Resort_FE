@@ -12,6 +12,7 @@ import { Divider, Popover } from 'antd'
 import { FiLogOut } from 'react-icons/fi'
 import { RiLockPasswordLine } from 'react-icons/ri'
 import { MdFavorite } from 'react-icons/md'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
 
 const cx = classNames.bind(styles);
 
@@ -102,9 +103,12 @@ const Header = ({active, userInfo, imageUrl}) => {
         <div className={cx("header__right-avatar")}>
           <div className={cx("avatar")}>
             <Popover content={content} title={title} trigger='click'>
-              <img
+              <LazyLoadImage
+                key={imageUrl}
                 src={imageUrl}
                 alt='Avatar'
+                effect='blur'
+                placeholderSrc={imageUrl}
               />
             </Popover>
           </div>

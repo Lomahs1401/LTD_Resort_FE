@@ -1,7 +1,7 @@
 import { toast } from "react-toastify"
 
 export const addFavouriteRoom = (data) => {
-    toast.success('Add to list favourites room successfully!', {
+    toast.success('Successfully added to favorites rooms list.', {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -19,7 +19,7 @@ export const addFavouriteRoom = (data) => {
 }
 
 export const addFavouriteService = (data) => {
-    toast.success('Add to list favourites service successfully!', {
+    toast.success('Successfully added to favorites services list.!', {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -37,7 +37,7 @@ export const addFavouriteService = (data) => {
 }
 
 export const removeFavouriteRoom = (data) => {
-    toast.success('Remove favorite room from favorite list successfully!', {
+    toast.success('Successfully removed from favorites rooms list!', {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -55,7 +55,7 @@ export const removeFavouriteRoom = (data) => {
 }
 
 export const removeFavouriteService = (data) => {
-    toast.success('Remove favorite service from favorite list successfully!', {
+    toast.success('Successfully removed from favorites rooms list!', {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -83,5 +83,55 @@ export const removeAvatar = (data) => {
     return {
         type: 'avatar/removeAvatar',
         payload: data
+    }
+}
+
+export const bookmarkRoom = (data) => {
+    toast.success('Successfully bookmark room!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    })
+
+    return {
+        type: 'room/bookmarkRoom',
+        payload: data,
+    }
+}
+
+export const unmarkRoom = (data) => {
+    toast.success('Successfully unmark room!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    })
+
+    return {
+        type: 'room/unmarkRoom',
+        payload: data,
+    }
+}
+
+export const addRoomTypes = (data) => {
+    return {
+        type: 'roomType/addRoomType',
+        payload: data,
+    }
+}
+
+export const removeRoomType = (data) => {
+    return {
+        type: 'roomType/removeRoomType',
+        payload: data,
     }
 }

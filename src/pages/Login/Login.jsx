@@ -190,7 +190,7 @@ const Login = () => {
                   <Checkbox>Remember me</Checkbox>
                 </Form.Item>
                 <p className={cx("forgot__password")}>
-                  <Link to="/forgot_password" className={cx("forgot__password__link")}>
+                  <Link to="/forgot-password" className={cx("forgot__password__link")}>
                     Forgot Password
                   </Link>
                 </p>

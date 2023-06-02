@@ -54,20 +54,27 @@
                 width: 49px;
                 height: 49px;
                 position: relative;
-            }
 
-            img {
-                width: 45px;
-                height: 45px;
-                position: absolute;
-                top: 0;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 2px solid #FF8682;
+                > span {
+                    position: absolute;
+                    width: 45px;
+                    height: 45px;
+                    top: 0;
+                }
 
-                &:hover {
-                    cursor: pointer;
-                    opacity: 0.9;
+                img {
+                    width: 45px;
+                    height: 45px;
+                    position: absolute;
+                    top: 0;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 2px solid #FF8682;
+    
+                    &:hover {
+                        cursor: pointer;
+                        opacity: 0.9;
+                    }
                 }
             }
         }
