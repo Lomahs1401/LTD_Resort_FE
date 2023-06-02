@@ -5,11 +5,10 @@ import Header from "../../layouts/Header/Header";
 import Footer from "../../layouts/Footer/Footer";
 import AuthUser from "../../utils/AuthUser";
 import { useState } from "react";
-import { Divider } from 'antd'
+import { Divider } from "antd";
 import BookingCard from "../../components/BookingCard/BookingCard";
 import { useSelector } from "react-redux";
 import { avatarSelector, favouritesRoomsSelector, favouritesServicesSelector } from "../../redux/selectors";
-
 const cx = classNames.bind(styles);
 
 function Favourites() {
@@ -39,7 +38,6 @@ function Favourites() {
                 toggleState === 1
                   ? cx("tabs__active")
                   : cx("tabs")
-              }
               onClick={() => toggleTab(1)}
             >
               <div>
@@ -132,7 +130,6 @@ function Favourites() {
           </div>
         </div>
       </div>
-      
       <Footer />
     </div>
   );

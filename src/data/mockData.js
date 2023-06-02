@@ -3,15 +3,25 @@ import { tokens } from "../utils/theme";
 export const mockDataTeam = [
   {
     id: 1,
-    name: "Jon Snow",
+    full_name: "Jon Snow",
+    gender: "Male",
+    birthday: "2002-01-14",
     email: "jonsnow@gmail.com",
+    CMND: "201839482",
+    address: "Đà Nẵng",
+    account_bank: "000029583293",
+    name_bank: "Vietcombank",
+    dayStart: "2012-01-14",
+    dayQuit: "2020-01-14",
+    position: "Boss",
     age: 35,
     phone: "(665)121-5454",
     access: "admin",
   },
   {
     id: 2,
-    name: "Cersei Lannister",
+    full_name: "Cersei Lannister",
+    gender: "Female",
     email: "cerseilannister@gmail.com",
     age: 42,
     phone: "(421)314-2288",
@@ -19,7 +29,8 @@ export const mockDataTeam = [
   },
   {
     id: 3,
-    name: "Jaime Lannister",
+    full_name: "Jaime Lannister",
+    gender: "Female",
     email: "jaimelannister@gmail.com",
     age: 45,
     phone: "(422)982-6739",
@@ -27,7 +38,8 @@ export const mockDataTeam = [
   },
   {
     id: 4,
-    name: "Anya Stark",
+    full_name: "Anya Stark",
+    gender: "Male",
     email: "anyastark@gmail.com",
     age: 16,
     phone: "(921)425-6742",
@@ -35,7 +47,8 @@ export const mockDataTeam = [
   },
   {
     id: 5,
-    name: "Daenerys Targaryen",
+    full_name: "Daenerys Targaryen",
+    gender: "Female",
     email: "daenerystargaryen@gmail.com",
     age: 31,
     phone: "(421)445-1189",
@@ -43,7 +56,8 @@ export const mockDataTeam = [
   },
   {
     id: 6,
-    name: "Ever Melisandre",
+    full_name: "Ever Melisandre",
+    gender: "Female",
     email: "evermelisandre@gmail.com",
     age: 150,
     phone: "(232)545-6483",
@@ -51,7 +65,8 @@ export const mockDataTeam = [
   },
   {
     id: 7,
-    name: "Ferrara Clifford",
+    full_name: "Ferrara Clifford",
+    gender: "Male",
     email: "ferraraclifford@gmail.com",
     age: 44,
     phone: "(543)124-0123",
@@ -59,7 +74,8 @@ export const mockDataTeam = [
   },
   {
     id: 8,
-    name: "Rossini Frances",
+    full_name: "Rossini Frances",
+    gender: "Male",
     email: "rossinifrances@gmail.com",
     age: 36,
     phone: "(222)444-5555",
@@ -67,12 +83,559 @@ export const mockDataTeam = [
   },
   {
     id: 9,
-    name: "Harvey Roxie",
+    full_name: "Harvey Roxie",
+    gender: "Male",
     email: "harveyroxie@gmail.com",
     age: 65,
     phone: "(444)555-6239",
     access: "admin",
   },
+];
+
+export const mockDatabillRoom = [
+  {
+    id: 1,
+    id_customer: 1,
+    total_amount: "12",
+    total_room: "4",
+    total_people: "2",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 2,
+    id_customer: 1,
+    total_amount: "12",
+    total_room: "4",
+    total_people: "2",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 3,
+    id_customer: 2,
+    total_amount: "12",
+    total_room: "4",
+    total_people: "2",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 4,
+    id_customer: 4,
+    total_amount: "12",
+    total_room: "4",
+    total_people: "2",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 5,
+    id_customer: 3,
+    total_amount: "12",
+    total_room: "4",
+    total_people: "2",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    position: "Boss",
+    discount: "35",
+  },
+  {
+    id: 6,
+    id_customer: 2,
+    total_amount: "12",
+    total_room: "4",
+    total_people: "2",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 7,
+    id_customer: 10,
+    total_amount: "12",
+    total_room: "4",
+    total_people: "2",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 8,
+    id_customer: 2,
+    total_amount: "12",
+    total_room: "4",
+    total_people: "2",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+];
+
+export const mockDatabillService = [
+  {
+    id: 1,
+    id_customer: 3,
+    total_amount: "12",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 2,
+    id_customer: 2,
+    total_amount: "12",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 3,
+    id_customer: 4,
+    total_amount: "12",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 4,
+    id_customer: 6,
+    total_amount: "12",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 5,
+    id_customer: 2,
+    total_amount: "12",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    position: "Boss",
+    discount: "35",
+  },
+  {
+    id: 6,
+    id_customer: 3,
+    total_amount: "12",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 7,
+    id_customer: 1,
+    total_amount: "12",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+  {
+    id: 8,
+    id_customer: 3,
+    total_amount: "12",
+    payment_method: "null",
+    tax: "000029583293",
+    name_bank: "Vietcombank",
+    pay_time: "2012-01-14",
+    checkin_time: "2020-01-14",
+    checkout_time: "2020-01-14",
+    cancel_time: "2020-01-14",
+    discount: "35",
+  },
+];
+
+export const mockDatabillRoomDetail = [
+  {
+    id: 1,
+    id_bill: 5,
+    id_room: 1,
+  },
+  {
+    id: 2,
+    id_bill: 5,
+    id_room: 3,
+  },
+  {
+    id: 3,
+    id_bill: 4,
+    id_room: 2,
+  },
+]
+
+export const mockDatabillServiceDetail = [
+  {
+    id: 1,
+    id_bill: 1,
+    id_service: 1,
+  },
+  {
+    id: 2,
+    id_bill: 1,
+    id_service: 2,
+  },
+  {
+    id: 3,
+    id_bill: 2,
+    id_service: 2,
+  },
+]
+
+export const mockDataCustomer = [
+  {
+    id: 1,
+    full_name: "Jon Snow",
+    email: "jonsnow@gmail.com",
+    gender: "male",
+    birthday: "2002-01-14",
+    address: "Đà Nẵng",
+    phone: "(665)121-5454",
+    ranking_point: "RANKING_BRONZE",
+    date: "03/12/2022",
+  },
+  {
+    id: 2,
+    full_name: "Cersei Lannister",
+    email: "cerseilannister@gmail.com",
+    gender: "male",
+    birthday: "2002-03-22",
+    address: "Thanh Hoá",
+    phone: "(421)314-2288",
+    ranking_point: "RANKING_PLATINUM",
+    date: "06/15/2021",
+  },
+  {
+    id: 3,
+    full_name: "Jaime Lannister",
+    email: "jaimelannister@gmail.com",
+    gender: "female",
+    birthday: "2002-01-14",
+    address: "Huế",
+    phone: "(422)982-6739",
+    ranking_point: "RANKING_BRONZE",
+    date: "05/02/2022",
+  },
+  {
+    id: 4,
+    full_name: "Anya Stark",
+    email: "anyastark@gmail.com",
+    gender: "female",
+    birthday: "2002-01-20",
+    address: "Đà Nẵng",
+    cost: "80.55",
+    phone: "(921)425-6742",
+    ranking_point: "RANKING_DIAMOND",
+    date: "03/21/2022",
+  },
+  {
+    id: 5,
+    full_name: "Daenerys Targaryen",
+    email: "daenerystargaryen@gmail.com",
+    gender: "male",
+    birthday: "2102-01-14",
+    address: "Đà Nẵng",
+    cost: "1.24",
+    phone: "(421)445-1189",
+    ranking_point: "RANKING_SILVER",
+    date: "01/12/2021",
+  },
+  {
+    id: 6,
+    full_name: "Ever Melisandre",
+    email: "evermelisandre@gmail.com",
+    gender: "female",
+    birthday: "2002-01-14",
+    address: "Nhà",
+    cost: "63.12",
+    phone: "(232)545-6483",
+    ranking_point: "RANKING_DIAMOND",
+    date: "11/02/2022",
+  },
+  {
+    id: 7,
+    full_name: "Ferrara Clifford",
+    email: "ferraraclifford@gmail.com",
+    gender: "female",
+    birthday: "2002-13-14",
+    address: "Đà Nẵng",
+    cost: "52.42",
+    phone: "(543)124-0123",
+    ranking_point: "RANKING_GOLD",
+    date: "02/11/2022",
+  },
+  {
+    id: 8,
+    full_name: "Rossini Frances",
+    email: "rossinifrances@gmail.com",
+    gender: "male",
+    birthday: "2002-01-14",
+    address: "...",
+    cost: "21.24",
+    phone: "(222)444-5555",
+    date: "05/02/2021",
+  },
+];
+
+export const mockDataRoom = [
+  {
+    id: 1,
+    room_name: "B201",
+    id_area: 1,
+    id_floor: 1,
+    id_type: 1,
+  },
+  {
+    id: 2,
+    room_name: "C302",
+    id_area: 2,
+    id_floor: 4,
+    id_type: 2,
+  },
+  {
+    id: 3,
+    room_name: "C302",
+    id_area: 2,
+    id_floor: 4,
+    id_type: 2,
+  },
+  
+];
+
+export const mockDataRoomFloor = [
+  {
+    id: 1,
+    floor_name: "1",
+    
+  },
+  {
+    id: 2,
+    floor_name: "2",
+    
+  },
+  {
+    id: 3,
+    floor_name: "3",
+    
+  },
+  {
+    id: 4,
+    floor_name: "4",
+    
+  },
+  
+];
+
+export const mockDataRoomArea = [
+  {
+    id: 1,
+    area_name: "A",
+    
+  },
+  {
+    id: 2,
+    area_name: "B",
+    
+  },
+  {
+    id: 3,
+    area_name: "C",
+    
+  },
+  
+];
+
+export const mockDataRoomType = [
+  {
+    id: 1,
+    type_name: "Water",
+    size: "2",
+    capacity : "4",
+    describe: "Trang",
+    image: ",",
+    price: "500000",
+    point_ranking: "10000",
+  },
+  {
+    id: 2,
+    type_name: "Fire",
+    size: "4",
+    capacity : "5",
+    describe: "Duc",
+    image: "0",
+    price: "20000",
+    point_ranking: "110000",
+
+  },
+  {
+    id: 3,
+    type_name: "Deluxe",
+    size: "4",
+    capacity : "2",
+    describe: "Long",
+    image: "0",
+    price: "500000000",
+    point_ranking: "10002130",
+
+  },
+  
+];
+
+export const mockDataService = [
+  {
+    id: 1,
+    service_name: "Sapa",
+    description: "Khoa",
+    status: true,
+    price: "500",
+    point_ranking: "5000",
+    id_type: 2,
+  },
+  {
+    id: 2,
+    service_name: "Drink",
+    description: "Quynh",
+    status: false,
+    price: "55500",
+    point_ranking: "512000",
+    id_type: 1,
+
+  },
+  {
+    id: 3,
+    service_name: "Football",
+    description: "Vinh",
+    status: true,
+    price: "10000",
+    point_ranking: "500000",
+    id_type: 3,
+
+  },
+  
+];
+
+export const mockDataServiceType = [
+  {
+    id: 1,
+    type_name: "On Ground",
+  },
+  {
+    id: 2,
+    type_name: "Bar",
+  },
+  {
+    id: 3,
+    type_name: "Back up",
+  },
+  
+];
+
+export const mockDataEquipment = [
+  {
+    id: 1,
+    equipment_name: "Pan",
+    description: "Thai",
+    price: "2999",
+    number: "2",
+    image: "no",
+  },
+  {
+    id: 2,
+    equipment_name: "TV",
+    description: "Huu",
+    price: "300",
+    number: "2",
+    image: "no",
+
+  },
+  {
+    id: 3,
+    equipment_name: "Sword",
+    description: "Dat",
+    price: "30000",
+    number: "10",
+    image: "no",
+
+  },
+  
 ];
 
 export const mockDataContacts = [

@@ -9,14 +9,18 @@ import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import BedIcon from "@mui/icons-material/Bed";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
+import RoomServiceIcon from "@mui/icons-material/RoomService";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import testimonial from "../../../img/testimonial1.png"
+import testimonial from "../../../img/testimonial1.png";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -89,7 +93,7 @@ const Sidebar = () => {
               </Box>
             )}
           </MenuItem>
-          
+
           {/* USER */}
           {!isCollapsed && (
             <Box mb="25px">
@@ -133,29 +137,103 @@ const Sidebar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Data
+              Account
             </Typography>
             <Item
-              title="Manage Team"
-              to="/admin/team"
+              title="Manage Staff"
+              to="/admin/staff"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
+
             <Item
-              title="Contacts Information"
-              to="/admin/contacts"
+              title="Manage Customer"
+              to="/admin/customer"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Invoices Balances"
-              to="/admin/invoices"
+              title="Manage Admin"
+              to="/admin/manageadmin"
               icon={<ReceiptOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
+
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Room
+            </Typography>
+            <Item
+              title="Room"
+              to="/admin/room"
+              icon={<BedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Room Area"
+              to="/admin/roomarea"
+              icon={<LocationOnIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Room Floor"
+              to="/admin/roomfloor"
+              icon={<ArrowUpwardIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Room Type"
+              to="/admin/roomtype"
+              icon={<BedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Equipment"
+              to="/admin/equipment"
+              icon={<RoomServiceIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Service
+            </Typography>
+            <Item
+              title="Service"
+              to="/admin/service"
+              icon={<RoomServiceIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Service Type"
+              to="/admin/servicetype"
+              icon={<RoomServiceIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+
+            {/* <Item
+              title="Create Service"
+              to="/admin/createservice"
+              icon={<PersonOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            /> */}
 
             <Typography
               variant="h6"
@@ -186,14 +264,14 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
 
-            <Typography
+            {/* <Typography
               variant="h6"
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
               Charts
-            </Typography>
-            <Item
+            </Typography> */}
+            {/* <Item
               title="Bar Chart"
               to="/admin/bar"
               icon={<BarChartOutlinedIcon />}
@@ -213,14 +291,14 @@ const Sidebar = () => {
               icon={<TimelineOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
-            <Item
+            /> */}
+            {/* <Item
               title="Geography Chart"
               to="/admin/geography"
               icon={<MapOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
           </Box>
         </Menu>
       </ProSidebar>

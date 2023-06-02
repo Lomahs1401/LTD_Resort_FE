@@ -156,7 +156,7 @@ const AccountInfo = ({ customerInfo, customerRanking }) => {
         <div className={cx("info-container")}>
           <div className={cx("info-container__left")}>
             <div className={cx("title-text")}>Name</div>
-            <div className={cx("content-text")}>{customerInfo?.full_name ?? "No information provided"}</div>
+            <div className={cx("content-text")}>{customerInfo?.fullName?? "No information provided"}</div>
           </div>
           <div className={cx("info-container__right")}>
             {customerInfo?.full_name ? <FaCheckCircle /> : <FaInfoCircle style={{ color: 'grey' }} />}

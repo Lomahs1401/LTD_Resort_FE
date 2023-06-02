@@ -1,23 +1,29 @@
+import { useState , useEffect } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../../utils/theme";
-import { mockDataInvoices } from "../../../data/mockData";
+import { mockDataCustomer } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
-import styles from "./Invoices.module.scss";
+import styles from "./Customer.module.scss";
 import classNames from "classnames/bind";
+import AuthUser from "../../../utils/AuthUser";
 
 const cx = classNames.bind(styles);
 
-const Invoices = () => {
+const Customer = () => {
+  const {http} = AuthUser();
+  const [listCustomers, setListCustomers] = useState([]);
+  const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const columns = [
-    { 
-      field: "id", 
-      headerName: "ID" 
+    {
+      field: "id",
+      headerName: "ID",
     },
     {
-      field: "name",
+      field: "full_name",
       headerName: "Name",
       flex: 1,
       cellClassName: "name-column--cell",
@@ -49,9 +55,37 @@ const Invoices = () => {
     },
   ];
 
+  const handleDoubleClickCell = (params, ev) => {
+    const { row } = params;
+    console.log(row);
+
+    // Chuyển hướng đến trang hóa đơn
+    navigate("/admin/bill", { state: row });
+  };
+
+  //fetch api
+  useEffect(() => {
+
+    const fetchData = () =>{
+      http.get('/admin/list-customer')
+      .then((resolve) => {
+        console.log(resolve);
+        setListCustomers(resolve.data.list_customers);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      })
+    }
+    fetchData()
+    // form.setFieldsValue(values);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
+  }, []);
+
+
   return (
     <div className={cx("invoices-wrapper")}>
-      <Header title="INVOICES" subtitle="List of Invoice Balances" />
+      <Header title="CUSTOMER" subtitle="List of Customer" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -81,10 +115,16 @@ const Invoices = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataInvoices} columns={columns} />
+        <DataGrid
+          checkboxSelection
+          rows={listCustomers}
+          columns={columns}
+          className={cx("table")}
+          onCellDoubleClick={handleDoubleClickCell}
+        />
       </Box>
     </div>
   );
 };
 
-export default Invoices;
+export default Customer;
