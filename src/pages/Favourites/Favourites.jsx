@@ -5,11 +5,10 @@ import Header from "../../layouts/Header/Header";
 import Footer from "../../layouts/Footer/Footer";
 import AuthUser from "../../utils/AuthUser";
 import { useState } from "react";
-import { Divider } from 'antd'
+import { Divider } from "antd";
 import BookingCard from "../../components/BookingCard/BookingCard";
 import { useSelector } from "react-redux";
 import { avatarSelector, favouritesRoomsSelector, favouritesServicesSelector } from "../../redux/selectors";
-
 const cx = classNames.bind(styles);
 
 function Favourites() {
@@ -86,9 +85,7 @@ function Favourites() {
                         ranking={favouriteRoom.ranking}
                         type={favouriteRoom.type}
                         capacity={favouriteRoom.capacity}
-                        listRooms={favouriteRoom.listRooms}
                         area={favouriteRoom.area}
-                        totalReviews={54}
                         disableFavouriteCheck={true}
                       />
                     )
@@ -120,7 +117,6 @@ function Favourites() {
                         price={favouriteService.price}
                         ranking={favouriteService.ranking}
                         type={favouriteService.type}
-                        totalReviews={54}
                         disableFavouriteCheck={true}
                       />
                     )
@@ -135,7 +131,6 @@ function Favourites() {
           </div>
         </div>
       </div>
-      
       <Footer />
     </div>
   );

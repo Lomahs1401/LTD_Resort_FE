@@ -8,7 +8,19 @@ import BookmarkRoom from '../BookmarkRoom/BookmarkRoom';
 
 const cx = classNames.bind(styles);
 
-const BookingRoom = ({ areaId, areaName, roomTypeId }) => {
+const BookingRoom = ({ 
+  areaId, 
+  areaName, 
+  roomTypeId,
+  roomTypeName,
+  roomSize,
+  totalRooms,
+  numberCustomers,
+  description,
+  image,
+  price,
+  pointRanking
+}) => {
 
   const { http } = AuthUser();
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +29,6 @@ const BookingRoom = ({ areaId, areaName, roomTypeId }) => {
 
   // reload "Favourites" in header
   const [, setReloadBookmarkRoom] = useState(false);
-
   
   useEffect(() => {
     const fetchData = () => {
@@ -71,6 +82,14 @@ const BookingRoom = ({ areaId, areaName, roomTypeId }) => {
                         areaId={areaId}
                         floorId={floor.id}
                         roomTypeId={roomTypeId}
+                        roomTypeName={roomTypeName}
+                        roomSize={roomSize}
+                        totalRooms={totalRooms}
+                        numberCustomers={numberCustomers}
+                        description={description}
+                        image={image}
+                        price={price}
+                        pointRanking={pointRanking}
                         setReloadBookmarkRoom={setReloadBookmarkRoom}
                       />
                     )

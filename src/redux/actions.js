@@ -121,3 +121,17 @@ export const unmarkRoom = (data) => {
         payload: data,
     }
 }
+
+export const addRoomTypes = (data) => {
+    return {
+        type: 'roomType/addRoomType',
+        payload: data,
+    }
+}
+
+export const removeRoomType = (data) => {
+    return {
+        type: 'roomType/removeRoomType',
+        payload: data,
+    }
+}

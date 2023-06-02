@@ -60,6 +60,7 @@ export default function AuthUser() {
     }
 
     const http = axios.create({
+        // baseURL: "https://ltdresortbe-production.up.railway.app/api",
         baseURL: "http://127.0.0.1:8000/api",
         headers: {
             "Authorization": `Bearer ${token}`,

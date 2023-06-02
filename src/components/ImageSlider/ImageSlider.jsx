@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from './ImageSlider.module.scss'
 import classNames from "classnames/bind";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const cx = classNames.bind(styles);
 
@@ -37,8 +38,7 @@ const ImageSlider = ({ slides, parentWidth }) => {
     setCurrentIndex(slideIndex);
   };
 
-  const getSlideStylesWithBackground = (slideIndex) => ({
-    backgroundImage: `url(${slides[slideIndex].url})`,
+  const getSlideStylesWithBackground = () => ({
     width: `${parentWidth}px`,
   })
 
@@ -76,11 +76,19 @@ const ImageSlider = ({ slides, parentWidth }) => {
       <div style={slidesContainerOverflowStyles}>
         <div style={getSliderContainerStylesWithWidth()}>
           {slides.map((_, slideIndex) => (
-            <div 
-            className={cx("slide")}
-              key={slideIndex} 
-              style={getSlideStylesWithBackground(slideIndex)} 
+            <LazyLoadImage 
+              key={slideIndex}
+              src={`${slides[slideIndex].url}`}
+              alt={`Carousel ${slideIndex}`}
+              effect='blur'
+              placeholderSrc={`${slides[slideIndex].url}`}
+              style={getSlideStylesWithBackground(slideIndex)}
             />
+            // <div 
+            // className={cx("slide")}
+            //   key={slideIndex} 
+            //   style={getSlideStylesWithBackground(slideIndex)} 
+            // />
           ))}
         </div>
       </div>
