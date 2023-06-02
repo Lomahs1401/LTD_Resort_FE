@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 import {
   DataGrid,
@@ -6,8 +7,16 @@ import {
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
+import { Diamond } from "@mui/icons-material";
 import { tokens } from "../../../utils/theme";
-import { mockDatabillRoom, mockDatabillService } from "../../../data/mockData";
+import {
+  mockDatabillRoom,
+  mockDatabillService,
+  mockDatabillRoomDetail,
+  mockDatabillServiceDetail,
+  mockDataRoom,
+  mockDataService,
+} from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { Form, Input, Modal, Select, Steps } from "antd";
@@ -19,6 +28,9 @@ import classNames from "classnames/bind";
 const cx = classNames.bind(styles);
 
 const Bill = () => {
+  const location = useLocation();
+  const { state } = location;
+  const Customer = state;
   const Layout = {
     labelCol: {
       span: 6,
@@ -129,6 +141,15 @@ const Bill = () => {
       cellClassName: "name-column--cell",
     },
   ];
+  const columnsRoomDetail = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    {
+      field: "room_name",
+      headerName: "Room name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+  ];
   const columnsService = [
     { field: "id", headerName: "ID", flex: 0.5 },
     {
@@ -156,14 +177,24 @@ const Bill = () => {
       cellClassName: "name-column--cell",
     },
   ];
-
+  const columnsServiceDetail = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    {
+      field: "service_name",
+      headerName: "Service name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+  ];
   const items = [
     {
       title: "Room",
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDatabillRoom.filter((item) => item.id_customer === 1)}
+          rows={mockDatabillRoom.filter(
+            (item) => item.id_customer === Customer.id
+          )}
           columns={columnsRoom}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
@@ -176,7 +207,9 @@ const Bill = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDatabillService.filter((item) => item.id_customer === 1)}
+          rows={mockDatabillService.filter(
+            (item) => item.id_customer === Customer.id
+          )}
           columns={columnsService}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
@@ -212,6 +245,127 @@ const Bill = () => {
   return (
     <div className={cx("contact-wrapper")}>
       <Header title="INFO" subtitle="List of " />
+      <div className={cx("account-info-wrapper")}>
+        <div className={cx("account-info-wrapper__right")}>aa</div>
+        <div className={cx("account-info-wrapper__left")}>
+          <div className={cx("info-container")}>
+            <div className={cx("info-container__left")}>
+              <div className={cx("title-text")}>Customer Name</div>
+              <div className={cx("content-text")}>{Customer.full_name}</div>
+            </div>
+          </div>
+          <div className={cx("info-container")}>
+            <div className={cx("info-container__left")}>
+              <div className={cx("title-text")}>Gender</div>
+              <div className={cx("content-text")}>{Customer.gender}</div>
+            </div>
+          </div>
+          <div className={cx("info-container")}>
+            <div className={cx("info-container__left")}>
+              <div className={cx("title-text")}>Date of birth</div>
+              <div className={cx("content-text")}>{Customer.birthday}</div>
+            </div>
+          </div>
+          <div className={cx("info-container")}>
+            <div className={cx("info-container__left")}>
+              <div className={cx("title-text")}>ID Card</div>
+              <div className={cx("content-text")}>{Customer.email}</div>
+            </div>
+          </div>
+          <div className={cx("info-container")}>
+            <div className={cx("info-container__left")}>
+              <div className={cx("title-text")}>Address</div>
+              <div className={cx("content-text")}>{Customer.address}</div>
+            </div>
+          </div>
+          <div className={cx("info-container")}>
+            <div className={cx("info-container__left")}>
+              <div className={cx("title-text")}>Phone number</div>
+              <div className={cx("content-text")}>{Customer.phone}</div>
+            </div>
+          </div>
+          <div className={cx("info-container")}>
+            <div className={cx("info-container__left")}>
+              <div className={cx("title-text")}>Ranking point</div>
+              <div className={cx("content-text")}>
+                {(() => {
+                  if (Customer.ranking_point === "RANKING_BRONZE") {
+                    return (
+                      <Diamond
+                        style={{
+                          fontSize: 40,
+                          marginRight: "-6px",
+                          color: "#A77044",
+                        }}
+                      />
+                    );
+                  } else if (Customer.ranking_point === "RANKING_SILVER") {
+                    return (
+                      <Diamond
+                        style={{
+                          fontSize: 40,
+                          marginRight: "-6px",
+                          color: "#D7D7D7",
+                        }}
+                      />
+                    );
+                  } else if (Customer.ranking_point === "RANKING_GOLD") {
+                    return (
+                      <Diamond
+                        style={{
+                          fontSize: 40,
+                          marginRight: "-6px",
+                          color: "#FEE101",
+                        }}
+                      />
+                    );
+                  } else if (Customer.ranking_point === "RANKING_PLATINUM") {
+                    return (
+                      <Diamond
+                        style={{
+                          fontSize: 40,
+                          marginRight: "-6px",
+                          color: "#79CCE4",
+                        }}
+                      />
+                    );
+                  } else if (Customer.ranking_point === "RANKING_DIAMOND") {
+                    return (
+                      <Diamond
+                        style={{
+                          fontSize: 40,
+                          marginRight: "-6px",
+                          color: "#225684",
+                        }}
+                      />
+                    );
+                  }
+                })()}
+              </div>
+            </div>
+            <div className={cx("info-container__right")}>
+              {/* {(() => {
+              if (customerRanking === RANKING_BRONZE) {
+                return <Diamond style={{ fontSize: 40, marginRight: '-6px', color: '#A77044' }} />
+              }
+              else if (customerRanking === RANKING_SILVER) {
+                return <Diamond style={{ fontSize: 40, marginRight: '-6px', color: '#D7D7D7' }} />
+              }
+              else if (customerRanking === RANKING_GOLD) {
+                return <Diamond style={{ fontSize: 40, marginRight: '-6px', color: '#FEE101' }} />
+              }
+              else if (customerRanking === RANKING_PLATINUM) {
+                return <Diamond style={{ fontSize: 40, marginRight: '-6px', color: '#79CCE4' }} />
+              }
+              else if (customerRanking === RANKING_DIAMOND) {
+                return <Diamond style={{ fontSize: 40, marginRight: '-6px', color: '#225684' }} />
+              }
+            })()} */}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -276,7 +430,7 @@ const Bill = () => {
               setDisabled(true);
             }}
           >
-            Room Info
+            {values.total_people ? <>ROOM INFO</> : <>SERVICE INFO</>}
           </div>
         }
         open={openModalRoom}
@@ -351,7 +505,7 @@ const Bill = () => {
                 valuePropName="children"
                 className={cx("form-attributes__item")}
               >
-              <div disabled={true} className={cx("input")} />
+                <div disabled={true} className={cx("input")} />
               </Form.Item>
             )}
           </div>
@@ -364,7 +518,7 @@ const Bill = () => {
                 valuePropName="children"
                 className={cx("form-attributes__item")}
               >
-              <div disabled={true} className={cx("input")} />
+                <div disabled={true} className={cx("input")} />
               </Form.Item>
             )}
           </div>
@@ -456,36 +610,38 @@ const Bill = () => {
               <div disabled={true} className={cx("input")} />
             </Form.Item>
           </div>
-          <DataGrid
-          onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDatabillRoom.filter((item) => item.id_customer === 1)}
-          columns={columnsRoom}
-          components={{ Toolbar: CustomToolbar }}
-          className={cx("table")}
-        />
-          {/* 
-          <Form.Item
-            wrapperCol={24}
-            style={{
-              display: "flex",
-              width: "60%",
-              justifyContent: "flex-end",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              {disabledCreate ? (
-                <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") == "" ? (
-                <Button type="primary" onClick={handleAdd}>
-                  Add
-                </Button>
-              ) : (
-                <Button type="primary" onClick={handleSumbit}>
-                  Edit
-                </Button>
+
+          {/* // Lọc dữ liệu từ mảng "mockDatabillRoomDetail" theo điều kiện id_bill
+          trùng với values.id const filteredData =
+          mockDatabillRoomDetail.filter((item) => item.id_bill === values.id);
+          // Lấy danh sách các id_room từ dữ liệu đã lọc const roomIds =
+          filteredData.map((item) => item.id_room); // Lấy thông tin chi tiết về
+          các phòng từ bảng "dataroom" dựa trên roomIds const roomDetails =
+          mockDataRoom.filter((item) => roomIds.includes(item.id)); */}
+
+          {values.total_people ? (
+            <DataGrid
+              rows={mockDataRoom.filter((item) =>
+                mockDatabillRoomDetail
+                  .filter((item) => item.id_bill === values.id)
+                  .map((item) => item.id_room)
+                  .includes(item.id)
               )}
-            </div>
-          </Form.Item> */}
+              columns={columnsRoomDetail}
+              className={cx("table")}
+            />
+          ) : (
+            <DataGrid
+              rows={mockDataService.filter((item) =>
+                mockDatabillServiceDetail
+                  .filter((item) => item.id_bill === values.id)
+                  .map((item) => item.id_service)
+                  .includes(item.id)
+              )}
+              columns={columnsServiceDetail}
+              className={cx("table")}
+            />
+          )}
         </Form>
       </Modal>
     </div>

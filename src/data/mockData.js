@@ -91,6 +91,7 @@ export const mockDataTeam = [
     access: "admin",
   },
 ];
+
 export const mockDatabillRoom = [
   {
     id: 1,
@@ -214,6 +215,7 @@ export const mockDatabillRoom = [
     discount: "35",
   },
 ];
+
 export const mockDatabillService = [
   {
     id: 1,
@@ -321,12 +323,137 @@ export const mockDatabillService = [
     discount: "35",
   },
 ];
-export const mockDatabillServiceDetail = {
-  
-}
 
+export const mockDatabillRoomDetail = [
+  {
+    id: 1,
+    id_bill: 5,
+    id_room: 1,
+  },
+  {
+    id: 2,
+    id_bill: 5,
+    id_room: 3,
+  },
+  {
+    id: 3,
+    id_bill: 4,
+    id_room: 2,
+  },
+]
 
+export const mockDatabillServiceDetail = [
+  {
+    id: 1,
+    id_bill: 1,
+    id_service: 1,
+  },
+  {
+    id: 2,
+    id_bill: 1,
+    id_service: 2,
+  },
+  {
+    id: 3,
+    id_bill: 2,
+    id_service: 2,
+  },
+]
 
+export const mockDataCustomer = [
+  {
+    id: 1,
+    full_name: "Jon Snow",
+    email: "jonsnow@gmail.com",
+    gender: "male",
+    birthday: "2002-01-14",
+    address: "Đà Nẵng",
+    phone: "(665)121-5454",
+    ranking_point: "RANKING_BRONZE",
+    date: "03/12/2022",
+  },
+  {
+    id: 2,
+    full_name: "Cersei Lannister",
+    email: "cerseilannister@gmail.com",
+    gender: "male",
+    birthday: "2002-03-22",
+    address: "Thanh Hoá",
+    phone: "(421)314-2288",
+    ranking_point: "RANKING_PLATINUM",
+    date: "06/15/2021",
+  },
+  {
+    id: 3,
+    full_name: "Jaime Lannister",
+    email: "jaimelannister@gmail.com",
+    gender: "female",
+    birthday: "2002-01-14",
+    address: "Huế",
+    phone: "(422)982-6739",
+    ranking_point: "RANKING_BRONZE",
+    date: "05/02/2022",
+  },
+  {
+    id: 4,
+    full_name: "Anya Stark",
+    email: "anyastark@gmail.com",
+    gender: "female",
+    birthday: "2002-01-20",
+    address: "Đà Nẵng",
+    cost: "80.55",
+    phone: "(921)425-6742",
+    ranking_point: "RANKING_DIAMOND",
+    date: "03/21/2022",
+  },
+  {
+    id: 5,
+    full_name: "Daenerys Targaryen",
+    email: "daenerystargaryen@gmail.com",
+    gender: "male",
+    birthday: "2102-01-14",
+    address: "Đà Nẵng",
+    cost: "1.24",
+    phone: "(421)445-1189",
+    ranking_point: "RANKING_SILVER",
+    date: "01/12/2021",
+  },
+  {
+    id: 6,
+    full_name: "Ever Melisandre",
+    email: "evermelisandre@gmail.com",
+    gender: "female",
+    birthday: "2002-01-14",
+    address: "Nhà",
+    cost: "63.12",
+    phone: "(232)545-6483",
+    ranking_point: "RANKING_DIAMOND",
+    date: "11/02/2022",
+  },
+  {
+    id: 7,
+    full_name: "Ferrara Clifford",
+    email: "ferraraclifford@gmail.com",
+    gender: "female",
+    birthday: "2002-13-14",
+    address: "Đà Nẵng",
+    cost: "52.42",
+    phone: "(543)124-0123",
+    ranking_point: "RANKING_GOLD",
+    date: "02/11/2022",
+  },
+  {
+    id: 8,
+    full_name: "Rossini Frances",
+    email: "rossinifrances@gmail.com",
+    gender: "male",
+    birthday: "2002-01-14",
+    address: "...",
+    cost: "21.24",
+    phone: "(222)444-5555",
+    date: "05/02/2021",
+  },
+];
 
 export const mockDataRoom = [
   {
@@ -338,6 +465,13 @@ export const mockDataRoom = [
   },
   {
     id: 2,
+    room_name: "C302",
+    id_area: 2,
+    id_floor: 4,
+    id_type: 2,
+  },
+  {
+    id: 3,
     room_name: "C302",
     id_area: 2,
     id_floor: 4,
@@ -388,6 +522,7 @@ export const mockDataRoomArea = [
   },
   
 ];
+
 export const mockDataRoomType = [
   {
     id: 1,

@@ -14,13 +14,11 @@ import { tokens } from "../../../utils/theme";
 import { mockDataTeam } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import { AiFillEdit, AiFillDelete, AiOutlineUserAdd } from "react-icons/ai";
-
 import styles from "./Staff.module.scss";
 import classNames from "classnames/bind";
-import { useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import Draggable from "react-draggable";
-
+import moment from 'moment';
 const cx = classNames.bind(styles);
 
 const Staff = () => {
@@ -36,8 +34,7 @@ const Staff = () => {
   const [openModalStaff, setOpenModalStaff] = useState(false);
   const [values, setValues] = useState({});
 
-  const dateFormat = "DD/MM/YYYY";
-  const navigate = useNavigate();
+  const dateFormat = "YYYY-MM-DD";
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [form] = Form.useForm();
@@ -73,16 +70,16 @@ const Staff = () => {
     setdisabledCreate(false);
     setOpenModalStaff(true);
     form.setFieldValue("fullName", "");
-    form.setFieldValue("gender", "");
-    // form.setFieldValue('birthDate', row.birthday);
+    form.setFieldValue("gender", null);
+    form.setFieldValue("birthDate", null);
     form.setFieldValue("phone", "");
     form.setFieldValue("ID_Card", "");
     form.setFieldValue("address", "");
     form.setFieldValue("accountbank", "");
     form.setFieldValue("namebank", "");
-    // form.setFieldValue('dayStart', row.dayStart);
-    // form.setFieldValue('dayQuit', row.dayQuit);
-    form.setFieldValue("position", "");
+    form.setFieldValue("dayStart", null);
+    form.setFieldValue("dayQuit", null);
+    form.setFieldValue("position", null);
     setValues();
   };
 
@@ -92,14 +89,15 @@ const Staff = () => {
     const { row } = params;
     form.setFieldValue("fullName", row.full_name);
     form.setFieldValue("gender", row.gender);
-    // form.setFieldValue('birthDate', row.birthday);
+
+    form.setFieldValue("birthDate",null);
     form.setFieldValue("phone", row.phone);
     form.setFieldValue("ID_Card", row.CMND);
     form.setFieldValue("address", row.address);
     form.setFieldValue("accountbank", row.account_bank);
     form.setFieldValue("namebank", row.name_bank);
-    // form.setFieldValue('dayStart', row.dayStart);
-    // form.setFieldValue('dayQuit', row.dayQuit);
+    form.setFieldValue("dayStart", null);
+    form.setFieldValue("dayQuit", null);
     form.setFieldValue("position", row.position);
     setOpenModalStaff(true);
   };
@@ -115,14 +113,14 @@ const Staff = () => {
     const { row } = params;
     form.setFieldValue("fullName", row.full_name);
     form.setFieldValue("gender", row.gender);
-    // form.setFieldValue('birthDate', row.birthday);
+    form.setFieldValue("birthDate", row.birthday);
     form.setFieldValue("phone", row.phone);
     form.setFieldValue("ID_Card", row.CMND);
     form.setFieldValue("address", row.address);
     form.setFieldValue("accountbank", row.account_bank);
     form.setFieldValue("namebank", row.name_bank);
-    // form.setFieldValue('dayStart', row.dayStart);
-    // form.setFieldValue('dayQuit', row.dayQuit);
+    form.setFieldValue("dayStart", row.dayStart);
+    form.setFieldValue("dayQuit", row.dayQuit);
     form.setFieldValue("position", row.position);
     setOpenModalStaff(true);
     console.log(row);
@@ -353,16 +351,24 @@ const Staff = () => {
               },
             ]}
             hasFeedback
+            className={cx("form-attributes__item")}
           >
-            <Input
-              placeholder={"Please fill full name"}
-              disabled={disabledCreate}
-            />
+            {disabledCreate ? (
+              <div className={cx("form__content")}>
+                {form.getFieldValue("fullName")}
+              </div>
+            ) : (
+              <Input
+                placeholder={"Please fill full name"}
+                className={cx("form__content")}
+              />
+            )}
           </Form.Item>
           <Form.Item
             name="gender"
             label="Gender"
             hasFeedback
+            className={cx("form-attributes__item")}
             rules={[
               {
                 required: true,
@@ -370,14 +376,15 @@ const Staff = () => {
               },
             ]}
           >
-            <Select
-              placeholder="Please select gender"
-              disabled={disabledCreate}
-            >
-              <Select.Option value="Male">Male</Select.Option>
-              <Select.Option value="Female">Female</Select.Option>
-              <Select.Option value="Other">Other</Select.Option>
-            </Select>
+            {disabledCreate ? (
+              <div>{form.getFieldValue("gender")}</div>
+            ) : (
+              <Select placeholder="Please select gender">
+                <Select.Option value="Male">Male</Select.Option>
+                <Select.Option value="Female">Female</Select.Option>
+                <Select.Option value="Other">Other</Select.Option>
+              </Select>
+            )}
           </Form.Item>
           <Form.Item
             label="Birth Date"
@@ -389,13 +396,17 @@ const Staff = () => {
               },
             ]}
             hasFeedback
+            className={cx("form-attributes__item")}
           >
-            <DatePicker
-              placeholder="Select date"
-              format={dateFormat}
-              onChange={handleSelectBirthDate}
-              disabled={disabledCreate}
-            />
+            {disabledCreate ? (
+              <div>{form.getFieldValue("birthDate")}</div>
+            ) : (
+              <DatePicker
+                placeholder="Select date"
+                format={dateFormat}
+                onChange={handleSelectBirthDate}
+              />
+            )}
           </Form.Item>
           <Form.Item
             name="ID_Card"
@@ -407,8 +418,13 @@ const Staff = () => {
               },
             ]}
             hasFeedback
+            className={cx("form-attributes__item")}
           >
-            <Input placeholder="201801234" disabled={disabledCreate} />
+            {disabledCreate ? (
+              <div>{form.getFieldValue("ID_Card")}</div>
+            ) : (
+              <Input placeholder="201801234" />
+            )}
           </Form.Item>
           <Form.Item
             name="address"
@@ -420,8 +436,13 @@ const Staff = () => {
               },
             ]}
             hasFeedback
+            className={cx("form-attributes__item")}
           >
-            <Input placeholder="Đà Nẵng" disabled={disabledCreate} />
+            {disabledCreate ? (
+              <div>{form.getFieldValue("address")}</div>
+            ) : (
+              <Input placeholder="Đà Nẵng" />
+            )}
           </Form.Item>
           <Form.Item
             name="phone"
@@ -433,8 +454,13 @@ const Staff = () => {
               },
             ]}
             hasFeedback
+            className={cx("form-attributes__item")}
           >
-            <Input placeholder="0905000001" disabled={disabledCreate} />
+            {disabledCreate ? (
+              <div>{form.getFieldValue("phone")}</div>
+            ) : (
+              <Input placeholder="0905000001" />
+            )}
           </Form.Item>
           <Form.Item
             name="accountbank"
@@ -446,11 +472,13 @@ const Staff = () => {
               },
             ]}
             hasFeedback
+            className={cx("form-attributes__item")}
           >
-            <Input
-              placeholder={values?.account_bank}
-              disabled={disabledCreate}
-            />
+            {disabledCreate ? (
+              <div>{form.getFieldValue("accountbank")}</div>
+            ) : (
+              <Input placeholder="Account Bank" />
+            )}
           </Form.Item>
           <Form.Item
             name="namebank"
@@ -462,8 +490,13 @@ const Staff = () => {
               },
             ]}
             hasFeedback
+            className={cx("form-attributes__item")}
           >
-            <Input placeholder={values?.name_bank} disabled={disabledCreate} />
+            {disabledCreate ? (
+              <div>{form.getFieldValue("namebank")}</div>
+            ) : (
+              <Input placeholder="Name Bank" />
+            )}
           </Form.Item>
           <Form.Item
             label="Day Start"
@@ -475,13 +508,17 @@ const Staff = () => {
               },
             ]}
             hasFeedback
+            className={cx("form-attributes__item")}
           >
-            <DatePicker
-              placeholder="Select date"
-              format={dateFormat}
-              onChange={handleSelectdayStart}
-              disabled={disabledCreate}
-            />
+            {disabledCreate ? (
+              <div>{form.getFieldValue("dayStart")}</div>
+            ) : (
+              <DatePicker
+                placeholder="Select date"
+                format={dateFormat}
+                onChange={handleSelectdayStart}
+              />
+            )}
           </Form.Item>
           <Form.Item
             label="Day Quit"
@@ -493,18 +530,24 @@ const Staff = () => {
               },
             ]}
             hasFeedback
+            className={cx("form-attributes__item")}
           >
-            <DatePicker
-              placeholder="Select date"
-              format={dateFormat}
-              onChange={handleSelectdayQuit}
-              disabled={disabledCreate}
-            />
+            {disabledCreate ? (
+              <div>{form.getFieldValue("dayQuit")}</div>
+            ) : (
+              <DatePicker
+                placeholder="Select date"
+                format={dateFormat}
+                onChange={handleSelectdayQuit}
+                disabled={disabledCreate}
+              />
+            )}
           </Form.Item>
           <Form.Item
             name="position"
             label="Position"
             hasFeedback
+            className={cx("form-attributes__item")}
             rules={[
               {
                 required: true,
@@ -512,14 +555,18 @@ const Staff = () => {
               },
             ]}
           >
-            <Select
-              placeholder="Please select Position"
-              disabled={disabledCreate}
-            >
-              <Select.Option value="Boss">Boss</Select.Option>
-              <Select.Option value="Freshman">Freshman</Select.Option>
-              <Select.Option value="Staff">Staff</Select.Option>
-            </Select>
+            {disabledCreate ? (
+              <div>{form.getFieldValue("position")}</div>
+            ) : (
+              <Select
+                placeholder="Please select Position"
+                disabled={disabledCreate}
+              >
+                <Select.Option value="Boss">Boss</Select.Option>
+                <Select.Option value="Freshman">Freshman</Select.Option>
+                <Select.Option value="Staff">Staff</Select.Option>
+              </Select>
+            )}
           </Form.Item>
 
           <Form.Item wrapperCol={24}>

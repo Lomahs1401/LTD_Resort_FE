@@ -134,7 +134,6 @@ const Service = () => {
 
   const handleDoubleClickCell = (params) => {
     const { row } = params;
-    const { id } = row;
     console.log(row);
     form.setFieldValue("name", row.service_name);
     form.setFieldValue("description", row.description);

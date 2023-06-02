@@ -146,13 +146,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            {/* <Item
-              title="Create Staff"
-              to="/admin/createstaff"
-              icon={<PeopleOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
+
             <Item
               title="Manage Customer"
               to="/admin/customer"

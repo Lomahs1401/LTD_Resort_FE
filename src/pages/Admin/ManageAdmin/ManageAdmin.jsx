@@ -1,7 +1,8 @@
 import { Box, Typography, useTheme } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../../utils/theme";
-import { mockDataInvoices } from "../../../data/mockData";
+import { mockDataCustomer } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import styles from "./ManageAdmin.module.scss";
 import classNames from "classnames/bind";
@@ -9,15 +10,16 @@ import classNames from "classnames/bind";
 const cx = classNames.bind(styles);
 
 const ManageAdmin = () => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const columns = [
-    { 
-      field: "id", 
-      headerName: "ID" 
+    {
+      field: "id",
+      headerName: "ID",
     },
     {
-      field: "name",
+      field: "full_name",
       headerName: "Name",
       flex: 1,
       cellClassName: "name-column--cell",
@@ -49,6 +51,13 @@ const ManageAdmin = () => {
     },
   ];
 
+  const handleDoubleClickCell = (params, ev) => {
+    const { row } = params;
+    console.log(row);
+
+    // Chuyển hướng đến trang hóa đơn
+    navigate("/admin/bill", { state: row });
+  };
   return (
     <div className={cx("invoices-wrapper")}>
       <Header title="Admin" subtitle="List of Admin" />
@@ -81,7 +90,13 @@ const ManageAdmin = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataInvoices} columns={columns} />
+        <DataGrid
+          checkboxSelection
+          rows={mockDataCustomer}
+          columns={columns}
+          className={cx("table")}
+          onCellDoubleClick={handleDoubleClickCell}
+        />
       </Box>
     </div>
   );
