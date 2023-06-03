@@ -2,11 +2,6 @@ import React, { useEffect, useState } from 'react'
 import styles from './FindService.module.scss'
 import classNames from "classnames/bind";
 import findServices from '../../img/FindServices.png'
-import overviewService1 from '../../img/overviewService1.png'
-import overviewService2 from '../../img/overviewService2.png'
-import overviewService3 from '../../img/overviewService3.png'
-import overviewService4 from '../../img/overviewService4.png'
-import overviewService5 from '../../img/overviewService5.png'
 import Header from '../../layouts/Header/Header';
 import Footer from '../../layouts/Footer/Footer';
 import OverviewCard from '../../components/OverviewCard/OverviewCard';
@@ -21,6 +16,7 @@ import currency from '../../utils/currency';
 import { useSelector } from 'react-redux';
 import { avatarSelector } from '../../redux/selectors';
 import { toast } from 'react-toastify';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 const { Panel } = Collapse;
 
 const cx = classNames.bind(styles);
@@ -29,8 +25,8 @@ const FindService = () => {
 
   const { http, user } = AuthUser();
 
-  // Fetch list services state
-  const [listServices, setListServices] = useState([]);
+  // Fetch list top 5 lowest price of room type (Overview section)
+  const [listOverviewRoomServices, setListOverviewRoomServices] = useState([]);
 
   // Fetch data state
   const [loading, setLoading] = useState(false);
@@ -44,18 +40,21 @@ const FindService = () => {
   const [serviceTypes, setServiceTypes] = useState([]);
 
   // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const POST_PER_PAGE = 4;
-  const lastPostIndex = currentPage * POST_PER_PAGE;
-  const firstPostIndex = lastPostIndex - POST_PER_PAGE;
-  const currentPost = listServices.slice(firstPostIndex, lastPostIndex);
-  
+  const pageSizeOptions = [3, 4, 5];
+  const DEFAULT_CURRENT_PAGE_NUMBER = 1;
+  const DEFAULT_PAGE_SIZE_NUMBER = 4;
+  const [listServices, setListServices] = useState([]); // Fetch list room types state
+  const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE_NUMBER);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_NUMBER);
+  const [totalServices, setTotalServices] = useState(0);
+
   // reload "Favourites" in header
   const [, setReloadHeader] = useState(false);
-  
+
   // Filter state
-  const [filterPrice, setFilterPrice] = useState(100000);
+  const [filterPrice, setFilterPrice] = useState(0);
   const [filterServiceType, setFilterServiceType] = useState([]);
+  const [listFilterServices, setListFilterServices] = useState([]);
 
   const serviceTypeOptions = serviceTypes.map((serviceType) => {
     return {
@@ -93,7 +92,8 @@ const FindService = () => {
     ) {
       http.get('/auth/services')
         .then((resolve) => {
-          setListServices(resolve.data.list_services);
+          setListFilterServices([]);
+          setTotalServices(resolve.data.list_services.length);
           setCurrentPage(1);
           toast.success('Filter successfully!', {
             position: "top-right",
@@ -122,7 +122,7 @@ const FindService = () => {
     } else {
       http.post('/auth/services/filter', formData)
         .then((resolve) => {
-          setListServices(resolve.data.list_filter_services)
+          setListFilterServices(resolve.data.list_filter_services)
           setCurrentPage(1);
           toast.success('Filter successfully!', {
             position: "top-right",
@@ -153,18 +153,34 @@ const FindService = () => {
 
   // --------------------------     Paginate     --------------------------
 
-  const handleClickPaginate = (page) => {
-    console.log('Page:', page);
+  const handleClickPaginate = (page, pageSize) => {
+    console.log(page, pageSize);
     setCurrentPage(page);
+  }
+
+  const handleShowSizeChange = (currentPage, pageSize) => {
+    console.log(currentPage, pageSize);
+    setCurrentPage(currentPage);
+    setPageSize(pageSize);
   }
 
   // --------------------------     Fetch API     --------------------------
 
   useEffect(() => {
     const fetchData = () => {
-      http.get('/auth/services')
+      http.get('/auth/services/total')
         .then((resolve) => {
-          setListServices(resolve.data.list_services);
+          console.log('Total Services: ', resolve);
+          setTotalServices(resolve.data.total_services);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
+
+      http.get('/auth/services/list-lowest-price')
+        .then((resolve) => {
+          console.log('List Lowest Price: ', resolve);
+          setListOverviewRoomServices(resolve.data.list_lowest_price);
         })
         .catch((reject) => {
           console.log(reject);
@@ -172,7 +188,9 @@ const FindService = () => {
 
       http.get('/auth/services/lowest-price')
         .then((resolve) => {
+          console.log('Lowest Price: ', resolve);
           setLowestPrice(resolve.data.lowest_price);
+          setFilterPrice(resolve.data.lowest_price)
         })
         .catch((reject) => {
           console.log(reject);
@@ -180,6 +198,7 @@ const FindService = () => {
 
       http.get('/auth/services/highest-price')
         .then((resolve) => {
+          console.log('Highest Price: ', resolve);
           setHighestPrice(resolve.data.highest_price);
         })
         .catch((reject) => {
@@ -188,17 +207,53 @@ const FindService = () => {
 
       http.get('/auth/services/names')
         .then((resolve) => {
+          console.log('List Service Name: ', resolve);
           setServiceTypes(resolve.data.list_service_names);
         })
         .catch((reject) => {
           console.log(reject);
         })
     }
-      
+
     fetchData();
     setLoading(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const fetchData = () => {
+      if (listFilterServices.length === 0) {
+        if (filterPrice !== lowestPrice || filterServiceType.length !== 0) {
+          setListServices([]);
+          setTotalServices(0);
+        } else {
+          http.post(`/auth/services/paginate/${currentPage}/${pageSize}`, {
+            list_filter_services: listFilterServices
+          })
+            .then((resolve) => {
+              setListServices(resolve.data.list_services);
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+        }
+      } else {
+        http.post(`/auth/services/paginate/${currentPage}/${pageSize}`, {
+          list_filter_services: listFilterServices
+        })
+          .then((resolve) => {
+            setListServices(resolve.data.list_services);
+            setTotalServices(listFilterServices.length);
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+      }
+    }
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, pageSize, listFilterServices])
 
   if (!loading) {
     return (
@@ -220,10 +275,12 @@ const FindService = () => {
             </div>
           </nav>
           <div className={cx("image-container")}>
-            <img
+            <LazyLoadImage
+              key={findServices}
               src={findServices}
-              alt="Services"
-              className={cx("header-image")}
+              alt='Services'
+              effect='blur'
+              placeholderSrc={findServices}
             />
           </div>
         </div>
@@ -235,49 +292,20 @@ const FindService = () => {
 
         <div className={cx("section-overview")}>
           <div className={cx("section-overview__list-services")}>
-            <OverviewCard
-              image={overviewService1}
-              service={'SPA - Massage'}
-              price={'230.000'}
-              ranking={5}
-              type={'Service'}
-              description={'Book service'}
-            />
-            <OverviewCard
-              image={overviewService2}
-              service={'Pool'}
-              price={'300.000'}
-              ranking={5}
-              type={'Service'}
-              description={'Book service'}
-            />
-            <OverviewCard
-              image={overviewService3}
-              service={'Fitness'}
-              price={'250.000'}
-              ranking={5}
-              type={'Service'}
-              description={'Book service'}
-            />
-            <OverviewCard
-              image={overviewService4}
-              service={'Karaoke'}
-              price={'200.000'}
-              ranking={5}
-              type={'Service'}
-              description={'Book service'}
-            />
-            <OverviewCard
-              image={overviewService5}
-              service={'Tennis'}
-              price={'150.000'}
-              ranking={5}
-              type={'Service'}
-              description={'Book service'}
-            />
+            {listOverviewRoomServices.map((overviewRoomService) => {
+              return (
+                <OverviewCard
+                  key={overviewRoomService.id}
+                  image={overviewRoomService.image}
+                  title={overviewRoomService.service_name}
+                  price={overviewRoomService.price}
+                  ranking={5}
+                  type={'Service'}
+                />
+              )
+            })}
           </div>
         </div>
-
 
         <div className={cx("section-list-type-services")}>
           <div className={cx("filter-services")}>
@@ -339,14 +367,21 @@ const FindService = () => {
           <div className={cx("list-rooms-container")}>
             <h2>List Services</h2>
             <div className={cx("list-rooms-container__result")}>
-              {
-                listServices.length < POST_PER_PAGE 
-                  ? `Showing ${listServices.length} of `
-                  : `Showing ${firstPostIndex + currentPost.length} of `
-              }
-              <span>{listServices.length} services</span>
+              {(() => {
+                if (totalServices <= pageSize) {
+                  return `Showing ${totalServices} of `
+                } else {
+                  if (pageSize * currentPage <= totalServices) {
+                    return `Showing ${pageSize * currentPage} of `
+                  } else {
+                    const total = pageSize * currentPage;
+                    return `Showing ${total - (total - totalServices)} of `
+                  }
+                }
+              })()}
+              <span>{totalServices} services</span>
             </div>
-            {currentPost.map((service) => {
+            {listServices.map((service) => {
               return (
                 <BookingCard
                   key={service.id}
@@ -356,19 +391,22 @@ const FindService = () => {
                   price={service.price}
                   ranking={5}
                   type={'Service'}
-                  totalReviews={54}
                   setReloadHeader={setReloadHeader}
                 />
               )
             })}
             <div className={cx("list-room-pagination")}>
               <Pagination
-                showQuickJumper
                 current={currentPage}
-                defaultCurrent={currentPage}
-                pageSize={POST_PER_PAGE}
-                total={listServices.length}
+                defaultCurrent={DEFAULT_CURRENT_PAGE_NUMBER}
+                defaultPageSize={DEFAULT_PAGE_SIZE_NUMBER}
+                hideOnSinglePage
+                total={totalServices}
+                pageSizeOptions={pageSizeOptions}
+                showQuickJumper
+                showSizeChanger
                 onChange={handleClickPaginate}
+                onShowSizeChange={handleShowSizeChange}
               />
             </div>
           </div>

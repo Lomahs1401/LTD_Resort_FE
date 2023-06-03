@@ -1,0 +1,11 @@
+.booking-step-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2% 4%;
+
+    > h1 {
+        margin-top: 0;
+    }
+}

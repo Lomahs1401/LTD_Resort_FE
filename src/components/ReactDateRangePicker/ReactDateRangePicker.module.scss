@@ -1,0 +1,20 @@
+.date-range-picker-wrapper {
+    padding: 16px 24px;
+    background-color: #8DD3BB;
+    border-radius: 10px;
+}
+
+.date-range-picker-component {
+
+    font-size: 18px;
+    background-color: beige;
+    .rdrDefinedRangesWrapper {
+        font-size: 18px !important;
+        background-color: beige;
+    }
+
+    .rdrCalendarWrapper  {
+        font-size: 18px;
+        background-color: beige;
+    }
+}

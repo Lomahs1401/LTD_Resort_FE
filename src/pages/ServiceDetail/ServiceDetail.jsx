@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./RoomTypeDetail.module.scss";
+import styles from "./ServiceDetail.module.scss";
 import classNames from "classnames/bind";
 import Header from "../../layouts/Header/Header";
 import Footer from "../../layouts/Footer/Footer";
@@ -7,31 +7,23 @@ import Comment from "../../components/Comment/Comment";
 import AuthUser from "../../utils/AuthUser";
 import { Rate, Divider, Pagination } from "antd";
 import { BiArrowBack } from "react-icons/bi"
-import { BsFillCartCheckFill, BsFillHeartFill, BsFillShareFill, BsWifi } from "react-icons/bs";
-import { IoSparkles, IoRestaurant, IoCafe, IoPersonSharp, IoBedSharp } from "react-icons/io5";
-import { FaSwimmingPool, FaConciergeBell } from "react-icons/fa";
-import { BiSpa, BiDrink } from "react-icons/bi";
-import { IoIosBed, IoIosFitness } from "react-icons/io";
+import { BsFillHeartFill, BsFillShareFill } from "react-icons/bs";
+import { IoSparkles } from "react-icons/io5";
 import { GiAchievement } from "react-icons/gi";
-import { RxDimensions } from "react-icons/rx";
 import { useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { avatarSelector, bookmarkRoomsSelector, favouritesRoomsSelector } from "../../redux/selectors";
+import { avatarSelector, favouritesServicesSelector } from "../../redux/selectors";
 import currency from "../../utils/currency";
-import { addFavouriteRoom, removeFavouriteRoom } from "../../redux/actions";
+import { addFavouriteService, removeFavouriteService } from "../../redux/actions";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ref, listAll, getDownloadURL } from "firebase/storage"
 import { storage } from "../../utils/firebase";
 import Loading from "../../components/Loading/Loading";
-import checkin from "../../img/checkin.jpg"
-import checkout from "../../img/chekout.png"
 import { toast } from "react-toastify";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import BookingRoom from "../../components/BookingRoom/BookingRoom";
-import Swal from "sweetalert2";
 
 const cx = classNames.bind(styles);
 
@@ -57,13 +49,13 @@ function SamplePrevArrow(props) {
   );
 }
 
-export const RoomTypeDetail = () => {
-  const { roomTypeId } = useParams();
+export const ServiceDetail = () => {
+  const { serviceId } = useParams();
   const { http, user } = AuthUser();
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
-  const FIREBASE_URL = `gs://ltd-resort.appspot.com/room-types/${roomTypeId}/`;
+  const FIREBASE_URL = `gs://ltd-resort.appspot.com/services/${serviceId}/`;
 
-  const imageSettings = {
+  const settings = {
     dots: true,
     infinite: true,
     slidesToShow: 3,
@@ -100,62 +92,18 @@ export const RoomTypeDetail = () => {
     ]
   };
 
-  const bookingSettings = {
-    dots: true,
-    infinite: true,
-    slidesToShow: 2,
-    slidesToScroll: 2,
-    initialSlide: 0,
-    speed: 1000,
-    nextArrow: <SampleNextArrow style={{ backgroundColor: 'green' }} />,
-    prevArrow: <SamplePrevArrow style={{ backgroundColor: 'red' }} />,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-          infinite: true,
-          dots: true
-        }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-          initialSlide: 2
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
-  };
-
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch room type state
-  const [roomTypeDetail, setRoomTypeDetail] = useState({});
-  const [totalRooms, setTotalRooms] = useState(0);
+  // Fetch service detail state
+  const [serviceDetail, setServiceDetail] = useState({});
 
-  const [listAreas, setListAreas] = useState([]);
-  
   // Fetch list image state
   const [imageList, setImageList] = useState([]);
   const imageRef = ref(storage, FIREBASE_URL);
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  
-  // Selector
   const avatar = useSelector(avatarSelector);
-  const favouritesRooms = useSelector(favouritesRoomsSelector);
-  const bookmarkRooms = useSelector(bookmarkRoomsSelector);
+  const favouritesServices = useSelector(favouritesServicesSelector);
 
   // Pagination state
   const pageSizeOptions = [5, 10, 20];
@@ -170,8 +118,8 @@ export const RoomTypeDetail = () => {
 
   const [toggleFavourite, setToggleFavourite] = useState(() => {
     let isToggleFavourite = false;
-    favouritesRooms.some((favouriteRoom) => {
-      if (favouriteRoom.id === parseInt(roomTypeId)) {
+    favouritesServices.some((favouriteService) => {
+      if (favouriteService.id === parseInt(serviceId)) {
         isToggleFavourite = true;
         return true;
       } else {
@@ -183,20 +131,20 @@ export const RoomTypeDetail = () => {
 
   const handleClickFavourite = () => {
     if (!toggleFavourite) {
-      dispatch(addFavouriteRoom({
-        id: parseInt(roomTypeId),
-        image: roomTypeDetail.image,
-        title: roomTypeDetail.room_type_name,
-        price: roomTypeDetail.price,
-        ranking: roomTypeDetail.point_ranking,
+      dispatch(addFavouriteService({
+        id: parseInt(serviceId),
+        image: serviceDetail.image,
+        title: serviceDetail.room_type_name,
+        price: serviceDetail.price,
+        ranking: serviceDetail.point_ranking,
         type: "Room",
-        capacity: roomTypeDetail.number_customers,
-        listRooms: roomTypeDetail.number_rooms,
-        area: roomTypeDetail.room_size,
+        capacity: serviceDetail.number_customers,
+        listRooms: serviceDetail.number_rooms,
+        area: serviceDetail.room_size,
       }));
       setToggleFavourite(true);
     } else {
-      dispatch(removeFavouriteRoom(parseInt(roomTypeId)));
+      dispatch(removeFavouriteService(parseInt(serviceId)));
       setToggleFavourite(false);
     }
   }
@@ -223,23 +171,6 @@ export const RoomTypeDetail = () => {
     console.log(currentPage, pageSize);
     setCurrentPage(currentPage);
     setPageSize(pageSize);
-  }
-
-  const handleClickBookingNow = () => {
-    document.getElementById('booking-room').scrollIntoView({behavior: 'smooth'})
-  }
-
-  const handleClickBookingRoom = () => {
-    if (bookmarkRooms.length === 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'No room chosen',
-        text: 'You haven\'t selected any room yet!',
-      })
-    } else {
-      // dispatch(addRoomTypes(roomTypeDetail))
-      navigate(`/booking/${roomTypeId}`);
-    }
   }
 
   useEffect(() => {
@@ -279,53 +210,36 @@ export const RoomTypeDetail = () => {
 
   useEffect(() => {
     const fetchData = () => {
-      http.get(`/auth/room-types/${roomTypeId}`)
+      http.get(`/auth/services/${serviceId}`)
         .then((resolve) => {
-          setRoomTypeDetail(resolve.data.room_type);
+          setServiceDetail(resolve.data.service);
         })
         .catch((reject) => {
           console.log(reject);
         })
 
-      http.get(`/auth/room-types/total-rooms/${roomTypeId}`)
-        .then((resolve) => {
-          setTotalRooms(resolve.data.number_of_rooms);
-        })
-        .catch((reject) => {
-          console.log(reject);
-        })
-
-      http.get(`/auth/feedbacks/room-type/total/${roomTypeId}`)
+      http.get(`/auth/feedbacks/service/total/${serviceId}`)
         .then((resolve) => {
           console.log(resolve);
-          setTotalFeedbacks(resolve.data.total_feedback_rooms);
+          setTotalFeedbacks(resolve.data.total_feedback_services);
         })
         .catch((error) => {
           console.log(error);
         })
 
-      http.get(`/auth/feedbacks/average-rate/room/${roomTypeId}`)
+      http.get(`/auth/feedbacks/average-rate/service/${serviceId}`)
         .then((resolve) => {
           console.log(resolve);
-          setAverageRating(resolve.data.average_rating_room_type);
+          setAverageRating(resolve.data.average_rating_service);
         })
         .catch((error) => {
           console.log(error);
         })
 
-      http.get(`/auth/feedbacks/room-type/total-verified/${roomTypeId}`)
+      http.get(`/auth/feedbacks/service/total-verified/${serviceId}`)
         .then((resolve) => {
           console.log(resolve);
-          setTotalVerifiedFeedbacks(resolve.data.total_verified_feedback_room_types);
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-
-      http.get(`/auth/areas`)
-        .then((resolve) => {
-          console.log(resolve);
-          setListAreas(resolve.data.list_areas);
+          setTotalVerifiedFeedbacks(resolve.data.total_verified_feedback_services);
         })
         .catch((error) => {
           console.log(error);
@@ -338,8 +252,8 @@ export const RoomTypeDetail = () => {
 
   useEffect(() => {
     const fetchFeedbacks = () => {
-      
-      http.get(`/auth/feedbacks/${roomTypeId}/room/paginate/${currentPage}/${pageSize}`)
+
+      http.get(`/auth/feedbacks/${serviceId}/service/paginate/${currentPage}/${pageSize}`)
         .then((resolve) => {
           console.log(resolve);
           setFeedbacks(resolve.data.list_feedbacks);
@@ -360,19 +274,19 @@ export const RoomTypeDetail = () => {
   } else {
     return (
       <div>
-        <Header active='Find Rooms' userInfo={user} imageUrl={avatar} />
+        <Header active='Find Services' userInfo={user} imageUrl={avatar} />
 
-        <div className={cx("room-content")}>
+        <div className={cx("service-content")}>
           <Link
-            to="/find-rooms"
+            to="/find-services"
             className={cx("link-back")}
           >
             <BiArrowBack />
             Back
           </Link>
-          <div className={cx("room-info")}>
-            <div className={cx("room-info__left")}>
-              <h2>{roomTypeDetail.room_type_name}</h2>
+          <div className={cx("service-info")}>
+            <div className={cx("service-info__left")}>
+              <h2>{serviceDetail.service_name}</h2>
               <div className={cx("achievement")}>
                 <div className={cx("achievement__left")}>
                   <Rate
@@ -381,33 +295,18 @@ export const RoomTypeDetail = () => {
                     tooltips={RATING_DESC}
                     style={{ color: "#FF8682" }}
                   />
-                  <p className={cx("achievement-desc")}>5 Star Room</p>
+                  <p className={cx("achievement-desc")}>5 Star Service</p>
                 </div>
                 <div className={cx("achievement__right")}>
                   <GiAchievement size={25} style={{ color: "#FFD700	" }} />
                   <p className={cx("achievement-desc")}>Star</p>
                 </div>
               </div>
-              <div className={cx("detail")}>
-                <div className={cx("detail-person")}>
-                  <IoPersonSharp />
-                  <p>{roomTypeDetail?.number_customers} {roomTypeDetail?.number_customers === 1 ? "person" : "persons"}</p>
-                </div>
-                <div className={cx("detail-rooms")}>
-                  <IoBedSharp />
-                  <p>{totalRooms} rooms</p>
-                </div>
-                <div className={cx("detail-size")}>
-                  <RxDimensions />
-                  <p>{roomTypeDetail.room_size} m<sup>2</sup></p>
-                </div>
-              </div>
             </div>
-            <div className={cx("room-info__right")}>
+            <div className={cx("service-info__right")}>
               <p>Price from</p>
               <h1 style={{ color: "#FF8682" }}>
-                {roomTypeDetail?.price && currency(roomTypeDetail?.price)}
-                <sub>/Night</sub>
+                {serviceDetail?.price && currency(serviceDetail?.price)}
               </h1>
               <div className={cx("button")}>
                 <div className={cx("button__left")}>
@@ -422,21 +321,21 @@ export const RoomTypeDetail = () => {
                   </button>
                 </div>
                 <div className={cx("button__right")}>
-                  <button onClick={handleClickBookingNow}>Book now</button>
+                  <button>Book now</button>
                 </div>
               </div>
             </div>
           </div>
 
           <div className={cx("image-carousel")}>
-            <Slider {...imageSettings}>
+            <Slider {...settings}>
               {imageList.map((image, index) => {
                 return (
-                  <div className={cx("image-container")} key={index}>
+                  <div className={cx("image-container")} key={image}>
                     <LazyLoadImage
-                      key={image}
+                      key={index}
                       src={image}
-                      alt={`Pic ${index}`}
+                      alt={`Image ${index}`}
                       effect="blur"
                       placeholderSrc={image}
                     />
@@ -450,10 +349,10 @@ export const RoomTypeDetail = () => {
 
           <div className={cx("overview")}>
             <h1>Overview</h1>
-            <p>{roomTypeDetail.description}</p>
+            <p>{serviceDetail.description}</p>
             <div className={cx("strength")}>
               <div className={cx("box__special")}>
-                {totalFeedbacks !== 0 ? <h3>{averageRating.toFixed(2)}</h3> : <h3>No review yet</h3>}
+                <h3>{averageRating.toFixed(2)}</h3>
                 <div>
                   {(() => {
                     if (totalFeedbacks === 0) {
@@ -508,154 +407,11 @@ export const RoomTypeDetail = () => {
 
           <Divider className={cx("seperate-line")} />
 
-          <div className={cx("room-type-info")}>
-            <div className={cx("room-type-info__left")}>
-              <h1>Check-in time/Check-out time</h1>
-              <div className={cx("checkin-container")}>
-                <div className={cx("checkin-time")}>
-                  <div className={cx("checkin-time__left")}>
-                    <img src={checkin} alt="checkin" />
-                    <h2>Check-in time</h2>
-                  </div>
-                  <div className={cx("checkin-time__right")}>
-                    <h2>from 2:00 pm</h2>
-                  </div>
-                </div>
-                <div className={cx("checkout-time")}>
-                  <div className={cx("checkout-time__left")}>
-                    <img src={checkout} alt="checkout" />
-                    <h2>Check-out time</h2>
-                  </div>
-                  <div className={cx("checkout-time__right")}>
-                    <h2>before 12.00 am</h2>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <Divider className={cx("seperate-line")} type="vertical" style={{ height: 200 }} />
-
-            <div className={cx("room-type-info__right")}>
-              <h1>Amenities</h1>
-              <div className={cx("amenities")}>
-                <div className={cx("amenities-attributes")}>
-                  <div className={cx("amenities-attributes__icons")}>
-                    <div className={cx("amenities-attributes__icons-item")}>
-                      <FaSwimmingPool size={20} />
-                      Outdoor pool
-                    </div>
-                    <div className={cx("amenities-attributes__icons-item")}>
-                      <FaSwimmingPool size={20} />
-                      Indoor pool
-                    </div>
-                    <div className={cx("amenities-attributes__icons-item")}>
-                      <BiSpa size={20} />
-                      Spa and wellness center
-                    </div>
-                    <div className={cx("amenities-attributes__icons-item")}>
-                      <IoRestaurant size={20} />
-                      Restaurant
-                    </div>
-                    <div className={cx("amenities-attributes__icons-item")}>
-                      <FaConciergeBell size={20} />
-                      Room service
-                    </div>
-                  </div>
-                  <div className={cx("amenities-attributes__icons")}>
-                    <div className={cx("amenities-attributes__icons-item")}>
-                      <IoIosFitness size={20} />
-                      Fitness center
-                    </div>
-                    <div className={cx("amenities-attributes__icons-item")}>
-                      <BiDrink size={20} />
-                      Bar/Lounge
-                    </div>
-                    <div className={cx("amenities-attributes__icons-item")}>
-                      <BsWifi size={20} />
-                      Free Wi-Fi
-                    </div>
-                    <div className={cx("amenities-attributes__icons-item")}>
-                      <IoCafe size={20} />
-                      Tea/coffee machine
-                    </div>
-                    <div
-                      className={cx("amenities-attributes__icons-item")}
-                      style={{ color: "orange" }}
-                    >
-                      +24 more
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <Divider className={cx("seperate-line")} />
-
-          <div id="booking-room" className={cx("booking-room-container")}>
-            <h1>Reservations</h1>
-            <div className={cx("booking-container")}>
-              <div className={cx("booking-container__left")}>
-                <div className={cx("booking-container__left-detail")}>
-                  <Slider {...bookingSettings}>
-                    {listAreas.map((area, index) => {
-                      return (
-                        <div key={index}>
-                          <BookingRoom 
-                            areaId={area.id}
-                            areaName={area.area_name}
-                            roomTypeId={parseInt(roomTypeId)} 
-                            roomTypeName={roomTypeDetail.room_type_name}
-                            roomSize={roomTypeDetail.room_size}
-                            totalRooms={totalRooms}
-                            numberCustomers={roomTypeDetail.number_customers}
-                            description={roomTypeDetail.description}
-                            image={roomTypeDetail.image}
-                            price={roomTypeDetail.price}
-                            pointRanking={roomTypeDetail.point_ranking}
-                          />
-                        </div>
-                      )
-                    })}
-                  </Slider>
-                </div>
-              </div>
-              <div className={cx("booking-container__right")}>
-                <div className={cx("cart-container")}>
-                  <h1>Cart</h1>
-                  <div className={cx("cart-detail")}>
-                    <div className={cx("cart-detail__top")}>
-                      <div className={cx("cart-detail__top-left")}>
-                        <IoIosBed size={30} />
-                        <h3>Total rooms currently booked</h3>
-                      </div>
-                      
-                      <div className={cx("cart-detail__top-right")}>
-                        <h3>{bookmarkRooms.length}</h3>
-                      </div>
-                    </div>
-                    <div className={cx("cart-detail__bottom")}>
-                      <button 
-                        className={cx("cart-btn")}
-                        onClick={handleClickBookingRoom}
-                      >
-                        <BsFillCartCheckFill size={24} />
-                        <p>Book</p>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <Divider className={cx("seperate-line")} />
-
           <div className={cx("review-wrapper")}>
             <div className={cx("review-wrapper__left")}>
               <h2>Reviews</h2>
               <div className={cx("score")}>
-                {totalFeedbacks !== 0 ? <h1>{averageRating.toFixed(2)}</h1> : <h1>No review yet</h1>}
+                <h1>{averageRating.toFixed(2)}</h1>
                 <div className={cx("summary")}>
                   {(() => {
                     if (totalFeedbacks === 0) {
@@ -714,7 +470,7 @@ export const RoomTypeDetail = () => {
               if (index === feedbacks.length - 1) {
                 return (
                   <Comment
-                    key={feedback.id}
+                    key={index}
                     accountId={feedback.account_id}
                     avatar={feedback.avatar}
                     comment={feedback.comment}
@@ -778,4 +534,4 @@ export const RoomTypeDetail = () => {
   }
 };
 
-export default RoomTypeDetail;
+export default ServiceDetail;
