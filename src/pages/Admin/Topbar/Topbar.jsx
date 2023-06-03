@@ -1,6 +1,7 @@
 import React from 'react'
 import { Box, IconButton, useTheme } from "@mui/material";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { tokens, ColorModeContext } from '../../../utils/theme';
 import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -17,7 +18,12 @@ const cx = classNames.bind(styles);
 const Topbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const colorMode = useContext(ColorModeContext)
+  const colorMode = useContext(ColorModeContext);
+  const navigate = useNavigate();
+
+  const handleClickInfo = () => {
+    navigate("/admin/details");
+  }
 
   return (
     <div className={cx("topbar-wrapper")}>
@@ -48,7 +54,7 @@ const Topbar = () => {
         <IconButton>
           <SettingsOutlinedIcon />
         </IconButton>
-        <IconButton>
+        <IconButton onClick={handleClickInfo}>
           <PersonOutlinedIcon />
         </IconButton>
       </Box>

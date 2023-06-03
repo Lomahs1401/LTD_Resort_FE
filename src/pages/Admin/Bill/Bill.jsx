@@ -1,12 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
-import {
-  DataGrid,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-} from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { Diamond } from "@mui/icons-material";
 import { tokens } from "../../../utils/theme";
 import {
@@ -19,18 +14,21 @@ import {
 } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import { useTheme } from "@mui/material";
-import { Form, Input, Modal, Select, Steps } from "antd";
+import { Form, Modal, Steps } from "antd";
 import { MdHotel, MdRoomService } from "react-icons/md";
 import Draggable from "react-draggable";
 import styles from "./Bill.module.scss";
 import classNames from "classnames/bind";
+import { getDownloadURL, ref, uploadBytes, getStorage } from "firebase/storage";
+import { storage } from "../../../utils/firebase";
+import AuthUser from "../../../utils/AuthUser";
 
 const cx = classNames.bind(styles);
 
 const Bill = () => {
   const location = useLocation();
   const { state } = location;
-  const Customer = state;
+  const { http } = AuthUser();
   const Layout = {
     labelCol: {
       span: 6,
@@ -43,6 +41,13 @@ const Bill = () => {
   const colors = tokens(theme.palette.mode);
   const [current, setCurrent] = useState(0);
   const [openModalRoom, setOpenModalRoom] = useState(false);
+  const [Customer, setCustomer] = useState();
+  const [total, setTotal] = useState();
+
+  const [room, setRoom] = useState([]);
+  const [service, setService] = useState([]);
+  const [extraService, setExtraService] = useState([]);
+  const [imageUrl, setImageUrl] = useState("");
   const [form] = Form.useForm();
   const [values, setValues] = useState({
     room_name: "",
@@ -50,15 +55,6 @@ const Bill = () => {
     area: "",
     type: "",
   });
-
-  function CustomToolbar() {
-    return (
-      <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-      </GridToolbarContainer>
-    );
-  }
 
   const onChange = (value) => {
     setCurrent(value);
@@ -102,45 +98,7 @@ const Bill = () => {
   };
 
   //data columns
-  const columnsRoom = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    {
-      field: "total_amount",
-      headerName: "Total Amount",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "total_room",
-      headerName: "Total Room",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "total_people",
-      headerName: "Total People",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "payment_method",
-      headerName: "Payment Method",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "name_bank",
-      headerName: "Name Bank",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "pay_time",
-      headerName: "Pay time",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-  ];
+  const columnsRoom = [{ field: "id", headerName: "ID", flex: 0.5 }];
   const columnsRoomDetail = [
     { field: "id", headerName: "ID", flex: 0.5 },
     {
@@ -192,26 +150,36 @@ const Bill = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDatabillRoom.filter(
-            (item) => item.id_customer === Customer.id
-          )}
+          rows={room ? room : mockDataRoom}
           columns={columnsRoom}
-          components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
         />
       ),
       icon: <MdHotel />,
     },
     {
-      title: "Bill",
+      title: "Service",
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
           rows={mockDatabillService.filter(
-            (item) => item.id_customer === Customer.id
+            (item) => item.id_customer === Customer?.id
           )}
           columns={columnsService}
-          components={{ Toolbar: CustomToolbar }}
+          className={cx("table")}
+        />
+      ),
+      icon: <MdRoomService />,
+    },
+    {
+      title: "Extra Service",
+      content: (
+        <DataGrid
+          onCellDoubleClick={handleDoubleClickCell}
+          rows={mockDatabillService.filter(
+            (item) => item.id_customer === Customer?.id
+          )}
+          columns={columnsService}
           className={cx("table")}
         />
       ),
@@ -242,109 +210,184 @@ const Bill = () => {
     });
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const id = state?.id;
+      await http
+        .get(`/admin/show-customer/${id}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setCustomer(resolve.data.data);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      await http
+        .get(`/admin/get-total-amount/${id}`)
+        .then((resolve) => {
+          setTotal(resolve.data.total_amount);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      await http
+        .get(`/admin/show-bill-customer/${id}`)
+        .then((resolve) => {
+          console.log(resolve);
+          if (resolve.status == 200) {
+            setRoom(resolve.data.bill_room);
+            setService(resolve.data.bill_service);
+            setExtraService(resolve.data.bill_extra_service);
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      const storage = getStorage();
+      const storageRef = ref(storage, Customer?.avatar);
+      const downloadUrl = await getDownloadURL(storageRef);
+      setImageUrl(downloadUrl);
+    };
+
+    fetchImage();
+  }, [Customer?.avatar]);
+
+  if (!imageUrl) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className={cx("contact-wrapper")}>
       <Header title="INFO" subtitle="List of " />
       <div className={cx("account-info-wrapper")}>
-        <div className={cx("account-info-wrapper__right")}>aa</div>
+        <div className={cx("account-info-wrapper__right")}>
+          <img src={imageUrl} alt="Avatar" />;
+        </div>
         <div className={cx("account-info-wrapper__left")}>
-          <div className={cx("info-container")}>
-            <div className={cx("info-container__left")}>
-              <div className={cx("title-text")}>Customer Name</div>
-              <div className={cx("content-text")}>{Customer.full_name}</div>
-            </div>
-          </div>
-          <div className={cx("info-container")}>
-            <div className={cx("info-container__left")}>
-              <div className={cx("title-text")}>Gender</div>
-              <div className={cx("content-text")}>{Customer.gender}</div>
-            </div>
-          </div>
-          <div className={cx("info-container")}>
-            <div className={cx("info-container__left")}>
-              <div className={cx("title-text")}>Date of birth</div>
-              <div className={cx("content-text")}>{Customer.birthday}</div>
-            </div>
-          </div>
-          <div className={cx("info-container")}>
-            <div className={cx("info-container__left")}>
-              <div className={cx("title-text")}>ID Card</div>
-              <div className={cx("content-text")}>{Customer.email}</div>
-            </div>
-          </div>
-          <div className={cx("info-container")}>
-            <div className={cx("info-container__left")}>
-              <div className={cx("title-text")}>Address</div>
-              <div className={cx("content-text")}>{Customer.address}</div>
-            </div>
-          </div>
-          <div className={cx("info-container")}>
-            <div className={cx("info-container__left")}>
-              <div className={cx("title-text")}>Phone number</div>
-              <div className={cx("content-text")}>{Customer.phone}</div>
-            </div>
-          </div>
-          <div className={cx("info-container")}>
-            <div className={cx("info-container__left")}>
-              <div className={cx("title-text")}>Ranking point</div>
-              <div className={cx("content-text")}>
-                {(() => {
-                  if (Customer.ranking_point === "RANKING_BRONZE") {
-                    return (
-                      <Diamond
-                        style={{
-                          fontSize: 40,
-                          marginRight: "-6px",
-                          color: "#A77044",
-                        }}
-                      />
-                    );
-                  } else if (Customer.ranking_point === "RANKING_SILVER") {
-                    return (
-                      <Diamond
-                        style={{
-                          fontSize: 40,
-                          marginRight: "-6px",
-                          color: "#D7D7D7",
-                        }}
-                      />
-                    );
-                  } else if (Customer.ranking_point === "RANKING_GOLD") {
-                    return (
-                      <Diamond
-                        style={{
-                          fontSize: 40,
-                          marginRight: "-6px",
-                          color: "#FEE101",
-                        }}
-                      />
-                    );
-                  } else if (Customer.ranking_point === "RANKING_PLATINUM") {
-                    return (
-                      <Diamond
-                        style={{
-                          fontSize: 40,
-                          marginRight: "-6px",
-                          color: "#79CCE4",
-                        }}
-                      />
-                    );
-                  } else if (Customer.ranking_point === "RANKING_DIAMOND") {
-                    return (
-                      <Diamond
-                        style={{
-                          fontSize: 40,
-                          marginRight: "-6px",
-                          color: "#225684",
-                        }}
-                      />
-                    );
-                  }
-                })()}
+          <div style={{ width: "50%" }}>
+            <div className={cx("info-container")}>
+              <div className={cx("info-container__left")}>
+                <div className={cx("title-text")}>Total Amount</div>
+                <div className={cx("content-text")}>{total}</div>
               </div>
             </div>
-            <div className={cx("info-container__right")}>
-              {/* {(() => {
+            <div className={cx("info-container")}>
+              <div className={cx("info-container__left")}>
+                <div className={cx("title-text")}>User name</div>
+                <div className={cx("content-text")}>{Customer?.username}</div>
+              </div>
+            </div>
+            <div className={cx("info-container")}>
+              <div className={cx("info-container__left")}>
+                <div className={cx("title-text")}>Email</div>
+                <div className={cx("content-text")}>{Customer?.email}</div>
+              </div>
+            </div>
+            <div className={cx("info-container")}>
+              <div className={cx("info-container__left")}>
+                <div className={cx("title-text")}>Customer Name</div>
+                <div className={cx("content-text")}>{Customer?.name}</div>
+              </div>
+            </div>
+            <div className={cx("info-container")}>
+              <div className={cx("info-container__left")}>
+                <div className={cx("title-text")}>Gender</div>
+                <div className={cx("content-text")}>{Customer?.gender}</div>
+              </div>
+            </div>
+          </div>
+          <div style={{ width: "50%" }}>
+            <div className={cx("info-container")}>
+              <div className={cx("info-container__left")}>
+                <div className={cx("title-text")}>Date of birth</div>
+                <div className={cx("content-text")}>{Customer?.birthday}</div>
+              </div>
+            </div>
+            <div className={cx("info-container")}>
+              <div className={cx("info-container__left")}>
+                <div className={cx("title-text")}>ID Card</div>
+                <div className={cx("content-text")}>{Customer?.CMND}</div>
+              </div>
+            </div>
+            <div className={cx("info-container")}>
+              <div className={cx("info-container__left")}>
+                <div className={cx("title-text")}>Address</div>
+                <div className={cx("content-text")}>{Customer?.address}</div>
+              </div>
+            </div>
+            <div className={cx("info-container")}>
+              <div className={cx("info-container__left")}>
+                <div className={cx("title-text")}>Phone number</div>
+                <div className={cx("content-text")}>{Customer?.phone}</div>
+              </div>
+            </div>
+            <div className={cx("info-container")}>
+              <div className={cx("info-container__left")}>
+                <div className={cx("title-text")}>Ranking point</div>
+                <div className={cx("content-text")}>
+                  {(() => {
+                    if (state?.ranking_name === 1) {
+                      return (
+                        <Diamond
+                          style={{
+                            fontSize: 40,
+                            marginRight: "-6px",
+                            color: "#A77044",
+                          }}
+                        />
+                      );
+                    } else if (state?.ranking_id === 2) {
+                      return (
+                        <Diamond
+                          style={{
+                            fontSize: 40,
+                            marginRight: "-6px",
+                            color: "#D7D7D7",
+                          }}
+                        />
+                      );
+                    } else if (state?.ranking_id === 3) {
+                      return (
+                        <Diamond
+                          style={{
+                            fontSize: 40,
+                            marginRight: "-6px",
+                            color: "#FEE101",
+                          }}
+                        />
+                      );
+                    } else if (state?.ranking_id === 4) {
+                      return (
+                        <Diamond
+                          style={{
+                            fontSize: 40,
+                            marginRight: "-6px",
+                            color: "#79CCE4",
+                          }}
+                        />
+                      );
+                    } else if (state?.ranking_id === 5) {
+                      return (
+                        <Diamond
+                          style={{
+                            fontSize: 40,
+                            marginRight: "-6px",
+                            color: "#225684",
+                          }}
+                        />
+                      );
+                    }
+                  })()}
+                </div>
+              </div>
+              <div className={cx("info-container__right")}>
+                {/* {(() => {
               if (customerRanking === RANKING_BRONZE) {
                 return <Diamond style={{ fontSize: 40, marginRight: '-6px', color: '#A77044' }} />
               }
@@ -361,6 +404,7 @@ const Bill = () => {
                 return <Diamond style={{ fontSize: 40, marginRight: '-6px', color: '#225684' }} />
               }
             })()} */}
+              </div>
             </div>
           </div>
         </div>
@@ -405,14 +449,6 @@ const Bill = () => {
           onChange={onChange}
         />
         <div className={cx("content")}>{items[current].content}</div>
-
-        {/* <DataGrid
-          onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDatabill.filter((item) => item.id_customer === 2)}
-          columns={columns}
-          components={{ Toolbar: CustomToolbar }}
-          className={cx("table")}
-        /> */}
       </Box>
       <Modal
         title={
