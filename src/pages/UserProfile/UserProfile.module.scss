@@ -27,7 +27,6 @@
                 position: relative;
                 width: 150px;
                 height: 150px;
-                // display: inline-block;
 
                 img {
                     height: 150px;
@@ -76,13 +75,6 @@
         margin-inline: 5%;
         margin-bottom: 40px;
 
-        .action {
-            width: 100%;
-            display: flex;
-            gap: 30%;
-            background-color: whitesmoke;
-        }
-
         .content {
             margin-top: 50px;
             border: 1px solid whitesmoke;
@@ -92,13 +84,12 @@
     }
 }
 
-::-webkit-scrollbar {
-    display: none;
-}
-
 .account-info-wrapper {
     padding-inline: 3%;
     padding-block: 2%;
+    border: 1px solid whitesmoke;
+    border-radius: 10px;
+    background-color: whitesmoke;
 
     &__top {
         display: flex;
@@ -190,3 +181,10 @@
 .modal-form {
     max-width: 600px;
 }
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+
+

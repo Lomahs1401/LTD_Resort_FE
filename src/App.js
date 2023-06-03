@@ -17,9 +17,10 @@ const Loading = lazy(() => import("./components/Loading/Loading"));
 const FindService = lazy(() => import("./pages/FindService/FindService"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail/ServiceDetail"));
 const Favourites = lazy(() => import("./pages/Favourites/Favourites"));
+const UserProfile = lazy(() => import("./pages/UserProfile/UserProfile"));
 const ManageAccount = lazy(() => import("./pages/ManageAccount/ManageAccount"));
 const BookingProgress = lazy(() => import("./pages/BookingProgress/BookingProgress"));
-const Admin = lazy(() => import("./pages/RoomTypeDetail/RoomTypeDetail"));
+const Admin = lazy(() => import("./pages/Admin/Admin"));
 const NotFound = lazy(() => import("./pages/Error/NotFound/NotFound"));
 const Unauthorized = lazy(() => import("./pages/Error/Unauthorized/Unauthorized"));
 
@@ -199,6 +200,18 @@ function App() {
                 element={
                   <Suspense fallback={<Loading />}>
                     <Favourites />
+                  </Suspense>
+                }
+              />
+            }
+          />
+          <Route
+            path="/user-profile"
+            element={
+              <CustomerRoute
+                element={
+                  <Suspense fallback={<Loading />}>
+                    <UserProfile />
                   </Suspense>
                 }
               />

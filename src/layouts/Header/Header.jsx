@@ -9,6 +9,7 @@ import AuthUser from '../../utils/AuthUser'
 import { useSelector } from 'react-redux'
 import { favouritesRoomsSelector, favouritesServicesSelector } from "../../redux/selectors";
 import { Divider, Popover } from 'antd'
+import { FaUser } from 'react-icons/fa'
 import { FiLogOut } from 'react-icons/fi'
 import { RiLockPasswordLine } from 'react-icons/ri'
 import { MdFavorite } from 'react-icons/md'
@@ -48,6 +49,10 @@ const Header = ({active, userInfo, imageUrl}) => {
           <div className={cx("favourites-couter")} style={totalFavouritesItem > 0 ? {display: 'block'} : {display: 'none'}}>
             <span>{totalFavouritesItem}</span>
           </div>
+        </Link>
+        <Link to="/user-profile" className={cx("content-wrapper__link-item")}>
+          <FaUser />
+          <p>User Profile</p>
         </Link>
         <Link to="/update-password" className={cx("content-wrapper__link-item")}>
           <RiLockPasswordLine/>
