@@ -160,10 +160,10 @@ const BookingCard = ({
               <Rate
                 disabled
                 tooltips={RATING_DESC}
-                defaultValue={ranking}
+                value={Math.round(ranking).toFixed(0)}
                 style={{ color: '#FF8682' }}
               />
-              <p className="ant-rate-text" style={{ fontSize: 16 }}>{ranking} Star {type}</p>
+              <p className="ant-rate-text" style={{ fontSize: 16 }}>{Math.round(ranking).toFixed(0)} Star {type}</p>
               {type === 'Room' && (
                 <>
                   <FaCoffee className={cx("amenities")} size={16} />

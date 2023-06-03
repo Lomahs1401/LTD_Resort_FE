@@ -22,6 +22,8 @@ const BookmarkRoom = ({
   image,
   price,
   pointRanking, 
+  totalAverage,
+  totalFeedbacks,
   setReloadBookmarkRoom 
 }) => {
 
@@ -88,6 +90,8 @@ const BookmarkRoom = ({
             image: image,
             price: price,
             pointRanking: pointRanking, 
+            totalAverage: totalAverage,
+            totalFeedbacks: totalFeedbacks
           }))
         }
         setBookmarked(true)

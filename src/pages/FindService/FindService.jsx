@@ -295,11 +295,12 @@ const FindService = () => {
             {listOverviewRoomServices.map((overviewRoomService) => {
               return (
                 <OverviewCard
+                  id={overviewRoomService.id}
                   key={overviewRoomService.id}
                   image={overviewRoomService.image}
                   title={overviewRoomService.service_name}
                   price={overviewRoomService.price}
-                  ranking={5}
+                  ranking={overviewRoomService.average_rating}
                   type={'Service'}
                 />
               )
@@ -389,7 +390,7 @@ const FindService = () => {
                   image={service.image}
                   title={service.service_name}
                   price={service.price}
-                  ranking={5}
+                  ranking={service.rating}
                   type={'Service'}
                   setReloadHeader={setReloadHeader}
                 />
