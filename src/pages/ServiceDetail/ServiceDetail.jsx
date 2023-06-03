@@ -8,10 +8,11 @@ import AuthUser from "../../utils/AuthUser";
 import { Rate, Divider, Pagination } from "antd";
 import { BiArrowBack } from "react-icons/bi"
 import { BsFillHeartFill, BsFillShareFill } from "react-icons/bs";
+import { MdRoomService } from "react-icons/md";
 import { IoSparkles } from "react-icons/io5";
-import { GiAchievement } from "react-icons/gi";
+import { TbDiamondFilled } from "react-icons/tb"
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { avatarSelector, favouritesServicesSelector } from "../../redux/selectors";
 import currency from "../../utils/currency";
@@ -24,6 +25,7 @@ import { storage } from "../../utils/firebase";
 import Loading from "../../components/Loading/Loading";
 import { toast } from "react-toastify";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import OverviewCard from "../../components/OverviewCard/OverviewCard";
 
 const cx = classNames.bind(styles);
 
@@ -52,10 +54,11 @@ function SamplePrevArrow(props) {
 export const ServiceDetail = () => {
   const { serviceId } = useParams();
   const { http, user } = AuthUser();
+  const location = useLocation();
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
-  const FIREBASE_URL = `gs://ltd-resort.appspot.com/services/${serviceId}/`;
+  const [firebaseUrl, setFirebaseUrl] = useState(`gs://ltd-resort.appspot.com/services/${serviceId}/`)
 
-  const settings = {
+  const imageSettings = {
     dots: true,
     infinite: true,
     slidesToShow: 3,
@@ -94,12 +97,17 @@ export const ServiceDetail = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  // Fetch random list room types state
+  const [listRandomServices, setListRandomServices] = useState([]);
+
   // Fetch service detail state
   const [serviceDetail, setServiceDetail] = useState({});
 
   // Fetch list image state
-  const [imageList, setImageList] = useState([]);
-  const imageRef = ref(storage, FIREBASE_URL);
+  const imageList = location.state?.imageList || [];
+  const [currentImageList, setCurrentImageList] = useState([]);
+  const [isImageListLoaded, setIsImageListLoaded] = useState(false);
+  const imageRef = ref(storage, firebaseUrl);
 
   const dispatch = useDispatch();
   const avatar = useSelector(avatarSelector);
@@ -190,7 +198,8 @@ export const ServiceDetail = () => {
           });
 
           Promise.all(promises).then(() => {
-            setImageList(fetchedImages); // Cập nhật state ImageList với các ảnh đã lấy được
+            setCurrentImageList(fetchedImages); // Cập nhật state ImageList với các ảnh đã lấy được
+            setIsImageListLoaded(true); // Cập nhật giá trị của isImageListLoaded
           });
         })
         .catch((error) => {
@@ -206,10 +215,17 @@ export const ServiceDetail = () => {
     setIsLoading(true);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [serviceId])
 
   useEffect(() => {
     const fetchData = () => {
+      http.get(`/auth/services/random/${serviceId}`)
+        .then((resolve) => {
+          setListRandomServices(resolve.data.list_random_services);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
       http.get(`/auth/services/${serviceId}`)
         .then((resolve) => {
           setServiceDetail(resolve.data.service);
@@ -248,7 +264,7 @@ export const ServiceDetail = () => {
 
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [serviceId])
 
   useEffect(() => {
     const fetchFeedbacks = () => {
@@ -265,7 +281,7 @@ export const ServiceDetail = () => {
 
     fetchFeedbacks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, pageSize])
+  }, [currentPage, pageSize, serviceId])
 
   if (!isLoading) {
     return (
@@ -291,15 +307,15 @@ export const ServiceDetail = () => {
                 <div className={cx("achievement__left")}>
                   <Rate
                     disabled
-                    defaultValue={5}
+                    value={Math.round(averageRating).toFixed(0)}
                     tooltips={RATING_DESC}
                     style={{ color: "#FF8682" }}
                   />
-                  <p className={cx("achievement-desc")}>5 Star Service</p>
+                  <p className={cx("achievement-desc")}>{Math.round(averageRating).toFixed(0)} Star Service</p>
                 </div>
                 <div className={cx("achievement__right")}>
-                  <GiAchievement size={25} style={{ color: "#FFD700	" }} />
-                  <p className={cx("achievement-desc")}>Star</p>
+                  <TbDiamondFilled size={25} style={{ color: "#FFD700	" }} />
+                  <p className={cx("achievement-desc")}>{serviceDetail.point_ranking} Points</p>
                 </div>
               </div>
             </div>
@@ -328,21 +344,23 @@ export const ServiceDetail = () => {
           </div>
 
           <div className={cx("image-carousel")}>
-            <Slider {...settings}>
-              {imageList.map((image, index) => {
-                return (
-                  <div className={cx("image-container")} key={image}>
-                    <LazyLoadImage
-                      key={index}
-                      src={image}
-                      alt={`Image ${index}`}
-                      effect="blur"
-                      placeholderSrc={image}
-                    />
-                  </div>
-                )
-              })}
-            </Slider>
+            {isImageListLoaded && (
+              <Slider {...imageSettings}>
+                {currentImageList.map((image, index) => {
+                  return (
+                    <div className={cx("image-container")} key={index}>
+                      <LazyLoadImage
+                        key={index}
+                        src={image}
+                        alt={`Pic ${index}`}
+                        effect="blur"
+                        placeholderSrc={image}
+                      />
+                    </div>
+                  )
+                })}
+              </Slider>
+            )}
           </div>
 
           <Divider className={cx("seperate-line")} />
@@ -524,6 +542,32 @@ export const ServiceDetail = () => {
                 onChange={handleClickPaginate}
                 onShowSizeChange={handleShowSizeChange}
               />
+            </div>
+          </div>
+
+          <Divider className={cx("seperate-line")} />
+
+          <div className={cx("section-random")}>
+            <div className={cx("section-random__title")}>
+              <MdRoomService size={30} />
+              <h1>Some other services you may be interested in</h1>
+            </div>
+            <div className={cx("section-random__list-rooms")}>
+              {listRandomServices.map((randomService) => {
+                return (
+                  <OverviewCard
+                    key={randomService.id}
+                    id={randomService.id}
+                    image={randomService.image}
+                    title={randomService.service_name}
+                    price={randomService.price}
+                    ranking={randomService.average_rating}
+                    type={'Service'}
+                    currentImageList={currentImageList}
+                    setFirebaseUrl={setFirebaseUrl}
+                  />
+                )
+              })}
             </div>
           </div>
         </div>

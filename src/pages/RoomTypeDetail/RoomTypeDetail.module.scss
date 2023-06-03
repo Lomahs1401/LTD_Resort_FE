@@ -665,20 +665,18 @@
   margin-inline: 2%;
 
   &__title {
-      color: #14274A;
-      text-align: center;
-      margin-bottom: 40px;
-      margin-inline: 8%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+    color: #14274A;
+    font-weight: 600;
+    margin-bottom: 20px;
 
-      h1 {
-          font-size: 32px;
-          font-weight: 500; 
-      }
-      p {
-          font-size: 22px;
-          font-weight: 400;
-          margin-inline: 24%;
-      }
+    h1 {
+      margin-block: 4px;
+      font-size: 32px;
+    }
   }
 
   &__list-rooms {

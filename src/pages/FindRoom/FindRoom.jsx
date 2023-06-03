@@ -386,7 +386,7 @@ const FindRoom = () => {
                   image={overviewRoomType.image}
                   title={overviewRoomType.room_type_name}
                   price={overviewRoomType.price}
-                  ranking={5}
+                  ranking={overviewRoomType.average_rating}
                   type={'Room'}
                 />
               )
@@ -524,7 +524,7 @@ const FindRoom = () => {
                   image={roomType.image}
                   title={roomType.room_type_name}
                   price={roomType.price}
-                  ranking={5}
+                  ranking={roomType.rating}
                   type={'Room'}
                   capacity={roomType.number_customers}
                   area={roomType.room_size}

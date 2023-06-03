@@ -10,7 +10,7 @@
     &__left {
 
         position: relative;
-        
+
         img {
             border-radius: 10px;
             width: 300px;
@@ -23,7 +23,7 @@
             position: absolute;
             right: 10px;
             top: 20px;
-
+    
             > span {
                 color: #2D484A;
                 font-size: 14px;
@@ -42,6 +42,7 @@
         justify-content: flex-start;
         align-content: flex-start;
     }
+
 }
 
 .amenities {
