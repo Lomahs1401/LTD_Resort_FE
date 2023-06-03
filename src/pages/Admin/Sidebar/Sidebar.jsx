@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect  } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -21,6 +21,8 @@ import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import testimonial from "../../../img/testimonial1.png";
+import { getDownloadURL, ref, getStorage } from "firebase/storage";
+import AuthUser from "../../../utils/AuthUser";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -43,8 +45,43 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [admin,setAdmin] = useState();
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const {http} =AuthUser();
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      await http
+        .get(`/admin/account-admin`)
+        .then((resolve) => {
+          console.log(resolve);
+          setAdmin(resolve.data.customer);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      const storage = getStorage();
+      const storageRef = ref(storage, admin?.avatar);
+      const downloadUrl = await getDownloadURL(storageRef);
+      setAvatarUrl(downloadUrl);
+    };
+
+    fetchImage();
+  }, [admin?.avatar]);
+
+  // if (!avatarUrl) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <Box
@@ -102,7 +139,7 @@ const Sidebar = () => {
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={testimonial}
+                  src={avatarUrl}
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
@@ -113,10 +150,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Ed Roh
+                  {admin?.username}
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  VP Fancy Admin
+                  {admin?.name}
                 </Typography>
               </Box>
             </Box>

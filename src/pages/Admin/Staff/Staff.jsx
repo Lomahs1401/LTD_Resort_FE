@@ -235,21 +235,20 @@ const Staff = () => {
       bottom: clientHeight - (targetRect.bottom - uiData.y),
     });
   };
-  // api
-
+  // //fetch api
   // useEffect(() => {
 
   //   const fetchData = () =>{
-  //     http.get('/admin/list-customer')
+  //     http.get('/admin/list')
   //     .then((resolve) => {
   //       console.log(resolve);
-  //       setListStaff(resolve.data.list_customers);
+  //       setListStaff(resolve.data.list_employee);
   //     })
   //     .catch((reject) => {
   //       console.log(reject);
   //     })
   //   }
-  //   // form.setFieldsValue(values);
+  //   fetchData()
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
     
   // }, []);

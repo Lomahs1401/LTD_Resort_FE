@@ -8,13 +8,11 @@
   align-items: center;
 
   &__left {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
   }
-
-
 }
 
 .title-text {
@@ -32,9 +30,8 @@
 .modal-form {
   max-width: 600px;
 }
-.form-attributes{
- 
-  &__item{
+.form-attributes {
+  &__item {
     margin: 0;
   }
 }
@@ -42,14 +39,21 @@
   font-weight: 700 !important;
 }
 .table {
-    font-size: larger !important;
+  font-size: larger !important;
 }
-.account-info-wrapper{
+.account-info-wrapper {
   display: flex;
-  &__right{
+  &__right {
     width: 50% !important;
+    img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+    }
   }
-  &__left{
+  &__left {
     width: 50% !important;
+    display: flex;
+    justify-content: space-between;
   }
 }

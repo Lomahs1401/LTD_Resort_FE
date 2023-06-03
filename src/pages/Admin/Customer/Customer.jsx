@@ -58,14 +58,13 @@ const Customer = () => {
   const handleDoubleClickCell = (params, ev) => {
     const { row } = params;
     console.log(row);
-
+    
     // Chuyển hướng đến trang hóa đơn
     navigate("/admin/bill", { state: row });
   };
 
   //fetch api
   useEffect(() => {
-
     const fetchData = () =>{
       http.get('/admin/list-customer')
       .then((resolve) => {
@@ -77,7 +76,6 @@ const Customer = () => {
       })
     }
     fetchData()
-    // form.setFieldsValue(values);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     
   }, []);

@@ -70,7 +70,7 @@ const Admin = () => {
               <Route path="/faq" element={<FAQ />} />
               <Route path="/calendar" element={<Calendar />} />
 
-              <Route path="/test" element={<AccordionDetails />} />
+              <Route path="/details" element={<AccordionDetails />} />
 
               {/* <Route path="/geography" element={<Geography />} /> */}
             </Routes>

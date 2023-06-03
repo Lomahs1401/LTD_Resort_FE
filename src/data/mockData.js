@@ -456,27 +456,27 @@ export const mockDataCustomer = [
 ];
 
 export const mockDataRoom = [
-  {
-    id: 1,
-    room_name: "B201",
-    id_area: 1,
-    id_floor: 1,
-    id_type: 1,
-  },
-  {
-    id: 2,
-    room_name: "C302",
-    id_area: 2,
-    id_floor: 4,
-    id_type: 2,
-  },
-  {
-    id: 3,
-    room_name: "C302",
-    id_area: 2,
-    id_floor: 4,
-    id_type: 2,
-  },
+  // {
+  //   id: 1,
+  //   room_name: "B201",
+  //   id_area: 1,
+  //   id_floor: 1,
+  //   id_type: 1,
+  // },
+  // {
+  //   id: 2,
+  //   room_name: "C302",
+  //   id_area: 2,
+  //   id_floor: 4,
+  //   id_type: 2,
+  // },
+  // {
+  //   id: 3,
+  //   room_name: "C302",
+  //   id_area: 2,
+  //   id_floor: 4,
+  //   id_type: 2,
+  // },
   
 ];
 
