@@ -19,7 +19,9 @@ const BookingRoom = ({
   description,
   image,
   price,
-  pointRanking
+  pointRanking,
+  totalAverage,
+  totalFeedbacks,
 }) => {
 
   const { http } = AuthUser();
@@ -90,6 +92,8 @@ const BookingRoom = ({
                         image={image}
                         price={price}
                         pointRanking={pointRanking}
+                        totalAverage={totalAverage}
+                        totalFeedbacks={totalFeedbacks}
                         setReloadBookmarkRoom={setReloadBookmarkRoom}
                       />
                     )

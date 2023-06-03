@@ -1,3 +1,5 @@
+import { addDays, format } from "date-fns"
+
 const initState = {
     favouritesRooms: localStorage.getItem('favourites_rooms') == null 
         ? [] 
@@ -15,10 +17,10 @@ const initState = {
         ? []
         : JSON.parse(localStorage.getItem('room_types')),
     checkinDate: localStorage.getItem('checkin_date') == null
-        ? new Date()
+        ? format(new Date(), "dd/MM/yyyy")
         : JSON.parse(localStorage.getItem('checkin_date')),
     checkoutDate: localStorage.getItem('checkout_date') == null
-        ? new Date()
+        ? format(addDays(new Date(), 2), "dd/MM/yyyy")
         : JSON.parse(localStorage.getItem('checkout_date')),
     progressStep: localStorage.getItem('progress_step') == null
         ? 0

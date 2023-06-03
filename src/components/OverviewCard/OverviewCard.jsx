@@ -18,6 +18,8 @@ const OverviewCard = ({
   price,
   ranking,
   type,
+  currentImageList,
+  setFirebaseUrl,
 }) => {
 
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
@@ -33,9 +35,15 @@ const OverviewCard = ({
 
   const handleClickBooking = () => {
     if (type === 'Room') {
-      navigate(`/find-rooms/${id}`);
+      if (typeof setFirebaseUrl === 'function') {
+        setFirebaseUrl(`gs://ltd-resort.appspot.com/room-types/${id}/`)
+      } 
+      navigate(`/find-rooms/${id}`, { imageList: currentImageList });
     } else {
-      navigate(`/find-services/${id}`);
+      if (typeof setFirebaseUrl === 'function') {
+        setFirebaseUrl(`gs://ltd-resort.appspot.com/services/${id}/`)
+      }
+      navigate(`/find-services/${id}`, { imageList: currentImageList });
     }
   }
 
@@ -83,10 +91,10 @@ const OverviewCard = ({
             <Rate
               disabled
               tooltips={RATING_DESC}
-              defaultValue={ranking}
+              value={Math.round(ranking).toFixed(0)}
               style={{ color: '#FF8682' }}
             />
-            <p className="ant-rate-text">{ranking} Star {type}</p>
+            <p className="ant-rate-text">{Math.round(ranking).toFixed(0)} Star {type}</p>
           </div>
           <button 
             className={cx("btn-booking")}

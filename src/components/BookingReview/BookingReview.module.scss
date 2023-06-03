@@ -1,0 +1,113 @@
+.booking-review-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-block: 2%;
+    box-shadow: rgba(149, 157, 165, 0.7) 0px 8px 24px;
+    border-radius: 10px;
+    
+    &__left {
+
+        img {
+            border-radius: 10px;
+            width: 300px;
+            height: 280px;
+            vertical-align: middle;
+            object-fit: cover;
+        }
+    }
+
+    &__right {
+        flex: 0 0 66%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-content: flex-start;
+        margin-top: 2%;
+        margin-right: 20px;
+    }
+}
+
+.amenities {
+    margin-left: 5%;
+    margin-right: 2%;
+}
+
+.top-content {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    &__left {
+        flex: 0 0 62%;
+    }
+
+    &__right {
+        flex: 0 0 38%;
+
+        > p {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        h1 {
+            color: #FF8682;
+        }
+    }
+}
+
+.middle-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    &__top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+
+        &-icon {
+            margin-right: 8px;
+        }
+    }
+}
+
+.seperate-line {
+    width: 80% !important;
+    border: 1px solid #BFC4C1;
+    margin-top: 20px;
+    margin-bottom: 12px;
+}
+
+.bottom-content {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+   
+    &__left {
+        .btn-review {
+            border-radius: 5px;
+            border: 1px solid #8DD3BB;
+            padding: 4px;
+            width: 50px;
+            transition: 0.3s;
+            float: left;
+
+            > p {
+                color: #14274A;
+                font-weight: 600;
+            }
+        }
+    }
+
+    &__right {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 8px;
+    }
+}

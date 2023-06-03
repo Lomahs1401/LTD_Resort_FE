@@ -11,9 +11,10 @@ import { BsFillCartCheckFill, BsFillHeartFill, BsFillShareFill, BsWifi } from "r
 import { IoSparkles, IoRestaurant, IoCafe, IoPersonSharp, IoBedSharp } from "react-icons/io5";
 import { FaSwimmingPool, FaConciergeBell, FaSearch } from "react-icons/fa";
 import { IoIosBed, IoIosFitness } from "react-icons/io";
-import { GiAchievement } from "react-icons/gi";
+import { MdMeetingRoom } from "react-icons/md"
+import { TbDiamondFilled } from "react-icons/tb"
 import { RxDimensions } from "react-icons/rx";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { avatarSelector, bookmarkRoomsSelector, favouritesRoomsSelector } from "../../redux/selectors";
 import { addFavouriteRoom, removeFavouriteRoom, addCheckinDate, addCheckoutDate } from "../../redux/actions";
@@ -113,8 +114,9 @@ function SamplePrevArrow(props) {
 export const RoomTypeDetail = () => {
   const { roomTypeId } = useParams();
   const { http, user } = AuthUser();
+  const location = useLocation();
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
-  const FIREBASE_URL = `gs://ltd-resort.appspot.com/room-types/${roomTypeId}/`;
+  const [firebaseUrl, setFirebaseUrl] = useState(`gs://ltd-resort.appspot.com/room-types/${roomTypeId}/`)
 
   const imageSettings = {
     dots: true,
@@ -202,8 +204,10 @@ export const RoomTypeDetail = () => {
   const [listAreas, setListAreas] = useState([]);
 
   // Fetch list image state
-  const [imageList, setImageList] = useState([]);
-  const imageRef = ref(storage, FIREBASE_URL);
+  const imageList = location.state?.imageList || [];
+  const [currentImageList, setCurrentImageList] = useState([]);
+  const [isImageListLoaded, setIsImageListLoaded] = useState(false);
+  const imageRef = ref(storage, firebaseUrl);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -339,7 +343,8 @@ export const RoomTypeDetail = () => {
           });
 
           Promise.all(promises).then(() => {
-            setImageList(fetchedImages); // Cập nhật state ImageList với các ảnh đã lấy được
+            setCurrentImageList(fetchedImages); // Cập nhật state ImageList với các ảnh đã lấy được
+            setIsImageListLoaded(true); // Cập nhật giá trị của isImageListLoaded
           });
         })
         .catch((error) => {
@@ -355,11 +360,11 @@ export const RoomTypeDetail = () => {
     setIsLoading(true);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [roomTypeId])
 
   useEffect(() => {
     const fetchData = () => {
-      http.get(`/auth/room-types/random`)
+      http.get(`/auth/room-types/random/${roomTypeId}`)
         .then((resolve) => {
           setListRandomRoomTypes(resolve.data.list_random_room_types);
         })
@@ -421,7 +426,7 @@ export const RoomTypeDetail = () => {
 
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [roomTypeId])
 
   useEffect(() => {
     const fetchFeedbacks = () => {
@@ -438,7 +443,7 @@ export const RoomTypeDetail = () => {
 
     fetchFeedbacks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, pageSize])
+  }, [currentPage, pageSize, roomTypeId])
 
   if (!isLoading) {
     return (
@@ -464,15 +469,15 @@ export const RoomTypeDetail = () => {
                 <div className={cx("achievement__left")}>
                   <Rate
                     disabled
-                    defaultValue={5}
+                    value={Math.round(averageRating).toFixed(0)}
                     tooltips={RATING_DESC}
                     style={{ color: "#FF8682" }}
                   />
-                  <p className={cx("achievement-desc")}>5 Star Room</p>
+                  <p className={cx("achievement-desc")}>{Math.round(averageRating).toFixed(0)} Star Room</p>
                 </div>
                 <div className={cx("achievement__right")}>
-                  <GiAchievement size={25} style={{ color: "#FFD700	" }} />
-                  <p className={cx("achievement-desc")}>Star</p>
+                  <TbDiamondFilled size={25} style={{ color: "#FFD700	" }} />
+                  <p className={cx("achievement-desc")}>{roomTypeDetail.point_ranking} Points</p>
                 </div>
               </div>
               <div className={cx("detail")}>
@@ -516,21 +521,23 @@ export const RoomTypeDetail = () => {
           </div>
 
           <div className={cx("image-carousel")}>
-            <Slider {...imageSettings}>
-              {imageList.map((image, index) => {
-                return (
-                  <div className={cx("image-container")} key={index}>
-                    <LazyLoadImage
-                      key={image}
-                      src={image}
-                      alt={`Pic ${index}`}
-                      effect="blur"
-                      placeholderSrc={image}
-                    />
-                  </div>
-                )
-              })}
-            </Slider>
+            {isImageListLoaded && (
+              <Slider {...imageSettings}>
+                {currentImageList.map((image, index) => {
+                  return (
+                    <div className={cx("image-container")} key={index}>
+                      <LazyLoadImage
+                        key={image}
+                        src={image}
+                        alt={`Pic ${index}`}
+                        effect="blur"
+                        placeholderSrc={image}
+                      />
+                    </div>
+                  )
+                })}
+              </Slider>
+            )}
           </div>
 
           <Divider className={cx("seperate-line")} />
@@ -751,6 +758,8 @@ export const RoomTypeDetail = () => {
                             image={roomTypeDetail.image}
                             price={roomTypeDetail.price}
                             pointRanking={roomTypeDetail.point_ranking}
+                            totalAverage={averageRating}
+                            totalFeedbacks={totalFeedbacks}
                           />
                         </div>
                       )
@@ -912,7 +921,10 @@ export const RoomTypeDetail = () => {
           <Divider className={cx("seperate-line")} />
 
           <div className={cx("section-random")}>
-            <h1>Some other room types you may be interested in</h1>
+            <div className={cx("section-random__title")}>
+              <MdMeetingRoom size={30} />
+              <h1>Some other room types you may be interested in</h1>
+            </div>
             <div className={cx("section-random__list-rooms")}>
               {listRandomRoomTypes.map((randomRoomType) => {
                 return (
@@ -922,8 +934,10 @@ export const RoomTypeDetail = () => {
                     image={randomRoomType.image}
                     title={randomRoomType.room_type_name}
                     price={randomRoomType.price}
-                    ranking={5}
+                    ranking={randomRoomType.average_rating}
                     type={'Room'}
+                    currentImageList={currentImageList}
+                    setFirebaseUrl={setFirebaseUrl}
                   />
                 )
               })}
