@@ -84,6 +84,13 @@
     }
 }
 
+.btn-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+}
+
 .account-info-wrapper {
     padding-inline: 3%;
     padding-block: 2%;
@@ -102,7 +109,7 @@
             color: black;
         }
 
-        .btn-change {
+        .btn-change, .btn-update-password {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -166,8 +173,16 @@
 }
 
 .title-text {
-    font-size: 24px;
-    color: #9b9e9c;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+
+    > p {
+        margin-block: 0;
+        font-size: 24px;
+        color: #9b9e9c;
+    }
 }
 
 .content-text {
@@ -176,6 +191,12 @@
     position: relative;
     width: fit-content;
     font-weight: 600;
+}
+
+.modal-wrapper {
+    .ant-modal-content {
+        width: 1000px !important;
+    }
 }
 
 .modal-form {

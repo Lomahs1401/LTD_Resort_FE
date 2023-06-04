@@ -9,6 +9,8 @@ const Home = lazy(() => import("./pages/Home/Home"));
 const Login = lazy(() => import("./pages/Login/Login"));
 const Register = lazy(() => import("./pages/Register/Register"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword/ForgotPassword"));
+const VerifyCode = lazy(() => import("./pages/VerifyCode/VerifyCode"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword/ResetPassword"));
 const Facilities = lazy(() => import("./pages/Facilities/Facilities"));
 const Room = lazy(() => import("./pages/Room/Room"));
 const FindRoom = lazy(() => import("./pages/FindRoom/FindRoom"));
@@ -116,18 +118,26 @@ function App() {
             }
           />
           <Route
-            path="/register"
-            element={
-              <Suspense fallback={<Loading />}>
-                <Register />
-              </Suspense>
-            }
-          />
-          <Route
             path="/forgot-password"
             element={
               <Suspense fallback={<Loading />}>
                 <ForgotPassword />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/verify-code"
+            element={
+              <Suspense fallback={<Loading />}>
+                <VerifyCode />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <Suspense fallback={<Loading />}>
+                <ResetPassword />
               </Suspense>
             }
           />
@@ -218,7 +228,7 @@ function App() {
             }
           />
           <Route
-            path="/booking/:roomTypeId"
+            path="/booking"
             element={
               <CustomerRoute
                 element={

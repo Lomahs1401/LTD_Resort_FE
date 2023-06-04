@@ -24,7 +24,8 @@ const Comment = ({
   ID_Card, 
   address, 
   phone, 
-  rankingPoint 
+  rankingPoint,
+  rankingName,
 }) => {
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
 
@@ -136,6 +137,7 @@ const Comment = ({
             address={address}
             phone={phone}
             rankingPoint={rankingPoint}
+            rankingName={rankingName}
           />
         }
         open={openModal}
