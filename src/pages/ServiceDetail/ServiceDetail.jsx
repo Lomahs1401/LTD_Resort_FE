@@ -14,9 +14,9 @@ import { TbDiamondFilled } from "react-icons/tb"
 import { useEffect } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { avatarSelector, favouritesServicesSelector } from "../../redux/selectors";
+import { avatarSelector, favouritesServicesSelector, servicesSelector } from "../../redux/selectors";
 import currency from "../../utils/currency";
-import { addFavouriteService, removeFavouriteService } from "../../redux/actions";
+import { addFavouriteService, addService, removeFavouriteService, removeService } from "../../redux/actions";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -112,6 +112,7 @@ export const ServiceDetail = () => {
   const dispatch = useDispatch();
   const avatar = useSelector(avatarSelector);
   const favouritesServices = useSelector(favouritesServicesSelector);
+  const services = useSelector(servicesSelector);
 
   // Pagination state
   const pageSizeOptions = [5, 10, 20];
@@ -181,6 +182,44 @@ export const ServiceDetail = () => {
     setPageSize(pageSize);
   }
 
+  const handleBookService = () => {
+    const serviceIndex = services.findIndex(service => service.id === parseInt(serviceId));
+    if (serviceIndex === -1) {
+      dispatch(addService({
+        id: serviceDetail.id,
+        serviceName: serviceDetail.service_name,
+        description: serviceDetail.description,
+        image: serviceDetail.image,
+        price: serviceDetail.price,
+        pointRanking: serviceDetail.point_ranking, 
+        totalAverage: averageRating,
+        totalFeedbacks: totalFeedbacks
+      }));
+      toast.success('Successfully add service to booking cart!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      })
+    } else {
+      dispatch(removeService(parseInt(serviceId)));
+      toast.success('Successfully remove service from booking cart!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      })
+    }
+  }
+
   useEffect(() => {
     const fetchImage = () => {
       let fetchedImages = []; // Tạo một mảng tạm để lưu trữ các ảnh lấy được từ Firebase
@@ -228,6 +267,7 @@ export const ServiceDetail = () => {
         })
       http.get(`/auth/services/${serviceId}`)
         .then((resolve) => {
+          console.log(resolve);
           setServiceDetail(resolve.data.service);
         })
         .catch((reject) => {
@@ -336,7 +376,10 @@ export const ServiceDetail = () => {
                     <BsFillShareFill />
                   </button>
                 </div>
-                <div className={cx("button__right")}>
+                <div 
+                  className={cx("button__right")}
+                  onClick={handleBookService}
+                >
                   <button>Book now</button>
                 </div>
               </div>

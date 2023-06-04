@@ -8,20 +8,27 @@ import gif_cat from '../../img/cat.gif'
 import carousel1 from '../../img/carousel1.png'
 import carousel2 from '../../img/carousel2.png'
 import carousel3 from '../../img/carousel3.png'
-import { Form, Button, Input, Divider, Modal, message } from 'antd'
+import { Form, Button, Input, Divider, Modal } from 'antd'
 import ImageSlider from '../../components/ImageSlider/ImageSlider';
 import { BiArrowBack } from 'react-icons/bi'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import AuthUser from '../../utils/AuthUser';
 
 const cx = classNames.bind(styles);
 
-const Login = () => {
+const ForgorPassword = () => {
 
   const slides = [
     { url: carousel1, title: 'Carousel 1' },
     { url: carousel2, title: 'Carousel 2' },
     { url: carousel3, title: 'Carousel 3' },
   ]
+
+  const EMAIL_INVALID_STATUS_CODE = 400;
+  const EMAIL_NOT_FOUND = 404;
+
+  const { http } = AuthUser();
 
   const forgotPasswormFormLayout = {
     labelCol: {
@@ -33,6 +40,7 @@ const Login = () => {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleLoginBySocial = (e) => {
     e.preventDefault();
@@ -50,13 +58,58 @@ const Login = () => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    console.log('Success:', values);
-    message.success('Submit successful. Please check your email!');
+    const formData = new FormData();
+
+    formData.append('email', values.email);
+
+    http.patch('/auth/reset-password/request', formData)
+      .then((resolve) => {
+        console.log(resolve);
+        navigate('/verify-code', { state: { email: values.email } });
+      })
+      .catch((reject) => {
+        console.log(reject);
+        const errorCode = reject.response.status;
+        const errorMsg = reject.response.data.message;
+
+        if (errorCode === EMAIL_INVALID_STATUS_CODE) {
+          toast.error(errorMsg, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          })
+        } else if (errorCode === EMAIL_NOT_FOUND) {
+          toast.error(errorMsg, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          })
+        }
+      })
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
-    message.error('Submit failed! Try again');
+    toast.error('Please enter your email', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    })
   };
 
   return (
@@ -89,9 +142,6 @@ const Login = () => {
                 autoComplete="off"
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
-                initialValues={{
-                  remember: true,
-                }}
               >
                 <Form.Item
                   label="Email"
@@ -168,4 +218,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default ForgorPassword

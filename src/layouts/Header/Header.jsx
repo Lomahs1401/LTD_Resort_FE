@@ -9,8 +9,8 @@ import AuthUser from '../../utils/AuthUser'
 import { useSelector } from 'react-redux'
 import { favouritesRoomsSelector, favouritesServicesSelector } from "../../redux/selectors";
 import { Divider, Popover } from 'antd'
+import { FaUser } from 'react-icons/fa'
 import { FiLogOut } from 'react-icons/fi'
-import { RiLockPasswordLine } from 'react-icons/ri'
 import { MdFavorite } from 'react-icons/md'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 
@@ -49,9 +49,9 @@ const Header = ({active, userInfo, imageUrl}) => {
             <span>{totalFavouritesItem}</span>
           </div>
         </Link>
-        <Link to="/update-password" className={cx("content-wrapper__link-item")}>
-          <RiLockPasswordLine/>
-          <p>Update Password</p>
+        <Link to="/user-profile" className={cx("content-wrapper__link-item")}>
+          <FaUser />
+          <p>User Profile</p>
         </Link>
       </div>
       <Divider className={cx("seperate-line")} />

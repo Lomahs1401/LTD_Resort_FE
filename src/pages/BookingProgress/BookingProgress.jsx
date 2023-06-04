@@ -8,8 +8,8 @@ import Header from '../../layouts/Header/Header';
 import Footer from '../../layouts/Footer/Footer';
 import { Steps } from 'antd';
 import { useState } from 'react';
+import Step1 from '../BookingStep/Step1/Step1';
 import Step2 from '../BookingStep/Step2/Step2';
-import Step3 from '../BookingStep/Step3/Step3';
 import { BiArrowBack } from 'react-icons/bi'
 import { BsFillCalendarCheckFill } from 'react-icons/bs'
 import { MdPayment } from 'react-icons/md'
@@ -35,13 +35,13 @@ const BookingProgress = () => {
     {
       title: 'Step 1',
       subTitle: 'Confirm Information',
-      content: <Step2 />,
+      content: <Step1 />,
       icon: <BsFillCalendarCheckFill />,
     },
     {
       title: 'Step 2',
       subTitle: 'Payment',
-      content: <Step3 />,
+      content: <Step2 />,
       icon: <MdPayment />,
     },
   ]
@@ -55,7 +55,7 @@ const BookingProgress = () => {
       <Header active='Find Rooms' userInfo={user} imageUrl={avatar} />
       <div className={cx("booking-steps")}>
         <Link
-          to={`/find-rooms/${roomTypeId}`}
+          to={'/find-rooms/'}
           className={cx("link-back")}
         >
           <BiArrowBack />

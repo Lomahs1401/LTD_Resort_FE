@@ -136,6 +136,20 @@ export const removeRoomType = (data) => {
     }
 }
 
+export const addService = (data) => {
+    return {
+        type: 'service/addService',
+        payload: data,
+    }
+}
+
+export const removeService = (data) => {
+    return {
+        type: 'service/removeService',
+        payload: data,
+    }
+}
+
 export const addCheckinDate = (data) => {
     return {
         type: 'checkinDate/addCheckinDate',

@@ -9,6 +9,8 @@ const Home = lazy(() => import("./pages/Home/Home"));
 const Login = lazy(() => import("./pages/Login/Login"));
 const Register = lazy(() => import("./pages/Register/Register"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword/ForgotPassword"));
+const VerifyCode = lazy(() => import("./pages/VerifyCode/VerifyCode"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword/ResetPassword"));
 const Facilities = lazy(() => import("./pages/Facilities/Facilities"));
 const Room = lazy(() => import("./pages/Room/Room"));
 const FindRoom = lazy(() => import("./pages/FindRoom/FindRoom"));
@@ -17,9 +19,10 @@ const Loading = lazy(() => import("./components/Loading/Loading"));
 const FindService = lazy(() => import("./pages/FindService/FindService"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail/ServiceDetail"));
 const Favourites = lazy(() => import("./pages/Favourites/Favourites"));
+const UserProfile = lazy(() => import("./pages/UserProfile/UserProfile"));
 const ManageAccount = lazy(() => import("./pages/ManageAccount/ManageAccount"));
 const BookingProgress = lazy(() => import("./pages/BookingProgress/BookingProgress"));
-const Admin = lazy(() => import("./pages/RoomTypeDetail/RoomTypeDetail"));
+const Admin = lazy(() => import("./pages/Admin/Admin"));
 const NotFound = lazy(() => import("./pages/Error/NotFound/NotFound"));
 const Unauthorized = lazy(() => import("./pages/Error/Unauthorized/Unauthorized"));
 
@@ -115,18 +118,26 @@ function App() {
             }
           />
           <Route
-            path="/register"
-            element={
-              <Suspense fallback={<Loading />}>
-                <Register />
-              </Suspense>
-            }
-          />
-          <Route
             path="/forgot-password"
             element={
               <Suspense fallback={<Loading />}>
                 <ForgotPassword />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/verify-code"
+            element={
+              <Suspense fallback={<Loading />}>
+                <VerifyCode />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <Suspense fallback={<Loading />}>
+                <ResetPassword />
               </Suspense>
             }
           />
@@ -205,7 +216,19 @@ function App() {
             }
           />
           <Route
-            path="/booking/:roomTypeId"
+            path="/user-profile"
+            element={
+              <CustomerRoute
+                element={
+                  <Suspense fallback={<Loading />}>
+                    <UserProfile />
+                  </Suspense>
+                }
+              />
+            }
+          />
+          <Route
+            path="/booking"
             element={
               <CustomerRoute
                 element={

@@ -16,6 +16,9 @@ const initState = {
     roomTypes: localStorage.getItem('room_types') == null
         ? []
         : JSON.parse(localStorage.getItem('room_types')),
+    services: localStorage.getItem('services') == null
+        ? []
+        : JSON.parse(localStorage.getItem('services')),
     checkinDate: localStorage.getItem('checkin_date') == null
         ? format(new Date(), "dd/MM/yyyy")
         : JSON.parse(localStorage.getItem('checkin_date')),
@@ -138,6 +141,29 @@ const rootReducer = (state = initState, action) => {
             return {
                 ...state,
                 roomTypes: newRoomTypes,
+            };
+        case 'service/addService':
+            localStorage.setItem('services', JSON.stringify([
+                ...state.services,
+                action.payload,
+            ]))
+            return {
+                ...state,
+                services: [
+                    ...state.services,
+                    action.payload,
+                ]    
+            }
+        case 'service/removeService':
+            const newServices = state.services.filter((service) => {
+                return service.id !== action.payload;
+            });
+            
+            localStorage.setItem('services', JSON.stringify(newServices));
+            
+            return {
+                ...state,
+                services: newServices,
             };
         case 'checkinDate/addCheckinDate':
             localStorage.setItem('checkin_date', JSON.stringify(action.payload))
