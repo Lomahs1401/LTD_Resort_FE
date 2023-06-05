@@ -1,17 +1,19 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from './Step1.module.scss'
 import classNames from "classnames/bind";
 import { useSelector } from 'react-redux';
 import { bookmarkRoomsSelector, checkinDateSelector, checkoutDateSelector, roomTypesSelector, servicesSelector } from '../../../redux/selectors';
 import BookingReview from '../../../components/BookingReview/BookingReview';
 import { Divider } from 'antd';
-import { FaBed } from 'react-icons/fa';
+import { BsFillTelephoneFill } from 'react-icons/bs';
+import { FaBed, FaUser, FaIdCard } from 'react-icons/fa';
 import { FcOvertime } from 'react-icons/fc';
 import { MdRoomService } from 'react-icons/md';
 import checkin from "../../../img/checkin.jpg"
 import checkout from "../../../img/chekout.png"
 import coins from "../../../img/coins.png"
 import currency from '../../../utils/currency';
+import AuthUser from '../../../utils/AuthUser';
 
 const cx = classNames.bind(styles);
 
@@ -23,33 +25,59 @@ const Step1 = () => {
   const checkoutDate = useSelector(checkoutDateSelector);
   const bookmarkRooms = useSelector(bookmarkRoomsSelector);
 
+  const [customerInfo, setCustomerInfo] = useState();
+
   const checkinParts = checkinDate.split("/");
   const checkoutParts = checkoutDate.split("/");
-  
+
   const startDate = new Date(checkinParts[2], checkinParts[1] - 1, checkinParts[0]);
   const endDate = new Date(checkoutParts[2], checkoutParts[1] - 1, checkoutParts[0]);
-  
+
   const timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
   const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
+  const { http } = AuthUser();
+
   const calculateTotalPrice = () => {
     let totalPrice = 0;
-  
+
     bookmarkRooms.forEach(bookmarkRoom => {
       const { roomTypeId } = bookmarkRoom;
       const roomType = roomTypes.find(type => type.id === roomTypeId);
-  
+
       if (roomType) {
         totalPrice += roomType.price * daysDiff;
       }
     });
-  
+
+    if (services.length > 0) {
+      services.forEach((service) => {
+        totalPrice += service.price
+      })
+    }
+
     return totalPrice;
   };
 
   const handleConfirmInfo = () => {
 
   }
+
+  useEffect(() => {
+    const fetchData = () => {
+      http.get(`/customer/account-customer`)
+        .then((resolve) => {
+          console.log(resolve);
+          setCustomerInfo(resolve.data.customer);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
+    }
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  })
 
   return (
     <div className={cx("booking-step-wrapper")}>
@@ -117,7 +145,7 @@ const Step1 = () => {
                 })
               }
             </>
-        )}
+          )}
       </div>
       <div className={cx("booking-step-wrapper__right")}>
         <div className={cx("booking-reservation")}>
@@ -141,6 +169,7 @@ const Step1 = () => {
         <Divider className={cx("seperate-line")} />
 
         <div className={cx("booking-check-info")}>
+          <h2>Booking Information</h2>
           <div className={cx("booking-check-info__date")}>
             <div className={cx("booking-check-title")}>
               <FcOvertime size={30} />
@@ -172,17 +201,44 @@ const Step1 = () => {
 
         <Divider className={cx("seperate-line")} />
 
+        <div className={cx("booking-user-info")}>
+          <h2>Contact Information</h2>
+          <div className={cx("booking-user-info__name")}>
+            <div className={cx("booking-check-title")}>
+              <FaUser size={30} />
+              <h3>Full Name</h3>
+            </div>
+            <p>{customerInfo?.name}</p>
+          </div>
+          <div className={cx("booking-user-info__card")}>
+            <div className={cx("booking-check-title")}>
+              <FaIdCard size={30} />
+              <h3>ID Card</h3>
+            </div>
+            <p>{customerInfo?.CMND}</p>
+          </div>
+          <div className={cx("booking-user-info__phone")}>
+            <div className={cx("booking-check-title")}>
+              <BsFillTelephoneFill size={30} />
+              <h3>Phone</h3>
+            </div>
+            <p>{customerInfo?.phone}</p>
+          </div>
+        </div>
+
+        <Divider className={cx("seperate-line")} />
+
         <div className={cx("booking-confirm-wrapper")}>
           <div className={cx("booking-total-price")}>
             <div className={cx("booking-total-price__title")}>
               <img src={coins} alt={'Coin'} />
-              <h3>Total Amount: <span style={{color: '#f35221', fontSize: 28, fontWeight: 'bold'}}>{currency(calculateTotalPrice())}</span></h3>
+              <h3>Total Amount: <span style={{color: '#f35221', fontSize: 24, fontWeight: 'bold'}}>{currency(calculateTotalPrice())}</span></h3>
             </div>
             <h2 className={cx("booking-total-price__total")}></h2>
           </div>
           <div className={cx("booking-confirm-btn")}>
             <button onClick={handleConfirmInfo}>
-              <p>Make a reservation</p>
+              <p>Payment</p>
             </button>
           </div>
         </div>

@@ -5,6 +5,7 @@ import Draggable from 'react-draggable';
 import Swal from "sweetalert2";
 import AuthUser from '../../utils/AuthUser';
 import background from '../../img/content1.jpg'
+import important from '../../img/Important.png'
 import ConfirmationToast from '../../components/ConfirmationToast/ConfirmationToast';
 import Headers from '../../layouts/Header/Header'
 import Footer from '../../layouts/Footer/Footer';
@@ -375,9 +376,13 @@ const UserProfile = () => {
               </div>
               <Divider className={cx("seperate-line")} />
               <div className={cx("account-info-wrapper__bottom")}>
-                <h2 style={{ fontWeight: 600 }}>
-                  Fields marked with <FaAsterisk size={16} color='red' /> are required to be able to book rooms and services
-                </h2>
+                <div className={cx("info-title")}>
+                  <img src={important} alt='Important' />
+                  <h2 style={{ fontWeight: 600 }}>
+                    Fields marked with <FaAsterisk size={16} color='red' /> are required to be able to book rooms and services
+                  </h2>
+                </div>
+                
                 <div className={cx("info-container")}>
                   <div className={cx("info-container__left")}>
                     <div className={cx("title-text")}>
