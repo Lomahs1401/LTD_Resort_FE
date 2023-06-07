@@ -7,3 +7,6 @@ export const servicesSelector = (state) => state.services;
 export const checkinDateSelector = (state) => state.checkinDate;
 export const checkoutDateSelector = (state) => state.checkoutDate;
 export const progressStepSelector = (state) => state.progressStep;
+export const totalAmountSelector = (state) => state.totalAmount;
+export const totalRoomsSelector = (state) => state.totalRooms;
+export const totalPeopleSelector = (state) => state.totalPeople;
