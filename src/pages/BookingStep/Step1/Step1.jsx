@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styles from './Step1.module.scss'
 import classNames from "classnames/bind";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { bookmarkRoomsSelector, checkinDateSelector, checkoutDateSelector, roomTypesSelector, servicesSelector } from '../../../redux/selectors';
 import BookingReview from '../../../components/BookingReview/BookingReview';
 import { Divider } from 'antd';
@@ -14,10 +14,11 @@ import checkout from "../../../img/chekout.png"
 import coins from "../../../img/coins.png"
 import currency from '../../../utils/currency';
 import AuthUser from '../../../utils/AuthUser';
+import { addTotalAmount, addTotalPeople, addTotalRooms, nextProgressStep } from '../../../redux/actions';
 
 const cx = classNames.bind(styles);
 
-const Step1 = () => {
+const Step1 = ({ current, setCurrent, setTotalAmount, setTotalRooms, setTotalPeople }) => {
 
   const roomTypes = useSelector(roomTypesSelector);
   const services = useSelector(servicesSelector);
@@ -25,6 +26,7 @@ const Step1 = () => {
   const checkoutDate = useSelector(checkoutDateSelector);
   const bookmarkRooms = useSelector(bookmarkRoomsSelector);
 
+  const dispatch = useDispatch();
   const [customerInfo, setCustomerInfo] = useState();
 
   const checkinParts = checkinDate.split("/");
@@ -59,8 +61,33 @@ const Step1 = () => {
     return totalPrice;
   };
 
-  const handleConfirmInfo = () => {
+  const calculateTotalPeople = () => {
+    let totalPeople = 0;
 
+    bookmarkRooms.forEach(bookmarkRoom => {
+      const { roomTypeId } = bookmarkRoom;
+      const roomType = roomTypes.find(type => type.id === roomTypeId);
+
+      if (roomType) {
+        totalPeople += roomType.numberCustomers;
+      }
+    });
+
+    return totalPeople;
+  };
+
+  const handleConfirmInfo = () => {
+    const totalAmount = calculateTotalPrice();
+    const totalRooms = bookmarkRooms.length;
+    const totalPeople = calculateTotalPeople()
+    setTotalAmount(totalAmount);
+    setTotalRooms(totalRooms);
+    setTotalPeople(totalPeople);
+    setCurrent(current + 1);
+    dispatch(nextProgressStep(current + 1));
+    dispatch(addTotalAmount(totalAmount));
+    dispatch(addTotalRooms(totalRooms));
+    dispatch(addTotalPeople(totalPeople));
   }
 
   useEffect(() => {
@@ -77,7 +104,7 @@ const Step1 = () => {
 
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  })
+  }, [])
 
   return (
     <div className={cx("booking-step-wrapper")}>
@@ -195,6 +222,15 @@ const Step1 = () => {
             </div>
             <button className={cx("btn-info")}>
               <p>{services.length}</p>
+            </button>
+          </div>
+          <div className={cx("booking-check-info__totalpeople")}>
+            <div className={cx("booking-check-title")}>
+              <MdRoomService size={30} />
+              <h3>Total People</h3>
+            </div>
+            <button className={cx("btn-info")}>
+              <p>{calculateTotalPeople()}</p>
             </button>
           </div>
         </div>

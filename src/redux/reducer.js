@@ -27,7 +27,16 @@ const initState = {
         : JSON.parse(localStorage.getItem('checkout_date')),
     progressStep: localStorage.getItem('progress_step') == null
         ? 0
-        : JSON.parse(localStorage.getItem('progress_step'))
+        : JSON.parse(localStorage.getItem('progress_step')),
+    totalAmount: localStorage.getItem('total_amount') == null 
+        ? 0 
+        : JSON.parse(localStorage.getItem('total_amount')),
+    totalRooms: localStorage.getItem('total_rooms') == null 
+        ? 0 
+        : JSON.parse(localStorage.getItem('total_rooms')),
+    totalPeople: localStorage.getItem('total_people') == null 
+        ? 0 
+        : JSON.parse(localStorage.getItem('total_people')),
 }
 
 const rootReducer = (state = initState, action) => {
@@ -182,6 +191,54 @@ const rootReducer = (state = initState, action) => {
             return {
                 ...state,
                 progressStep: action.payload,
+            }
+        case 'progressStep/prevProgressStep':
+            localStorage.setItem('progress_step', JSON.stringify(action.payload))
+            return {
+                ...state,
+                progressStep: action.payload,
+            }
+        case 'totalAmount/addTotalAmount':
+            localStorage.setItem('total_amount', JSON.stringify(action.payload));
+
+            return {
+                ...state,
+                totalAmount: action.payload,
+            }
+        case 'totalAmount/removeTotalAmount':
+            localStorage.setItem('total_amount', JSON.stringify(''));
+
+            return {
+                ...state,
+                totalAmount: action.payload,
+            }
+        case 'totalRooms/addTotalRooms':
+            localStorage.setItem('total_rooms', JSON.stringify(action.payload));
+
+            return {
+                ...state,
+                totalRooms: action.payload,
+        }
+        case 'totalRooms/removeTotalRooms':
+            localStorage.setItem('total_rooms', JSON.stringify(''));
+
+            return {
+                ...state,
+                totalRooms: action.payload,
+            }
+        case 'totalPeople/addTotalPeople':
+            localStorage.setItem('total_people', JSON.stringify(action.payload));
+
+            return {
+                ...state,
+                totalPeople: action.payload,
+        }
+        case 'totalPeople/removeTotalPeople':
+            localStorage.setItem('total_people', JSON.stringify(''));
+
+            return {
+                ...state,
+                totalPeople: action.payload,
             }
         default:
             return state;

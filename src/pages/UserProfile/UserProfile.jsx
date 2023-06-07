@@ -171,6 +171,17 @@ const UserProfile = () => {
     setOpenModalUpdatePassword(false);
   }
 
+  const disabledDate = (current) => {
+    const currentDate = dayjs();
+    const minDate = currentDate.subtract(18, 'year');
+
+    return (
+      (current && current.isAfter(currentDate)) ||
+      (current && !dayjs(current).isValid()) ||
+      (current && dayjs(current).isAfter(minDate))
+    );
+  }
+
   // Successful case
   const onFinishUpdateProfile = (values) => {
     const { fullName, gender, birthDate, email, ID_Card, address, phone } = values;
@@ -592,6 +603,7 @@ const UserProfile = () => {
                     <DatePicker
                       placeholder='Select date'
                       format={dateFormat}
+                      disabledDate={disabledDate}
                       onChange={handleSelectBirthDate}
                     />
                   </Form.Item>
