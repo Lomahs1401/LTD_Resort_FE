@@ -8,7 +8,8 @@ import Dashboard from "./Dashboard/Dashboard";
 import Staff from "./Staff/Staff";
 import ViewStaff from "./ViewStaff/ViewStaff";
 import CreateStaff from "./CreateStaff/CreateStaff";
-import ManageAdmin from "./ManageAdmin/ManageAdmin"
+import Department from "./Department/Department"
+import ViewAdmin from "./ViewAdmin/ViewAdmin";
 import Customer from "./Customer/Customer";
 import Bill from "./Bill/Bill";
 import Bar from "./Bar/Bar";
@@ -52,7 +53,8 @@ const Admin = () => {
               <Route path="/createstaff" element={<CreateStaff />} />
               <Route path="/customer" element={<Customer />} />
               <Route path="/bill" element={<Bill />} />
-              <Route path="/manageadmin" element={<ManageAdmin />} />
+              <Route path="/department" element={<Department />} />
+              <Route path="/viewadmin" element={<ViewAdmin />} />
               <Route path="/room" element={<Room />} />
               <Route path="/roomarea" element={<RoomArea />} />
               <Route path="/roomfloor" element={<RoomFloor />} />

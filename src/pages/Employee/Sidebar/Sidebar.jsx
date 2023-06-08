@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState , useEffect  } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -11,7 +11,7 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import BedIcon from "@mui/icons-material/Bed";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
@@ -45,12 +45,12 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [admin, setAdmin] = useState();
+  const [admin,setAdmin] = useState();
   const [avatarUrl, setAvatarUrl] = useState("");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-  const { http } = AuthUser();
-
+  const {http} =AuthUser();
+  
   useEffect(() => {
     const fetchData = async () => {
       await http
@@ -66,6 +66,7 @@ const Sidebar = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -162,7 +163,7 @@ const Sidebar = () => {
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
               title="Dashboard"
-              to="/admin/"
+              to="/employee/"
               icon={<HomeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -173,30 +174,25 @@ const Sidebar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Account
+              Customer
             </Typography>
-            <Item
-              title="Manage Staff"
-              to="/admin/staff"
-              icon={<PeopleOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+          
 
             <Item
               title="Manage Customer"
-              to="/admin/customer"
+              to="/employee/customer"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Manage Department"
-              to="/admin/department"
-              icon={<ReceiptOutlinedIcon />}
+              title="Manage Feedback"
+              to="/employee/feedback"
+              icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
+    
 
             <Typography
               variant="h6"
@@ -205,41 +201,22 @@ const Sidebar = () => {
             >
               Room
             </Typography>
-            {/* <Item
-              title="Room"
-              to="/admin/room"
-              icon={<BedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+       
             <Item
-              title="Room Area"
-              to="/admin/roomarea"
+              title="Bill Room"
+              to="/employee/bill"
               icon={<LocationOnIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Room Floor"
-              to="/admin/roomfloor"
+              title="Facility"
+              to="/employee/facility"
               icon={<ArrowUpwardIcon />}
               selected={selected}
               setSelected={setSelected}
-            /> */}
-            <Item
-              title="Room Type"
-              to="/admin/roomtype"
-              icon={<BedIcon />}
-              selected={selected}
-              setSelected={setSelected}
             />
-            <Item
-              title="Equipment"
-              to="/admin/equipment"
-              icon={<RoomServiceIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            
 
             <Typography
               variant="h6"
@@ -249,106 +226,33 @@ const Sidebar = () => {
               Service
             </Typography>
             <Item
-              title="Service"
-              to="/admin/service"
+              title="Bill Service"
+              to="/employee/service"
               icon={<RoomServiceIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Service Type"
-              to="/admin/servicetype"
+              title="Bill Extra Service"
+              to="/employee/extraservice"
               icon={<RoomServiceIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-
             <Typography
               variant="h6"
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Info
+              News
             </Typography>
             <Item
-              title="FeedBack"
-              to="/admin/form"
-              icon={<PersonOutlinedIcon />}
+              title="Manger News"
+              to="/employee/news"
+              icon={<RoomServiceIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="New"
-              to="/admin/calendar"
-              icon={<CalendarTodayOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-       
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Pages
-            </Typography>
-            <Item
-              title="Profile Form"
-              to="/admin/form"
-              icon={<PersonOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Calendar"
-              to="/admin/calendar"
-              icon={<CalendarTodayOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="FAQ Page"
-              to="/admin/faq"
-              icon={<HelpOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
-            {/* <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Charts
-            </Typography> */}
-            {/* <Item
-              title="Bar Chart"
-              to="/admin/bar"
-              icon={<BarChartOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Pie Chart"
-              to="/admin/pie"
-              icon={<PieChartOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Line Chart"
-              to="/admin/line"
-              icon={<TimelineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
-            {/* <Item
-              title="Geography Chart"
-              to="/admin/geography"
-              icon={<MapOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
           </Box>
         </Menu>
       </ProSidebar>

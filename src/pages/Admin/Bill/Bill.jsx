@@ -448,7 +448,7 @@ const Bill = () => {
           type="navigation"
           onChange={onChange}
         />
-        <div className={cx("content")}>{items[current].content}</div>
+        {items[current].content}
       </Box>
       <Modal
         title={

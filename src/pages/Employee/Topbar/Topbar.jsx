@@ -22,7 +22,7 @@ const Topbar = () => {
   const navigate = useNavigate();
 
   const handleClickInfo = () => {
-    navigate("/admin/details");
+    navigate("/employee/details");
   }
   const handleClickExit = () => {
     navigate("/login");
