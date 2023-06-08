@@ -6,8 +6,8 @@ import { Divider, Modal } from "antd";
 import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from '../../utils/firebase'
 import Draggable from "react-draggable";
-import UserProfile from "../UserProfile/UserProfile";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import UserProfileModal from "../UserProfileModal/UserProfileModal";
 
 const cx = classNames.bind(styles);
 
@@ -24,7 +24,8 @@ const Comment = ({
   ID_Card, 
   address, 
   phone, 
-  rankingPoint 
+  rankingPoint,
+  rankingName,
 }) => {
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
 
@@ -124,7 +125,7 @@ const Comment = ({
       </button>
       <Modal
         title={
-          <UserProfile 
+          <UserProfileModal 
             accountId={accountId}
             avatar={avatarUrl} 
             username={username}
@@ -136,6 +137,7 @@ const Comment = ({
             address={address}
             phone={phone}
             rankingPoint={rankingPoint}
+            rankingName={rankingName}
           />
         }
         open={openModal}

@@ -136,6 +136,20 @@ export const removeRoomType = (data) => {
     }
 }
 
+export const addService = (data) => {
+    return {
+        type: 'service/addService',
+        payload: data,
+    }
+}
+
+export const removeService = (data) => {
+    return {
+        type: 'service/removeService',
+        payload: data,
+    }
+}
+
 export const addCheckinDate = (data) => {
     return {
         type: 'checkinDate/addCheckinDate',
@@ -153,6 +167,55 @@ export const addCheckoutDate = (data) => {
 export const nextProgressStep = (data) => {
     return {
         type: 'progressStep/nextProgressStep',
+        payload: data,
+    }
+}
+
+export const prevProgressStep = (data) => {
+    return {
+        type: 'progressStep/prevProgressStep',
+        payload: data,
+    }
+}
+
+export const addTotalAmount = (data) => {
+    return {
+        type: 'totalAmount/addTotalAmount',
+        payload: data,
+    }
+}
+
+export const removeTotalAmount = (data) => {
+    return {
+        type: 'totalAmount/removeTotalAmount',
+        payload: data,
+    }
+}
+
+export const addTotalRooms = (data) => {
+    return {
+        type: 'totalRooms/addTotalRooms',
+        payload: data,
+    }
+}
+
+export const removeTotalRooms = (data) => {
+    return {
+        type: 'totalRooms/removeTotalRooms',
+        payload: data,
+    }
+}
+
+export const addTotalPeople = (data) => {
+    return {
+        type: 'totalPeople/addTotalPeople',
+        payload: data,
+    }
+}
+
+export const removeTotalPeople = (data) => {
+    return {
+        type: 'totalPeople/removeTotalPeople',
         payload: data,
     }
 }

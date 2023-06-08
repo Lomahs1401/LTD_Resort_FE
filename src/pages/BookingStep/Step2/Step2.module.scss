@@ -1,72 +1,69 @@
 .booking-step-wrapper {
     display: flex;
-    width: 96%;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: flex-start;
-    padding: 2%;
-    gap: 3%;
+    padding: 3%;
+}
 
-    &__left {
-        display: flex;
-        width: 80%;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        background-color: #f5f5f5;
-        border-radius: 10px;
-        padding-inline: 2%;
-        box-shadow: rgba(149, 157, 165, 0.7) 0px 8px 24px;
+.payment-title {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
 
-        > h2 {
-            margin-bottom: 4px;
-        }
+    > img {
+        width: 70px;
     }
+}
 
-    &__right {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        padding-inline: 2%;
-        background-color: #f5f5f5;
-        border-radius: 10px;
-        box-shadow: rgba(149, 157, 165, 0.7) 0px 8px 24px;
-    }
+.payment-wrapper {
+    width: 90%;
+    margin: 0 auto;
 }
 
 .seperate-line {
     border: 1px solid #BFC4C1;
-    width: 90% !important;
 }
 
-.booking-review-wrapper {
-    width: 90%;
-}
-
-.booking-reservation {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-}
-
-.checkin-time, .checkout-time {
+.booking-step-navigate {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
 
-    &__title {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 8px;
+.btn-back {
+    background-color: #ccc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    transition: 0.3s;
 
-        > img {
-            width: 40px;
-        }
+    &:hover {
+        opacity: 0.8;
+        cursor: pointer;
     }
 
-    &__data {
-        color: #ff8682;
+    > span {
+        font-size: 18px;
+        font-weight: 600;
+    }
+}
+
+.btn-confirm {
+    background-color: #f35221;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    transition: 0.3s;
+
+    &:hover {
+        opacity: 0.8;
+        cursor: pointer;
+    }
+    
+    > span {
+        font-size: 18px;
+        font-weight: 600;
     }
 }

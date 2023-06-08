@@ -231,7 +231,7 @@ export const RoomTypeDetail = () => {
   const [locale, setLocale] = useState('enUS');
   const [rangeDate, setRangeDate] = useState([{
     startDate: new Date(),
-    endDate: addDays(new Date(), 1), 
+    endDate: addDays(new Date(), 2), 
     key: "selection"
   }]);
 
@@ -306,8 +306,32 @@ export const RoomTypeDetail = () => {
         text: 'You haven\'t selected any room yet!',
       })
     } else {
-      // dispatch(addRoomTypes(roomTypeDetail))
-      navigate(`/booking/${roomTypeId}`);
+      http.get('/customer/account-customer')
+        .then((resolve) => {
+          console.log(resolve);
+          const { name, CMND, phone } = resolve.data.customer;
+          if (name === null || CMND === null || phone === null) {
+            Swal.fire(
+              'Missing user information',
+              'Please provide enough personal information before booking',
+              'error'
+            ).then(() => {
+              navigate('/user-profile');
+            })
+          } else {
+            navigate('/booking');
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+          Swal.fire(
+            'Oops!',
+            'Please try again',
+            'error'
+          ).then(() => {
+            navigate(1);
+          })
+        })
     }
   }
 
@@ -372,7 +396,7 @@ export const RoomTypeDetail = () => {
           console.log(reject);
         })
       http.get(`/auth/room-types/${roomTypeId}`)
-        .then((resolve) => {
+        .then((resolve) => {  
           setRoomTypeDetail(resolve.data.room_type);
         })
         .catch((reject) => {
@@ -875,6 +899,7 @@ export const RoomTypeDetail = () => {
                     address={feedback.address}
                     phone={feedback.phone}
                     rankingPoint={feedback.ranking_point}
+                    rankingName={feedback.ranking_name}
                   />
                 )
               } else {
@@ -895,6 +920,7 @@ export const RoomTypeDetail = () => {
                       address={feedback.address}
                       phone={feedback.phone}
                       rankingPoint={feedback.ranking_point}
+                      rankingName={feedback.ranking_name}
                     />
                     <Divider className={cx("seperate-line")} />
                   </>

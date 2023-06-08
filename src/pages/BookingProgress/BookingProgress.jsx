@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from './BookingProgress.module.scss'
 import classNames from "classnames/bind";
 import { useSelector } from 'react-redux';
@@ -8,40 +8,44 @@ import Header from '../../layouts/Header/Header';
 import Footer from '../../layouts/Footer/Footer';
 import { Steps } from 'antd';
 import { useState } from 'react';
+import Step1 from '../BookingStep/Step1/Step1';
 import Step2 from '../BookingStep/Step2/Step2';
-import Step3 from '../BookingStep/Step3/Step3';
 import { BiArrowBack } from 'react-icons/bi'
 import { BsFillCalendarCheckFill } from 'react-icons/bs'
 import { MdPayment } from 'react-icons/md'
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles)
 
 const BookingProgress = () => {
   
-  const { roomTypeId } = useParams(); 
+  const [, setTotalAmount] = useState();
+  const [, setTotalRooms] = useState();
+  const [, setTotalPeople] = useState();
   const { user } = AuthUser();
   const avatar = useSelector(avatarSelector);
   const [current, setCurrent] = useState(useSelector(progressStepSelector));
-  const [completedSteps, setCompletedSteps] = useState([]);
-
-  const handleStepCompletion = () => {
-    if (!completedSteps.includes(current)) {
-      setCompletedSteps([...completedSteps, current]); // Thêm chỉ số của step hiện tại vào danh sách bước đã hoàn thành
-    }
-  };
 
   const items = [
     {
       title: 'Step 1',
       subTitle: 'Confirm Information',
-      content: <Step2 />,
+      content: <Step1
+        current={current}
+        setCurrent={setCurrent}
+        setTotalAmount={setTotalAmount}
+        setTotalRooms={setTotalRooms}
+        setTotalPeople={setTotalPeople}
+      />,
       icon: <BsFillCalendarCheckFill />,
     },
     {
       title: 'Step 2',
       subTitle: 'Payment',
-      content: <Step3 />,
+      content: <Step2 
+        current={current}
+        setCurrent={setCurrent}
+      />,
       icon: <MdPayment />,
     },
   ]
@@ -49,13 +53,13 @@ const BookingProgress = () => {
   const onChange = (value) => {
     setCurrent(value);
   };
-
+  
   return (
     <div className={cx("booking-room-wrapper")}>
       <Header active='Find Rooms' userInfo={user} imageUrl={avatar} />
       <div className={cx("booking-steps")}>
         <Link
-          to={`/find-rooms/${roomTypeId}`}
+          to={'/find-rooms/'}
           className={cx("link-back")}
         >
           <BiArrowBack />

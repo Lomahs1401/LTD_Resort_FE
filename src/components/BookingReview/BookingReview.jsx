@@ -14,7 +14,6 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 const cx = classNames.bind(styles);
 
 const BookingReview = ({
-  id,
   image = '',
   title = '',
   price = 0,
@@ -23,7 +22,6 @@ const BookingReview = ({
   type = '',
   numberCustomers = 0,
   roomSize = 0,
-  totalRooms = 0,
   totalAverage = 0,
   totalReviews = 0,
 }) => {
@@ -68,10 +66,10 @@ const BookingReview = ({
             <Rate
               disabled
               tooltips={RATING_DESC}
-              defaultValue={ranking}
+              defaultValue={Math.round(ranking).toFixed(0)}
               style={{ color: '#FF8682' }}
             />
-            <p className="ant-rate-text" style={{ fontSize: 16 }}>{ranking} Star {type}</p>
+            <p className="ant-rate-text" style={{ fontSize: 16 }}>{Math.round(ranking).toFixed(0)} Star {type}</p>
             {type === 'Room' && (
               <>
                 <FaCoffee className={cx("amenities")} size={16} />
@@ -91,10 +89,6 @@ const BookingReview = ({
                 <FaUser size={20} className={cx("middle-content__top-icon")} />
                 {numberCustomers === 1 ? `${numberCustomers} person` : `${numberCustomers} persons`}
               </span>
-              {/* <span>
-                <FaBed size={20} className={cx("middle-content__top-icon")} />
-                {totalRooms} rooms
-              </span> */}
               <span>
                 <BsHouseCheckFill size={20} className={cx("middle-content__top-icon")} />
                 {roomSize}m<sup>2</sup>
@@ -118,19 +112,19 @@ const BookingReview = ({
           </div>
           <div className={cx("summary")}>
             {(() => {
-              if (totalAverage > 4) {
+              if (Math.round(totalAverage).toFixed(0) > 4) {
                 return (
                   <h4>Wonderful</h4>
                 )
-              } else if (totalAverage > 3 && totalAverage <= 4) {
+              } else if (Math.round(totalAverage).toFixed(0) > 3 && Math.round(totalAverage).toFixed(0) <= 4) {
                 return (
                   <h4>Good</h4>
                 )
-              } else if (totalAverage > 2 && totalAverage <= 3) {
+              } else if (Math.round(totalAverage).toFixed(0) > 2 && Math.round(totalAverage).toFixed(0) <= 3) {
                 return (
                   <h4>Normal</h4>
                 )
-              } else if (totalAverage > 1 && totalAverage <= 2) {
+              } else if (Math.round(totalAverage).toFixed(0) > 1 && Math.round(totalAverage).toFixed(0) <= 2) {
                 return (
                   <h4>Not Good</h4>
                 )
