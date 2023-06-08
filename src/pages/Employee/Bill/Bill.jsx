@@ -15,12 +15,12 @@ import { Form, Input, Modal, Select } from "antd";
 import { GrAdd } from "react-icons/gr";
 import Draggable from "react-draggable";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import styles from "./RoomArea.module.scss";
+import styles from "./Bill.module.scss";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(styles);
 
-const RoomArea = () => {
+const Bill = () => {
   const Layout = {
     labelCol: {
       span: 6,
@@ -89,6 +89,7 @@ const RoomArea = () => {
     setOpenModal(true);
     form.setFieldValue("name", "");
     setdisabledCreate(false);
+
     setValues({});
   };
   const handleEdit = (params) => {
@@ -167,7 +168,7 @@ const RoomArea = () => {
 
   return (
     <div className={cx("contact-wrapper")}>
-      <Header title="ROOM AREA" subtitle="List of Room Area" />
+      <Header title="BILL" subtitle="List of Bill" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -304,4 +305,4 @@ const RoomArea = () => {
   );
 };
 
-export default RoomArea;
+export default Bill;

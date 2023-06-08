@@ -23,7 +23,7 @@ import AuthUser from "../../../utils/AuthUser";
 const cx = classNames.bind(styles);
 
 const Staff = () => {
-  const {http} = AuthUser();
+  const { http } = AuthUser();
   const staffInfoLayout = {
     labelCol: {
       span: 6,
@@ -35,9 +35,14 @@ const Staff = () => {
 
   const [openModalStaff, setOpenModalStaff] = useState(false);
   const [values, setValues] = useState({});
-  const [listStaff, setListStaff] = useState([]);
-
-  const dateFormat = "YYYY-MM-DD";
+  const [listStaffWork, setListStaffWork] = useState([]);
+  const [listStaffQuit, setListStaffQuit] = useState([]);
+  const [listStaff, setListStaff] = useState();
+  const [listDepartment, setListDepartment] = useState([]);
+  const [listPosition, setListPosition] = useState([]);
+  const [Staff, setStaff] = useState();
+  const [status, setStatus] = useState(true);
+  const dateFormat = "DD-MM-YYYY";
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [form] = Form.useForm();
@@ -52,24 +57,41 @@ const Staff = () => {
         <Button startIcon={<AiOutlineUserAdd />} onClick={handleCreate}>
           Create
         </Button>
+        <Button onClick={handleWork}>Work</Button>
+        <Button onClick={handleQuit}>Quit</Button>
       </GridToolbarContainer>
     );
+  }
+
+  const handleWork = () => {
+    setListStaff(listStaffWork);
+    setStatus(true);
+  };
+  const handleQuit = () => {
+    setListStaff(listStaffQuit);
+    setStatus(false);
+  };
+
+  const handleSelect = (value) => {
+    
+
+      http
+        .get(`admin/list-position/${value}/${1}`)
+        .then((resolve) => {
+          setListPosition(resolve.data.list_position);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    
   }
 
   const handleSelectBirthDate = (date, dateString) => {
     form.setFieldValue("birthday", date);
   };
 
-  const handleSelectdayStart = (date, dateString) => {
-    form.setFieldValue("dayStart", date);
-  };
-
-  const handleSelectdayQuit = (date, dateString) => {
-    form.setFieldValue("dayQuit", date);
-  };
-
   const handleCreate = () => {
-    console.log("create");
+
     setdisabledCreate(false);
     setOpenModalStaff(true);
     form.setFieldValue("fullName", "");
@@ -86,52 +108,62 @@ const Staff = () => {
     setValues();
   };
 
+  const fetchStaff = (id) => {
+    http
+      .get(`/admin/find-employee/${id}`)
+      .then((resolve) => {
+
+        setStaff(resolve.data.data);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+  };
+
   const handleEdit = (params) => {
-    console.log(params);
+
     setdisabledCreate(false);
     const { row } = params;
-    form.setFieldValue("fullName", row.full_name);
-    form.setFieldValue("gender", row.gender);
-
+    fetchStaff(row.id);
+    form.setFieldValue("fullName", Staff?.name);
+    form.setFieldValue("gender", Staff?.gender);
     form.setFieldValue("birthDate", null);
-    form.setFieldValue("phone", row.phone);
-    form.setFieldValue("ID_Card", row.CMND);
-    form.setFieldValue("address", row.address);
-    form.setFieldValue("accountbank", row.account_bank);
-    form.setFieldValue("namebank", row.name_bank);
-    form.setFieldValue("dayStart", null);
-    form.setFieldValue("dayQuit", null);
-    form.setFieldValue("position", row.position);
+    form.setFieldValue("phone", Staff?.phone);
+    form.setFieldValue("ID_Card", Staff?.CMND);
+    form.setFieldValue("address", Staff?.address);
+    form.setFieldValue("accountbank", Staff?.account_bank);
+    form.setFieldValue("namebank", Staff?.name_bank);
+    form.setFieldValue("position", Staff?.position_name);
+    form.setFieldValue("department", Staff?.department_name);
     setOpenModalStaff(true);
   };
 
   const handleDelete = (params) => {
     console.log(params);
-    console.log("aaa");
     setOpenModalStaff(true);
   };
 
   const handleDoubleClickCell = (params) => {
     setdisabledCreate(true);
     const { row } = params;
-    form.setFieldValue("fullName", row.full_name);
-    form.setFieldValue("gender", row.gender);
-    form.setFieldValue("birthDate", row.birthday);
-    form.setFieldValue("phone", row.phone);
-    form.setFieldValue("ID_Card", row.CMND);
-    form.setFieldValue("address", row.address);
-    form.setFieldValue("accountbank", row.account_bank);
-    form.setFieldValue("namebank", row.name_bank);
-    form.setFieldValue("dayStart", row.dayStart);
-    form.setFieldValue("dayQuit", row.dayQuit);
-    form.setFieldValue("position", row.position);
+
+    fetchStaff(row.id);
+    form.setFieldValue("fullName", Staff?.name);
+    form.setFieldValue("gender", Staff?.gender);
+    form.setFieldValue("birthDate", Staff?.birthday);
+    form.setFieldValue("phone", Staff?.phone);
+    form.setFieldValue("ID_Card", Staff?.CMND);
+    form.setFieldValue("address", Staff?.address);
+    form.setFieldValue("accountbank", Staff?.account_bank);
+    form.setFieldValue("namebank", Staff?.name_bank);
+    form.setFieldValue("position", Staff?.position_name);
+    form.setFieldValue("department", Staff?.department_name);
+
     setOpenModalStaff(true);
-    console.log(row);
   };
 
   const handleOk = () => {
     setOpenModalStaff(false);
-    console.log("aa");
   };
 
   // Handle click button "X" of modal
@@ -168,9 +200,16 @@ const Staff = () => {
       cellClassName: "name-column--cell",
     },
     {
-      field: "age",
-      headerName: "Age",
+      field: "gender",
+      headerName: "Gender",
+
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "address",
+      headerName: "Address",
       type: "number",
+      flex: 1,
       headerAlign: "left",
       align: "left",
     },
@@ -180,8 +219,8 @@ const Staff = () => {
       flex: 1,
     },
     {
-      field: "email",
-      headerName: "Email",
+      field: "birthday",
+      headerName: "Birthday",
       flex: 1,
     },
     {
@@ -197,11 +236,17 @@ const Staff = () => {
           handleDelete(params);
         };
 
-        return (
+        return status ? (
           <Box display="flex" borderRadius="4px">
             <Button startIcon={<AiFillEdit />} onClick={handleEditClick}>
               {" "}
             </Button>
+            <Button startIcon={<AiFillDelete />} onClick={handleDeleteClick}>
+              {" "}
+            </Button>
+          </Box>
+        ) : (
+          <Box display="flex" borderRadius="4px">
             <Button startIcon={<AiFillDelete />} onClick={handleDeleteClick}>
               {" "}
             </Button>
@@ -235,23 +280,42 @@ const Staff = () => {
       bottom: clientHeight - (targetRect.bottom - uiData.y),
     });
   };
-  // //fetch api
-  // useEffect(() => {
+  //fetch api
+  useEffect(() => {
+    const fetchData = () => {
+      http
+        .get(`/admin/list-employee/${0}`,)
+        .then((resolve) => {
+          console.log(resolve);
+          setListStaffWork(resolve.data.list_employee);
+          setListStaff(resolve.data.list_employee);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      http
+        .get(`/admin/list-employee/${1}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListStaffQuit(resolve.data.list_employee);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      http
+        .get(`/admin/list-department`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListDepartment(resolve.data.list_department);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
 
-  //   const fetchData = () =>{
-  //     http.get('/admin/list')
-  //     .then((resolve) => {
-  //       console.log(resolve);
-  //       setListStaff(resolve.data.list_employee);
-  //     })
-  //     .catch((reject) => {
-  //       console.log(reject);
-  //     })
-  //   }
-  //   fetchData()
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-    
-  // }, []);
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className={cx("team-wrapper")}>
@@ -288,7 +352,7 @@ const Staff = () => {
           <DataGrid
             onCellDoubleClick={handleDoubleClickCell}
             checkboxSelection
-            rows={mockDataTeam}
+            rows={listStaff ? listStaff : mockDataTeam}
             columns={columns}
             components={{ Toolbar: CustomToolbar }}
             className={cx("table")}
@@ -350,13 +414,9 @@ const Staff = () => {
             phone: values?.phone,
             accountbank: values?.account_bank,
             namebank: values?.name_bank,
-            dayStart: values?.dayStart ? dayjs(values?.dayStart) : dayjs(),
-            dayQuit: values?.dayQuit ? dayjs(values?.dayQuit) : dayjs(),
             position: values?.position,
           }}
         >
-          {console.log(values)}
-
           <Form.Item
             name="fullName"
             label="Full Name"
@@ -515,48 +575,29 @@ const Staff = () => {
             )}
           </Form.Item>
           <Form.Item
-            label="Day Start"
-            name="dayStart"
+            name="department"
+            label="Department"
+            hasFeedback
+            className={cx("form-attributes__item")}
             rules={[
               {
                 required: true,
-                message: "Day Start is required!",
+                message: "Position is required!",
               },
             ]}
-            hasFeedback
-            className={cx("form-attributes__item")}
           >
             {disabledCreate ? (
-              <div>{form.getFieldValue("dayStart")}</div>
+              <div>{form.getFieldValue("department")}</div>
             ) : (
-              <DatePicker
-                placeholder="Select date"
-                format={dateFormat}
-                onChange={handleSelectdayStart}
-              />
-            )}
-          </Form.Item>
-          <Form.Item
-            label="Day Quit"
-            name="dayQuit"
-            rules={[
-              {
-                required: true,
-                message: "Day quit is required!",
-              },
-            ]}
-            hasFeedback
-            className={cx("form-attributes__item")}
-          >
-            {disabledCreate ? (
-              <div>{form.getFieldValue("dayQuit")}</div>
-            ) : (
-              <DatePicker
-                placeholder="Select date"
-                format={dateFormat}
-                onChange={handleSelectdayQuit}
+              <Select
+                placeholder="Please select Type room"
+                options={listDepartment.map((ele) => ({
+                  label: ele.department_name,
+                  value: ele.id,
+                }))}
                 disabled={disabledCreate}
-              />
+                onChange={handleSelect}
+              ></Select>
             )}
           </Form.Item>
           <Form.Item
@@ -575,13 +616,14 @@ const Staff = () => {
               <div>{form.getFieldValue("position")}</div>
             ) : (
               <Select
-                placeholder="Please select Position"
+                placeholder="Please select Type room"
+                options={listPosition.map((ele) => ({
+                  label: ele.position_name,
+                  value: ele.id,
+                }))}
                 disabled={disabledCreate}
-              >
-                <Select.Option value="Boss">Boss</Select.Option>
-                <Select.Option value="Freshman">Freshman</Select.Option>
-                <Select.Option value="Staff">Staff</Select.Option>
-              </Select>
+                onChange={handleSelect}
+              ></Select>
             )}
           </Form.Item>
 

@@ -8,19 +8,19 @@ import {
 } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import { tokens } from "../../../utils/theme";
-import { mockDataRoomArea } from "../../../data/mockData";
+import { mockDataRoomFloor } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { Form, Input, Modal, Select } from "antd";
 import { GrAdd } from "react-icons/gr";
 import Draggable from "react-draggable";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import styles from "./RoomArea.module.scss";
+import styles from "./Facility.module.scss";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(styles);
 
-const RoomArea = () => {
+const Facility = () => {
   const Layout = {
     labelCol: {
       span: 6,
@@ -51,7 +51,7 @@ const RoomArea = () => {
     { field: "id", headerName: "ID", flex: 0.5 },
 
     {
-      field: "area_name",
+      field: "floor_name",
       headerName: "Name",
       flex: 1,
       cellClassName: "name-column--cell",
@@ -89,12 +89,14 @@ const RoomArea = () => {
     setOpenModal(true);
     form.setFieldValue("name", "");
     setdisabledCreate(false);
+
     setValues({});
   };
+
   const handleEdit = (params) => {
     setdisabledCreate(false);
     const { row } = params;
-    form.setFieldValue("name", row.area_name);
+    form.setFieldValue("name", row.floor_name);
 
     setOpenModal(true);
   };
@@ -108,7 +110,7 @@ const RoomArea = () => {
     setdisabledCreate(true);
 
     setValues(row);
-    form.setFieldValue("name", row.area_name);
+    form.setFieldValue("name", row.floor_name);
 
     setOpenModal(true);
   };
@@ -167,7 +169,7 @@ const RoomArea = () => {
 
   return (
     <div className={cx("contact-wrapper")}>
-      <Header title="ROOM AREA" subtitle="List of Room Area" />
+      <Header title="FACILITY" subtitle="List of Facility" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -202,7 +204,7 @@ const RoomArea = () => {
       >
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataRoomArea}
+          rows={mockDataRoomFloor}
           columns={columns}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
@@ -224,7 +226,7 @@ const RoomArea = () => {
               setDisabled(true);
             }}
           >
-            Area Room Info
+            Floor Room Info
           </div>
         }
         open={openModal}
@@ -264,13 +266,13 @@ const RoomArea = () => {
               rules={[
                 {
                   required: true,
-                  message: "Name area is required!",
+                  message: "Name floor is required!",
                 },
               ]}
               hasFeedback
             >
               <Input
-                placeholder={"Please fill area name"}
+                placeholder={"Please fill floor name"}
                 disabled={disabledCreate}
               />
             </Form.Item>
@@ -304,4 +306,4 @@ const RoomArea = () => {
   );
 };
 
-export default RoomArea;
+export default Facility;

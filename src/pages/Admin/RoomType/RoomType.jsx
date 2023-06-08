@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Box } from "@mui/material";
 import {
   DataGrid,
@@ -15,8 +15,10 @@ import { Form, Input, Modal, Select } from "antd";
 import { GrAdd } from "react-icons/gr";
 import Draggable from "react-draggable";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import ImageGallery from "../ImageGallery/ImageGallery";
 import styles from "./RoomType.module.scss";
 import classNames from "classnames/bind";
+import AuthUser from "../../../utils/AuthUser";
 
 const cx = classNames.bind(styles);
 
@@ -31,9 +33,20 @@ const RoomType = () => {
   };
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { http } = AuthUser();
+  const [id, setId] = useState();
+  const [listRoom, setListRoom] = useState([]);
+  const [listRoomType, setListRoomType] = useState([]);
+  const [listRoomArea, setListRoomArea] = useState([]);
+  const [listRoomFloor, setListRoomFloor] = useState([]);
+  const [base, setBase] = useState(true);
   const [openModal, setOpenModal] = useState(false);
+  const [openModalRoom, setOpenModalRoom] = useState(false);
+  const [openModalArea, setOpenModalArea] = useState(false);
+  const [openModalFloor, setOpenModalFloor] = useState(false);
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
+  const [images, setImages] = useState([]);
 
   function CustomToolbar() {
     return (
@@ -43,29 +56,51 @@ const RoomType = () => {
         <Button startIcon={<GrAdd />} onClick={handleCreate}>
           Create
         </Button>
+        <Button startIcon={<GrAdd />} onClick={handleCreateArea}>
+          Create Area
+        </Button>
+        <Button startIcon={<GrAdd />} onClick={handleCreateFloor}>
+          Create Floor
+        </Button>
+      </GridToolbarContainer>
+    );
+  }
+  function CustomToolbarRoom() {
+    return (
+      <GridToolbarContainer>
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <Button startIcon={<GrAdd />} onClick={handleCreateRoom}>
+          Create
+        </Button>
       </GridToolbarContainer>
     );
   }
   //data columns
-  const columns = [
+  const columnsType = [
     { field: "id", headerName: "ID", flex: 0.5 },
-
     {
-      field: "type_name",
+      field: "room_type_name",
       headerName: "Name",
       flex: 1,
       cellClassName: "name-column--cell",
     },
 
     {
-      field: "size",
+      field: "room_size",
       headerName: "Size(m2)",
       flex: 1,
       cellClassName: "name-column--cell",
     },
     {
-      field: "capacity",
+      field: "number_customers",
       headerName: "Capacity",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "number_rooms",
+      headerName: "Total Room",
       flex: 1,
       cellClassName: "name-column--cell",
     },
@@ -109,9 +144,80 @@ const RoomType = () => {
     },
   ];
 
+  const columnsRoom = [
+    { field: "id_room", headerName: "ID", flex: 0.5 },
+
+    {
+      field: "room_name",
+      headerName: "Name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+
+    {
+      field: "area_name",
+      headerName: "Area",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "floor_name",
+      headerName: "Floor",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "accessLevel",
+      headerName: "Access Level",
+      width: 200,
+      renderCell: (params) => {
+        const handleEditClick = () => {
+          handleEdit(params);
+        };
+
+        const handleDeleteClick = () => {
+          handleDelete(params);
+        };
+
+        return (
+          <Box display="flex" borderRadius="4px">
+            <Button startIcon={<AiFillEdit />} onClick={handleEditClick}>
+              {" "}
+            </Button>
+            <Button startIcon={<AiFillDelete />} onClick={handleDeleteClick}>
+              {" "}
+            </Button>
+          </Box>
+        );
+      },
+    },
+  ];
+
   const handleCreate = () => {
     console.log("create");
     setOpenModal(true);
+    form.setFieldValue("name", "");
+    setdisabledCreate(false);
+    setValues({});
+  };
+  const handleCreateRoom = () => {
+    console.log("create");
+    setOpenModalRoom(true);
+    form.setFieldValue("name", "");
+    setdisabledCreate(false);
+    setValues({});
+  };
+  const handleCreateArea = () => {
+    console.log("create");
+    setOpenModalArea(true);
+    form.setFieldValue("name", "");
+    setdisabledCreate(false);
+
+    setValues({});
+  };
+  const handleCreateFloor = () => {
+    console.log("create");
+    setOpenModalFloor(true);
     form.setFieldValue("name", "");
     setdisabledCreate(false);
 
@@ -120,9 +226,22 @@ const RoomType = () => {
   const handleEdit = (params) => {
     setdisabledCreate(false);
     const { row } = params;
-    form.setFieldValue("name", row.area_name);
-
-    setOpenModal(true);
+    form.setFieldValue("typename", row.room_type_name);
+    form.setFieldValue("size", row.room_size);
+    form.setFieldValue("capacity", row.number_customers);
+    form.setFieldValue("price", row.price);
+    form.setFieldValue("point", row.point_ranking);
+    form.setFieldValue("roomName", row.room_name);
+    form.setFieldValue("floor", row.floor_name);
+    form.setFieldValue("area", row.area_name);
+    form.setFieldValue("roomType", id);
+    if (base) {
+      setOpenModal(true);
+    }
+    else{
+      setOpenModalRoom(true);
+    }
+    
   };
 
   const handleDelete = (params) => {
@@ -131,26 +250,52 @@ const RoomType = () => {
 
   const handleDoubleClickCell = (params) => {
     const { row } = params;
-    setdisabledCreate(true);
     console.log(row);
     setValues(row);
-    form.setFieldValue("typename", row.type_name);
-    form.setFieldValue("size", row.size);
-    form.setFieldValue("capacity", row.capacity);
-    form.setFieldValue("describe", row.describe);
-    form.setFieldValue("price", row.price);
-    form.setFieldValue("point", row.point_ranking);
+    form.setFieldValue("roomName", row.room_name);
+    form.setFieldValue("floor", row.floor_name);
+    form.setFieldValue("area", row.area_name);
+    form.setFieldValue("roomType", id);
+    setOpenModalRoom(true);
+    setdisabledCreate(true);
+  };
 
-    setOpenModal(true);
+  const handleClickCell = (params) => {
+    const { row } = params;
+    const ids = row.id;
+    setId(ids);
+    http
+      .get(`/admin/room/room-type/${ids}`)
+      .then((resolve) => {
+        setListRoom(resolve.data.list_rooms);
+        console.log("aaa", resolve);
+        setBase(false);
+      })
+      .catch((reject) => {
+        setListRoom([]);
+        setBase(false);
+        console.log(reject);
+      });
+  };
+
+  const handleUpdateImage = (updatedImages) => {
+    console.log(updatedImages); // Log mảng images đã được truyền lại từ ImageGallery
+    setImages(updatedImages); // Cập nhật mảng images trong component cha
   };
 
   const handleOk = () => {
     setOpenModal(false);
+    setOpenModalRoom(false);
+    setOpenModalArea(false);
+    setOpenModalFloor(false);
   };
 
   // Handle click button "X" of modal
   const handleCancel = () => {
     setOpenModal(false);
+    setOpenModalRoom(false);
+    setOpenModalArea(false);
+    setOpenModalFloor(false);
   };
   // Handle add new info
   const handleAdd = () => {
@@ -196,6 +341,38 @@ const RoomType = () => {
     });
   };
 
+  useEffect(() => {
+    const fetchData = () => {
+      http
+        .get(`/auth/room-types`)
+        .then((resolve) => {
+          setListRoomType(resolve.data.list_room_types);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      http
+        .get(`/auth/areas`)
+        .then((resolve) => {
+          setListRoomArea(resolve.data.list_areas);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      http
+        .get(`/auth/floors`)
+        .then((resolve) => {
+          setListRoomFloor(resolve.data.list_floors);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className={cx("contact-wrapper")}>
       <Header title="ROOM TYPE" subtitle="List of Room Type" />
@@ -231,13 +408,24 @@ const RoomType = () => {
           },
         }}
       >
-        <DataGrid
-          onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataRoomType}
-          columns={columns}
-          components={{ Toolbar: CustomToolbar }}
-          className={cx("table")}
-        />
+        {base ? (
+          <DataGrid
+            onCellDoubleClick={handleClickCell}
+            rows={listRoomType}
+            columns={columnsType}
+            components={{ Toolbar: CustomToolbar }}
+            className={cx("table")}
+          />
+        ) : (
+          <DataGrid
+            getRowId={(row) => row.id_room}
+            onCellDoubleClick={handleDoubleClickCell}
+            rows={listRoom}
+            columns={columnsRoom}
+            components={{ Toolbar: CustomToolbarRoom }}
+            className={cx("table")}
+          />
+        )}
       </Box>
       <Modal
         title={
@@ -401,7 +589,371 @@ const RoomType = () => {
               />
             </Form.Item>
           </div>
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="picture"
+              label="picture"
 
+              // hasFeedback
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Room Type is required!",
+              //   },
+              // ]}
+            >
+              <ImageGallery
+                images={images}
+                onChangeImages={handleUpdateImage}
+              />
+            </Form.Item>
+          </div>
+
+          <Form.Item
+            wrapperCol={24}
+            style={{
+              display: "flex",
+              width: "60%",
+              justifyContent: "flex-end",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              {disabledCreate ? (
+                <Button type="primary" disabled></Button>
+              ) : form.getFieldValue("name") == "" ? (
+                <Button type="primary" onClick={handleAdd}>
+                  Add
+                </Button>
+              ) : (
+                <Button type="primary" onClick={handleSumbit}>
+                  Edit
+                </Button>
+              )}
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title={
+          <div
+            style={{
+              width: "100%",
+              cursor: "move",
+              textAlign: "center",
+              marginBottom: 24,
+            }}
+            onMouseOver={() => {
+              setDisabled(false);
+            }}
+            onMouseOut={() => {
+              setDisabled(true);
+            }}
+          >
+            Area Room Info
+          </div>
+        }
+        open={openModalArea}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+        modalRender={(modal) => (
+          <Draggable
+            disabled={disabled}
+            bounds={bounds}
+            onStart={(event, uiData) => onStart(event, uiData)}
+          >
+            <div ref={draggleRef}>{modal}</div>
+          </Draggable>
+        )}
+      >
+        <Form
+          {...layout}
+          form={form}
+          layout="horizontal"
+          name="profile_form"
+          labelAlign="right"
+          labelWrap="true"
+          size="large"
+          autoComplete="off"
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          className={cx("modal-form")}
+          initialValues={{
+            name: values?.name,
+          }}
+        >
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="name"
+              label="Name"
+              rules={[
+                {
+                  required: true,
+                  message: "Name area is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill area name"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+
+          <Form.Item
+            wrapperCol={24}
+            style={{
+              display: "flex",
+              width: "60%",
+              justifyContent: "flex-end",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              {disabledCreate ? (
+                <Button type="primary" disabled></Button>
+              ) : form.getFieldValue("name") == "" ? (
+                <Button type="primary" onClick={handleAdd}>
+                  Add
+                </Button>
+              ) : (
+                <Button type="primary" onClick={handleSumbit}>
+                  Edit
+                </Button>
+              )}
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title={
+          <div
+            style={{
+              width: "100%",
+              cursor: "move",
+              textAlign: "center",
+              marginBottom: 24,
+            }}
+            onMouseOver={() => {
+              setDisabled(false);
+            }}
+            onMouseOut={() => {
+              setDisabled(true);
+            }}
+          >
+            Floor Room Info
+          </div>
+        }
+        open={openModalFloor}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+        modalRender={(modal) => (
+          <Draggable
+            disabled={disabled}
+            bounds={bounds}
+            onStart={(event, uiData) => onStart(event, uiData)}
+          >
+            <div ref={draggleRef}>{modal}</div>
+          </Draggable>
+        )}
+      >
+        <Form
+          {...layout}
+          form={form}
+          layout="horizontal"
+          name="profile_form"
+          labelAlign="right"
+          labelWrap="true"
+          size="large"
+          autoComplete="off"
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          className={cx("modal-form")}
+          initialValues={{
+            name: values?.name,
+          }}
+        >
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="name"
+              label="Name"
+              rules={[
+                {
+                  required: true,
+                  message: "Name floor is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill floor name"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+
+          <Form.Item
+            wrapperCol={24}
+            style={{
+              display: "flex",
+              width: "60%",
+              justifyContent: "flex-end",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              {disabledCreate ? (
+                <Button type="primary" disabled></Button>
+              ) : form.getFieldValue("name") == "" ? (
+                <Button type="primary" onClick={handleAdd}>
+                  Add
+                </Button>
+              ) : (
+                <Button type="primary" onClick={handleSumbit}>
+                  Edit
+                </Button>
+              )}
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title={
+          <div
+            style={{
+              width: "100%",
+              cursor: "move",
+              textAlign: "center",
+              marginBottom: 24,
+            }}
+            onMouseOver={() => {
+              setDisabled(false);
+            }}
+            onMouseOut={() => {
+              setDisabled(true);
+            }}
+          >
+            Room Info
+          </div>
+        }
+        open={openModalRoom}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+        modalRender={(modal) => (
+          <Draggable
+            disabled={disabled}
+            bounds={bounds}
+            onStart={(event, uiData) => onStart(event, uiData)}
+          >
+            <div ref={draggleRef}>{modal}</div>
+          </Draggable>
+        )}
+      >
+        <Form
+          {...layout}
+          form={form}
+          layout="horizontal"
+          name="profile_form"
+          labelAlign="right"
+          labelWrap="true"
+          size="large"
+          autoComplete="off"
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          className={cx("modal-form")}
+          initialValues={{
+            roomName: values?.room_name,
+            floor: values?.floor,
+            area: values?.area,
+            roomType: values?.type,
+          }}
+        >
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="roomName"
+              label="Room Name"
+              rules={[
+                {
+                  required: true,
+                  message: "Room name is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill room name"}
+                disabled={disabledCreate}
+                className={cx("input")}
+              />
+            </Form.Item>
+          </div>
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="floor"
+              label="Floor"
+              hasFeedback
+              rules={[
+                {
+                  required: true,
+                  message: "Floor is required!",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Please select floor"
+                options={listRoomFloor.map((ele) => ({
+                  label: ele.floor_name,
+                  value: ele.id,
+                }))}
+                disabled={disabledCreate}
+              ></Select>
+            </Form.Item>
+          </div>
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="area"
+              label="Area"
+              hasFeedback
+              rules={[
+                {
+                  required: true,
+                  message: "Area is required!",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Please select area"
+                options={listRoomArea.map((ele) => ({
+                  label: ele.area_name,
+                  value: ele.id,
+                }))}
+                disabled={disabledCreate}
+              ></Select>
+            </Form.Item>
+          </div>
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="roomType"
+              label="Room Type"
+              hasFeedback
+              rules={[
+                {
+                  required: true,
+                  message: "Room Type is required!",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Please select Type room"
+                options={listRoomType.map((ele) => ({
+                  label: ele.room_type_name,
+                  value: ele.id,
+                }))}
+                disabled={disabledCreate}
+              ></Select>
+            </Form.Item>
+          </div>
           <Form.Item
             wrapperCol={24}
             style={{

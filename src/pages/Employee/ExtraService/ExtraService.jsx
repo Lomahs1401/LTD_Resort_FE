@@ -8,27 +8,27 @@ import {
 } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import { tokens } from "../../../utils/theme";
-import { mockDataRoomArea } from "../../../data/mockData";
+import { mockDataServiceType } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { Form, Input, Modal, Select } from "antd";
 import { GrAdd } from "react-icons/gr";
 import Draggable from "react-draggable";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import styles from "./RoomArea.module.scss";
+import styles from "./ExtraService.module.scss";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(styles);
 
-const RoomArea = () => {
-  const Layout = {
+const ExtraService = () => {
+  const layout = {
     labelCol: {
       span: 6,
     },
     wrapperCol: {
       span: 18,
     },
-  };
+  }
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [openModal, setOpenModal] = useState(false);
@@ -51,12 +51,13 @@ const RoomArea = () => {
     { field: "id", headerName: "ID", flex: 0.5 },
 
     {
-      field: "area_name",
+      field: "type_name",
       headerName: "Name",
       flex: 1,
       cellClassName: "name-column--cell",
     },
 
+   
     {
       field: "accessLevel",
       headerName: "Access Level",
@@ -89,6 +90,7 @@ const RoomArea = () => {
     setOpenModal(true);
     form.setFieldValue("name", "");
     setdisabledCreate(false);
+
     setValues({});
   };
   const handleEdit = (params) => {
@@ -106,9 +108,14 @@ const RoomArea = () => {
   const handleDoubleClickCell = (params) => {
     const { row } = params;
     setdisabledCreate(true);
-
+    console.log(row);
     setValues(row);
-    form.setFieldValue("name", row.area_name);
+    form.setFieldValue("typename", row.type_name);
+    form.setFieldValue("size", row.size);
+    form.setFieldValue("capacity", row.capacity);
+    form.setFieldValue("describe", row.describe);
+    form.setFieldValue("price", row.price);
+    form.setFieldValue("point", row.point_ranking);
 
     setOpenModal(true);
   };
@@ -167,7 +174,7 @@ const RoomArea = () => {
 
   return (
     <div className={cx("contact-wrapper")}>
-      <Header title="ROOM AREA" subtitle="List of Room Area" />
+      <Header title="EXTRA SERVICE" subtitle="List of Extra Service" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -202,10 +209,11 @@ const RoomArea = () => {
       >
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataRoomArea}
+          rows={mockDataServiceType}
           columns={columns}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
+
         />
       </Box>
       <Modal
@@ -224,7 +232,7 @@ const RoomArea = () => {
               setDisabled(true);
             }}
           >
-            Area Room Info
+            Service type Info
           </div>
         }
         open={openModal}
@@ -242,7 +250,7 @@ const RoomArea = () => {
         )}
       >
         <Form
-          {...Layout}
+          {...layout}
           form={form}
           layout="horizontal"
           name="profile_form"
@@ -254,28 +262,127 @@ const RoomArea = () => {
           onFinishFailed={onFinishFailed}
           className={cx("modal-form")}
           initialValues={{
-            name: values?.name,
+            typename: values?.type_name,
+            size: values?.size,
+            capacity : values?.capacity ,
+            describe: values?.describe,
+            price: values?.price,
+            point: values?.point_ranking,
           }}
         >
-          <div className={cx("room-attributes")}>
+          <div className={cx("service-attributes")}>
             <Form.Item
-              name="name"
-              label="Name"
+              name="typename"
+              label="Type Name"
               rules={[
                 {
                   required: true,
-                  message: "Name area is required!",
+                  message: "Type name is required!",
                 },
               ]}
               hasFeedback
             >
               <Input
-                placeholder={"Please fill area name"}
+                placeholder={"Please fill type name"}
                 disabled={disabledCreate}
               />
             </Form.Item>
           </div>
+          <div className={cx("service-attributes")}>
+            <Form.Item
+              name="size"
+              label="Size(m2)"
+              rules={[
+                {
+                  required: true,
+                  message: "Size is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill the size"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+          <div className={cx("service-attributes")}>
+            <Form.Item
+              name="capacity"
+              label="Capacity"
 
+              rules={[
+                {
+                  required: true,
+                  message: "The capacity is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill the capacity"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+          <div className={cx("service-attributes")}>
+            <Form.Item
+              name="describe"
+              label="Describe"
+
+              rules={[
+                {
+                  required: true,
+                  message: "Describe is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill describe"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+          <div className={cx("service-attributes")}>
+            <Form.Item
+              name="price"
+              label="Price"
+
+              rules={[
+                {
+                  required: true,
+                  message: "Price is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill the price"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+          <div className={cx("service-attributes")}>
+            <Form.Item
+              name="point"
+              label="Point Ranking"
+
+              rules={[
+                {
+                  required: true,
+                  message: "The point is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill The point"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+         
           <Form.Item
             wrapperCol={24}
             style={{
@@ -304,4 +411,4 @@ const RoomArea = () => {
   );
 };
 
-export default RoomArea;
+export default ExtraService;

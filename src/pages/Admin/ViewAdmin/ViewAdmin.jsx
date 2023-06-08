@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../../utils/theme";
@@ -7,21 +8,28 @@ import Header from "../../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { Modal } from "antd";
 import Draggable from "react-draggable";
-import styles from "./ManageAdmin.module.scss";
+import styles from "./ViewAdmin.module.scss";
 import classNames from "classnames/bind";
 import UserProfile from "../../../components/UserProfile/UserProfile";
 import AuthUser from "../../../utils/AuthUser";
 
 const cx = classNames.bind(styles);
 
-const ManageAdmin = () => {
+const ViewAdmin = () => {
+  const location = useLocation();
+  const { state } = location;
+  const field = state.field;
+  const { row } = state;
+  console.log("row  ", row);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { http } = AuthUser();
   const [openModal, setOpenModal] = useState(false);
   const [admin, setAdmin] = useState();
   const [admins, setAdminS] = useState();
-  const [listAdmin, setListAdmin] = useState([]);
+  const [base, setBase] = useState();
+  const [listPosition, setlistPosition] = useState([]);
+  const [listPeople, setListPeople] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
 
   const handleOk = () => {
@@ -34,7 +42,8 @@ const ManageAdmin = () => {
   };
 
   //data columns
-  const columns = [
+
+  const columnsPeople = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "CMND", headerName: "Registrar ID" },
     {
@@ -60,51 +69,68 @@ const ManageAdmin = () => {
       headerName: "Address",
       flex: 1,
     },
-
-    {
-      field: "zipCode",
-      headerName: "Zip Code",
-      flex: 1,
-    },
   ];
-
-  const {
-    accountId,
-    avatar,
-    comment,
-    username,
-    rating,
-    fullName,
-    email,
-    gender,
-    birthDate,
-    ID_Card,
-    address,
-    phone,
-    rankingPoint,
-  } = {
-    accountId: 1,
-    avatar: 1,
-    comment: 1,
-    username: 1,
-    rating: 1,
-    fullName: 1,
-    email: 1,
-    gender: 1,
-    birthDate: 1,
-    ID_Card: 1,
-    address: 1,
-    phone: 1,
-    rankingPoint: 11,
-  };
+  const columnsPosition = [
+    { field: "id", headerName: "ID" },
+    { field: "position_name", headerName: "Position Name", flex: 0.5 },
+    { field: "total", headerName: "Total Work", flex: 0.5 },
+  ];
 
   const handleDoubleClickCell = (params) => {
     const { row } = params;
-    const { id } = row;
-    setAdminS(row);
-    console.log("da  ", row);
-    fetchAdmin(row.id);
+    const ids = row.id;
+    console.log(row);
+    setAdmin();
+    if (field === "position_admin" || field === "total_admin") {
+      http
+        .get(`/admin/find-admin/${ids}`)
+        .then((resolve) => {
+          setAdmin(resolve.data.data);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    } else if (field === "position_employee" || field === "total_employee") {
+      http
+        .get(`/admin/find-employee/${ids}`)
+        .then((resolve) => {
+          setAdmin(resolve.data.data);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    }
     setOpenModal(true);
+  };
+
+  const handleClickCell = (params) => {
+    const { row } = params;
+    const ids = row.id;
+    if (field === "position_admin") {
+      http
+        .get(`/admin/list-admin-by-position/${ids}`)
+        .then((resolve) => {
+          setListPeople(resolve.data.listAdmin);
+          setBase(true);
+        })
+        .catch((reject) => {
+          setListPeople([]);
+          setBase(true);
+          console.log(reject);
+        });
+    } else if (field === "position_employee") {
+      http
+        .get(`/admin/list-employee-by-position/${ids}`)
+        .then((resolve) => {
+          setListPeople(resolve.data.listAdmin);
+          setBase(true);
+        })
+        .catch((reject) => {
+          setListPeople([]);
+          setBase(true);
+          console.log(reject);
+        });
+    }
   };
   // ---------------------------      Modal Draggable      ---------------------------
   const draggleRef = useRef(null);
@@ -132,35 +158,67 @@ const ManageAdmin = () => {
 
   // fetch api
   useEffect(() => {
+    const id = row?.id;
+
     const fetchData = () => {
-      http
-        .get("/admin/list")
-        .then((resolve) => {
-          setListAdmin(resolve.data.list_accounts);
-        })
-        .catch((reject) => {
-          console.log(reject);
-        });
+      if (field === "position_admin") {
+        http
+          .get(`/admin/list-position/${id}/${0}`)
+          .then((resolve) => {
+            setlistPosition(resolve.data.list_position);
+            setBase(false);
+          })
+          .catch((reject) => {
+            console.log(reject);
+          });
+      } else if (field === "total_admin") {
+        http
+          .get(`/admin/list-by-department/${id}/${0}`)
+          .then((resolve) => {
+            setListPeople(resolve.data.list_position);
+
+            setBase(true);
+          })
+          .catch((reject) => {
+            console.log(reject);
+          });
+      } else if (field === "position_employee") {
+        http
+          .get(`/admin/list-position/${id}/${1}`)
+          .then((resolve) => {
+            console.log("3");
+            setlistPosition(resolve.data.list_position);
+            setBase(false);
+          })
+          .catch((reject) => {
+            console.log(reject);
+          });
+      } else if (field === "total_employee") {
+        http
+          .get(`/admin/list-by-department/${id}/${1}`)
+          .then((resolve) => {
+            console.log("4");
+            setListPeople(resolve.data.list_position);
+
+            setBase(true);
+          })
+          .catch((reject) => {
+            console.log(reject);
+          });
+      }
     };
+
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchAdmin = (id) => {
-    http
-      .get(`/admin/find/${id}`)
-      .then((resolve) => {
-        setAdmin(resolve.data.data);
-      })
-      .catch((reject) => {
-        console.log(reject);
-      });
-  };
-  console.log("admin: ", admin);
-
   return (
     <div className={cx("contact-wrapper")}>
-      <Header title="ADMIN" subtitle="List of Admin " />
+      {base ? (
+        <Header title="ADMIN" subtitle="List of Admin " />
+      ) : (
+        <Header title="POSITION" subtitle="List of Position " />
+      )}
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -193,17 +251,26 @@ const ManageAdmin = () => {
           },
         }}
       >
-        <DataGrid
-          onCellDoubleClick={handleDoubleClickCell}
-          rows={listAdmin}
-          columns={columns}
-          className={cx("table")}
-        />
+        {base ? (
+          <DataGrid
+            onCellDoubleClick={handleDoubleClickCell}
+            rows={listPeople}
+            columns={columnsPeople}
+            className={cx("table")}
+          />
+        ) : (
+          <DataGrid
+            onCellClick={handleClickCell}
+            rows={listPosition}
+            columns={columnsPosition}
+            className={cx("table")}
+          />
+        )}
       </Box>
       <Modal
         title={
           <div className={cx("modal__title")}>
-            <img src={admins?.image} alt="Avatar" />
+            <img src={admin?.image} alt="Avatar" />
             <div>ID NHAN VIEN : {admin?.id}</div>
             <div>{admin?.name}</div>
           </div>
@@ -222,8 +289,6 @@ const ManageAdmin = () => {
           </Draggable>
         )}
       >
-
-        
         <div className={cx("modal__form")}>
           <div
             style={{
@@ -289,4 +354,4 @@ const ManageAdmin = () => {
   );
 };
 
-export default ManageAdmin;
+export default ViewAdmin;
