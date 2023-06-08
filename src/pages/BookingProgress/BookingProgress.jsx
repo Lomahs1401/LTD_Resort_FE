@@ -53,21 +53,7 @@ const BookingProgress = () => {
   const onChange = (value) => {
     setCurrent(value);
   };
-
-  // useEffect(() => {
-  //   http.get('/customer/account-customer')
-  //     .then((resolve) => {
-  //       console.log(resolve);
-  //       setCustomerId(resolve.data.customer.id);
-  //       setFullName(resolve.data.customer.name);
-  //     })
-  //     .catch((reject) => {
-  //       console.log(reject);
-  //     })
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [])
-
+  
   return (
     <div className={cx("booking-room-wrapper")}>
       <Header active='Find Rooms' userInfo={user} imageUrl={avatar} />

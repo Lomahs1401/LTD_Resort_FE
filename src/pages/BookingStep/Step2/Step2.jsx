@@ -5,13 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { prevProgressStep, removeTotalAmount, removeTotalPeople, removeTotalRooms } from '../../../redux/actions';
 import { Button, Divider, Form, Input, Select } from 'antd';
 import creditCard from '../../../img/credit-card.png'
-import { totalAmountSelector, totalPeopleSelector, totalRoomsSelector } from '../../../redux/selectors';
+import { checkinDateSelector, checkoutDateSelector, totalAmountSelector, totalPeopleSelector, totalRoomsSelector } from '../../../redux/selectors';
 import { toast } from 'react-toastify';
 import AuthUser from '../../../utils/AuthUser';
-import axios from 'axios';
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -28,15 +27,19 @@ const Step2 = ({ current, setCurrent }) => {
     },
   };
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
+  const checkinDate = useSelector(checkinDateSelector);
+  const checkoutDate = useSelector(checkoutDateSelector);
 
   const totalAmount = useSelector(totalAmountSelector);
   const totalRooms = useSelector(totalRoomsSelector);
   const totalPeople = useSelector(totalPeopleSelector);
 
   const [form] = Form.useForm();
+  const [payTime, setPayTime] = useState(null);
   const [confirmPaySuccess, setConfirmPaySuccess] = useState(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [isFirstRender, setIsFirstRender] = useState(true);
   var startTime = new Date();
   var expire = new Date(startTime.getTime() + 15 * 60000); // Thêm 15 phút (15 * 60 * 1000 milliseconds) vào thời gian bắt đầu
@@ -58,7 +61,7 @@ const Step2 = ({ current, setCurrent }) => {
 
   const [fullName, ] = useState(() => {
     const user = JSON.parse(sessionStorage.getItem('user'));
-    return user.full_name;
+    return user.full_name === null ? null : user.full_name;
   });
 
   const [customerId, ] = useState(() => {
@@ -82,15 +85,14 @@ const Step2 = ({ current, setCurrent }) => {
     formData.append('txtexpire', values.expired);
     formData.append('order_desc', values.billContent);
     formData.append('bank_code', values.bank);
-    formData.append('customer_id', values.customerId);
     formData.append('amount', values.totalAmount);
-    formData.append('total_rooms', values.totalRooms);
-    formData.append('total_people', values.totalPeople);
 
     http.post('/customer/vnpay_payment', formData)
       .then((resolve) => {
         console.log(resolve);
         if (resolve.data.message === 'success') {
+          setPayTime(resolve.data.payTime); // Lưu giá trị resolve.data.payTime vào biến tham chiếu
+          setPaymentSuccess(true);
           window.location.href = decodeURIComponent(resolve.data.url); // Điều hướng tới trang thanh toán
         }
       })
@@ -126,6 +128,27 @@ const Step2 = ({ current, setCurrent }) => {
       // Xác định rằng URL chứa tham số vnp_ResponseCode
       if (responseCode === '00') {
         setConfirmPaySuccess(true);
+        const paymentData = {
+          totalAmount: form.getFieldValue('totalAmount'),
+          totalRoom: form.getFieldValue('totalRooms'),
+          totalPeople: form.getFieldValue('totalPeople'),
+          customerId: form.getFieldValue('customerId'),
+          paymentMethod: 'Online',
+          payTime: payTime,
+          checkinDate: checkinDate,
+          checkoutDate: checkoutDate,
+          tax: 0,
+          discount: 0,
+        };
+    
+        http.post('/customer/save_payment_data', paymentData)
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => {
+            console.log(error);
+            // Xử lý lỗi khi không thể lưu dữ liệu
+          });
       } else {
         setConfirmPaySuccess(false);
       }
@@ -138,6 +161,8 @@ const Step2 = ({ current, setCurrent }) => {
         icon: 'success',
         title: 'Payment Successful',
         text: 'Your payment has been successfully processed.',
+      }).then(() => {
+        navigate('/find-rooms');
       });
     } else if (confirmPaySuccess === false) {
       Swal.fire({
