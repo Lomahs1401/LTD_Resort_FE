@@ -22,12 +22,10 @@ import RoomArea from "./RoomArea/RoomArea";
 import RoomFloor from "./RoomFloor/RoomFloor";
 import RoomType from "./RoomType/RoomType";
 import Equiment from "./Equipment/Equipment";
-import CreateRoom from "./CreateRoom/CreateRoom";
 import Service from "./Service/Service";
 import ServiceType from "./ServiceType/ServiceType";
-import CreateService from "./CreateService/CreateService";
+import Statistical from "./Statistical/Statistical";
 import AccordionDetails from "./AccountDetail/AccountDetail";
-import Geography from "./Geography/Geography";
 import Calendar from "./Calendar/Calendar";
 import styles from "./Admin.module.scss";
 import classNames from "classnames/bind";
@@ -55,16 +53,17 @@ const Admin = () => {
               <Route path="/bill" element={<Bill />} />
               <Route path="/department" element={<Department />} />
               <Route path="/viewadmin" element={<ViewAdmin />} />
-              <Route path="/room" element={<Room />} />
+              {/* <Route path="/room" element={<Room />} />
               <Route path="/roomarea" element={<RoomArea />} />
-              <Route path="/roomfloor" element={<RoomFloor />} />
+              <Route path="/roomfloor" element={<RoomFloor />} /> */}
               <Route path="/roomtype" element={<RoomType />} />
               <Route path="/equipment" element={<Equiment />} />
-              {/* <Route path="/createroom" element={< CreateRoom />} /> */}
               <Route path="/service" element={<Service />} />
               <Route path="/servicetype" element={<ServiceType />} />
+              <Route path="/statistical" element={<Statistical />} />
 
               {/* <Route path="/createservice" element={< CreateService />} /> */}
+              
               <Route path="/form" element={<Form />} />
               <Route path="/bar" element={<Bar />} />
               <Route path="/pie" element={<Pie />} />

@@ -5,7 +5,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Diamond } from "@mui/icons-material";
 import { tokens } from "../../../utils/theme";
 import {
-  mockDatabillRoom,
   mockDatabillService,
   mockDatabillRoomDetail,
   mockDatabillServiceDetail,
@@ -19,8 +18,7 @@ import { MdHotel, MdRoomService } from "react-icons/md";
 import Draggable from "react-draggable";
 import styles from "./Bill.module.scss";
 import classNames from "classnames/bind";
-import { getDownloadURL, ref, uploadBytes, getStorage } from "firebase/storage";
-import { storage } from "../../../utils/firebase";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import AuthUser from "../../../utils/AuthUser";
 
 const cx = classNames.bind(styles);
@@ -216,8 +214,10 @@ const Bill = () => {
       await http
         .get(`/admin/show-customer/${id}`)
         .then((resolve) => {
-          console.log(resolve);
+          
           setCustomer(resolve.data.data);
+          console.log("hhuhu" ,resolve);
+          console.log("aaa" , resolve.data.data);
         })
         .catch((reject) => {
           console.log(reject);
@@ -234,7 +234,7 @@ const Bill = () => {
         .get(`/admin/show-bill-customer/${id}`)
         .then((resolve) => {
           console.log(resolve);
-          if (resolve.status == 200) {
+          if (resolve.status === 200) {
             setRoom(resolve.data.bill_room);
             setService(resolve.data.bill_service);
             setExtraService(resolve.data.bill_extra_service);
@@ -250,10 +250,13 @@ const Bill = () => {
 
   useEffect(() => {
     const fetchImage = async () => {
-      const storage = getStorage();
-      const storageRef = ref(storage, Customer?.avatar);
-      const downloadUrl = await getDownloadURL(storageRef);
-      setImageUrl(downloadUrl);
+      console.log("asa", Customer)
+      if (Customer?.avatar) {
+        const storage = getStorage();
+        const storageRef = ref(storage, Customer.avatar);
+        const downloadUrl = await getDownloadURL(storageRef);
+        setImageUrl(downloadUrl);
+      }
     };
 
     fetchImage();

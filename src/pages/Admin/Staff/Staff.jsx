@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, {  useState, useEffect, useRef } from "react";
 import { Box, useTheme, Button } from "@mui/material";
 import {
   DataGrid,
@@ -631,7 +631,7 @@ const Staff = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("gender") == "" ? (
+              ) : form.getFieldValue("gender") === "" ? (
                 <Button type="primary" onClick={handleAdd}>
                   Add
                 </Button>

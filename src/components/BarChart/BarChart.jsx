@@ -1,15 +1,17 @@
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../../utils/theme";
-import { mockBarData as data } from "../../data/mockData";
+import { mockBarWorker } from "../../data/mockData";
 
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const colorss = [tokens("dark").greenAccent[300], tokens("dark").redAccent[200]];
+
   return (
     <ResponsiveBar
-      data={data}
+      data={mockBarWorker}
       theme={{
         // added
         axis: {
@@ -39,13 +41,15 @@ const BarChart = ({ isDashboard = false }) => {
           },
         },
       }}
-      keys={["hot dog", "burger", "sandwich", "kebab", "fries", "donut"]}
-      indexBy="country"
+      // keys={["hot dog", "burger", "sandwich", "kebab", "fries", "donut"]}
+      keys={["employeesWorking", "employeesResigned"]}
+      indexBy="month"
+      groupMode="grouped"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       valueScale={{ type: "linear" }}
       indexScale={{ type: "band", round: true }}
-      colors={{ scheme: "nivo" }}
+      colors={colorss}
       defs={[
         {
           id: "dots",
@@ -124,6 +128,20 @@ const BarChart = ({ isDashboard = false }) => {
         return e.id + ": " + e.formattedValue + " in country: " + e.indexValue;
       }}
     />
+
+
+
+
+
+  //   <div style={{ height: '400px' }}>
+  //   <ResponsiveBar
+  //     data={mockBarWorker}
+  //     keys={['employeesWorking', 'employeesResigned']}
+  //     indexBy="month"
+  //     groupMode="stacked"
+  //     // Các thuộc tính khác của <ResponsiveBar /> nếu cần thiết
+  //   />
+  // </div>
   );
 };
 

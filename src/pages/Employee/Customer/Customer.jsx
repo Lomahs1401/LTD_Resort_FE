@@ -3,7 +3,6 @@ import { Box, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../../utils/theme";
-import { mockDataCustomer } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import styles from "./Customer.module.scss";
 import classNames from "classnames/bind";

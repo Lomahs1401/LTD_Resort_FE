@@ -10,19 +10,13 @@ import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import BedIcon from "@mui/icons-material/Bed";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
-import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import testimonial from "../../../img/testimonial1.png";
-import { getDownloadURL, ref, getStorage } from "firebase/storage";
+import { getDownloadURL, ref } from "firebase/storage";
 import AuthUser from "../../../utils/AuthUser";
+import { storage } from "../../../utils/firebase"
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -49,7 +43,9 @@ const Sidebar = () => {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-  const { http } = AuthUser();
+  const { http, user } = AuthUser();
+
+  const avatarRef = ref(storage, user.avatar)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,18 +65,13 @@ const Sidebar = () => {
 
   useEffect(() => {
     const fetchImage = async () => {
-      const storage = getStorage();
-      const storageRef = ref(storage, admin?.avatar);
-      const downloadUrl = await getDownloadURL(storageRef);
-      setAvatarUrl(downloadUrl);
+      getDownloadURL(avatarRef).then((url) => {
+        setAvatarUrl(url);
+      })
     };
 
     fetchImage();
-  }, [admin?.avatar]);
-
-  // if (!avatarUrl) {
-  //   return <div>Loading...</div>;
-  // }
+  }, []);
 
   return (
     <Box
@@ -205,27 +196,6 @@ const Sidebar = () => {
             >
               Room
             </Typography>
-            {/* <Item
-              title="Room"
-              to="/admin/room"
-              icon={<BedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Room Area"
-              to="/admin/roomarea"
-              icon={<LocationOnIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Room Floor"
-              to="/admin/roomfloor"
-              icon={<ArrowUpwardIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
             <Item
               title="Room Type"
               to="/admin/roomtype"
@@ -272,14 +242,14 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="FeedBack"
-              to="/admin/form"
+              to="/admin/feedback"
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="New"
-              to="/admin/calendar"
+              to="/admin/news"
               icon={<CalendarTodayOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -292,6 +262,14 @@ const Sidebar = () => {
             >
               Pages
             </Typography>
+            <Item
+              title="Statistical"
+              to="/admin/statistical"
+              icon={<PersonOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            
             <Item
               title="Profile Form"
               to="/admin/form"

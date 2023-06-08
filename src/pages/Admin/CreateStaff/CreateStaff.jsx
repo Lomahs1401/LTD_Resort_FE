@@ -3,7 +3,6 @@ import styles from "./CreateStaff.module.scss";
 import dayjs from "dayjs";
 import classNames from "classnames/bind";
 import { Box, Button, FormControl, InputLabel, MenuItem } from "@mui/material";
-import { GrEdit } from "react-icons/gr";
 import { Formik } from "formik";
 import * as yup from "yup";
 import Header from "../../../components/Header/Header";

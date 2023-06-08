@@ -1,57 +1,33 @@
-import React from "react";
-import styles from "./Dashboard.module.scss";
+import React, { useState } from "react";
+import styles from "./Statistical.module.scss";
 import classNames from "classnames/bind";
 
 import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../utils/theme";
 import { mockTransactions } from "../../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-// import EmailIcon from "@mui/icons-material/Email";
-// import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-// import PersonAddIcon from "@mui/icons-material/PersonAdd";
-// import TrafficIcon from "@mui/icons-material/Traffic";
-import PersonIcon from '@mui/icons-material/Person';
-import HotelIcon from '@mui/icons-material/Hotel';
-import CommentIcon from '@mui/icons-material/Comment';
-import ConstructionIcon from '@mui/icons-material/Construction';
+import PersonIcon from "@mui/icons-material/Person";
+import HotelIcon from "@mui/icons-material/Hotel";
+import CommentIcon from "@mui/icons-material/Comment";
+import ConstructionIcon from "@mui/icons-material/Construction";
 import Header from "../../../components/Header/Header";
 import LineChart from "../../../components/LineChart/LineChart";
+import PieChart from "../../../components/PieChart/PieChart";
 import BarChart from "../../../components/BarChart/BarChart";
 import StatBox from "../../../components/StatBox/StatBox";
 import ProgressCircle from "../../../components/ProgressCircle/ProgressCircle";
 
-
-
-const Dashboard = () => {
+const Statistical = () => {
   const cx = classNames.bind(styles);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-
-
-
-
   return (
     <Box marginX="20px" height="80%">
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
-
-        <Box>
-          <Button
-            sx={{
-              backgroundColor: colors.blueAccent[700],
-              color: colors.grey[100],
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
-            }}
-          >
-            <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-            Download Reports
-          </Button>
-        </Box>
+        <Header title="STATISCAL" subtitle="Welcome to your statistical" />
       </Box>
 
       {/* GRID & CHARTS */}
@@ -140,7 +116,7 @@ const Dashboard = () => {
         </Box>
 
         {/* ROW 2 */}
-     
+
         <Box
           gridColumn="span 8"
           gridRow="span 2"
@@ -159,7 +135,7 @@ const Dashboard = () => {
                 fontWeight="600"
                 color={colors.grey[100]}
               >
-                Revenue Generated
+                Total income
               </Typography>
               <Typography
                 variant="h3"
@@ -178,62 +154,39 @@ const Dashboard = () => {
             </Box>
           </Box>
           <Box height="250px" m="-20px 0 0 0">
-            <LineChart isDashboard={true}  />
+            <LineChart isDashboard={true} />
           </Box>
         </Box>
-        
+
         <Box
           gridColumn="span 4"
-          gridRow="span 4"
+          gridRow="span 2"
           backgroundColor={colors.primary[400]}
-          overflow="auto"
+          p="30px"
         >
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            borderBottom={`4px solid ${colors.primary[500]}`}
-            colors={colors.grey[100]}
-            p="15px"
-          >
-            <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
-              Recent Transactions
-            </Typography>
-          </Box>
-          {mockTransactions.map((transaction, i) => (
-            <Box
-              key={`${transaction.txId}-${i}`}
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              borderBottom={`4px solid ${colors.primary[500]}`}
-              p="15px"
-            >
-              <Box>
-                <Typography
-                  color={colors.greenAccent[500]}
-                  variant="h5"
-                  fontWeight="600"
-                >
-                  {transaction.txId}
-                </Typography>
-                <Typography color={colors.grey[100]}>
-                  {transaction.user}
-                </Typography>
-              </Box>
-              <Box color={colors.grey[100]}>{transaction.date}</Box>
-              <Box
-                backgroundColor={colors.greenAccent[500]}
-                p="5px 10px"
-                borderRadius="4px"
-              >
-                ${transaction.cost}
-              </Box>
-            </Box>
-          ))}
+          <Typography variant="h5" fontWeight="600">
+            Departmental Employee
+          </Typography>
+          <PieChart />
         </Box>
 
         {/* ROW 3 */}
+        <Box
+          gridColumn="span 8"
+          gridRow="span 2"
+          backgroundColor={colors.primary[400]}
+        >
+          <Typography
+            variant="h5"
+            fontWeight="600"
+            sx={{ padding: "30px 30px 0 30px" }}
+          >
+            Employee Status
+          </Typography>
+          <Box height="250px" mt="-20px">
+            <BarChart isDashboard={true} />
+          </Box>
+        </Box>
         <Box
           gridColumn="span 4"
           gridRow="span 2"
@@ -260,42 +213,9 @@ const Dashboard = () => {
             <Typography>Includes extra misc expenditures and costs</Typography>
           </Box>
         </Box>
-        <Box
-          gridColumn="span 4"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-        >
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            sx={{ padding: "30px 30px 0 30px" }}
-          >
-            Sales Quantity
-          </Typography>
-          <Box height="250px" mt="-20px">
-            <BarChart isDashboard={true} />
-          </Box>
-        </Box>
-        {/* <Box
-          gridColumn="span 4"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-          padding="30px"
-        >
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            sx={{ marginBottom: "15px" }}
-          >
-            Geography Based Traffic
-          </Typography>
-          <Box height="200px">
-            <GeographyChart isDashboard={true} />
-          </Box>
-        </Box> */}
       </Box>
     </Box>
   );
 };
 
-export default Dashboard;
+export default Statistical;

@@ -5,24 +5,18 @@ import { Link } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../../utils/theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
-import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import BedIcon from "@mui/icons-material/Bed";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
-import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
-import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import testimonial from "../../../img/testimonial1.png";
+import {VscFeedback} from "react-icons/vsc"
+import {FaMoneyBillWaveAlt} from "react-icons/fa"
+import {MdDeviceUnknown} from "react-icons/md"
 import { getDownloadURL, ref, getStorage } from "firebase/storage";
 import AuthUser from "../../../utils/AuthUser";
+import { fontSize } from "@mui/system";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -188,7 +182,7 @@ const Sidebar = () => {
             <Item
               title="Manage Feedback"
               to="/employee/feedback"
-              icon={<ContactsOutlinedIcon />}
+              icon={<VscFeedback  style={{fontSize: 'x-large'}}/>}
               selected={selected}
               setSelected={setSelected}
             />
@@ -205,14 +199,14 @@ const Sidebar = () => {
             <Item
               title="Bill Room"
               to="/employee/bill"
-              icon={<LocationOnIcon />}
+              icon={<FaMoneyBillWaveAlt  style={{fontSize: 'x-large'}}/>}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Facility"
               to="/employee/facility"
-              icon={<ArrowUpwardIcon />}
+              icon={<MdDeviceUnknown style={{fontSize: 'x-large'}}/>}
               selected={selected}
               setSelected={setSelected}
             />
