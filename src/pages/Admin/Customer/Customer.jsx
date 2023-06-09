@@ -29,29 +29,29 @@ const Customer = () => {
       cellClassName: "name-column--cell",
     },
     {
+      field: "gender",
+      headerName: "Gender",
+      flex: 1,
+    },
+    {
       field: "phone",
       headerName: "Phone Number",
       flex: 1,
     },
     {
-      field: "email",
-      headerName: "Email",
+      field: "address",
+      headerName: "Address",
       flex: 1,
     },
     {
-      field: "cost",
-      headerName: "Cost",
+      field: "ranking_point",
+      headerName: "Point",
       flex: 1,
       renderCell: (params) => (
         <Typography color={colors.greenAccent[500]}>
-          ${params.row.cost}
+          {params.row.ranking_point}
         </Typography>
       ),
-    },
-    {
-      field: "date",
-      headerName: "Date",
-      flex: 1,
     },
   ];
 

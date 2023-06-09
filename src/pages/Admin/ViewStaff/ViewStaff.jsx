@@ -1,6 +1,5 @@
 import React from "react";
-import { Button, DatePicker, Divider, Form, Input, Modal, Select } from "antd";
-import { FaCheckCircle, FaInfoCircle, FaUser } from "react-icons/fa";
+import { Button } from "antd";
 import { TbSwitch, TbEdit } from "react-icons/tb";
 import styles from "./ViewStaff.module.scss";
 import Header from "../../../components/Header/Header";

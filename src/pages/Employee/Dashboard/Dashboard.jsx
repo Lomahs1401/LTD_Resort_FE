@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./Dashboard.module.scss";
 import classNames from "classnames/bind";
 
@@ -16,7 +16,6 @@ import CommentIcon from '@mui/icons-material/Comment';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import Header from "../../../components/Header/Header";
 import LineChart from "../../../components/LineChart/LineChart";
-import GeographyChart from "../../../components/GeographyChart/GeographyChart";
 import BarChart from "../../../components/BarChart/BarChart";
 import StatBox from "../../../components/StatBox/StatBox";
 import ProgressCircle from "../../../components/ProgressCircle/ProgressCircle";

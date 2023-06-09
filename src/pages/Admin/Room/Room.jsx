@@ -37,7 +37,6 @@ const Room = () => {
     },
   };
   const [images, setImages] = useState([]);
-  const [showPopup, setShowPopup] = useState(false);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [openModalRoom, setOpenModalRoom] = useState(false);
@@ -448,7 +447,7 @@ const Room = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") == "" ? (
+              ) : form.getFieldValue("name") === "" ? (
                 <Button type="primary" onClick={handleAdd}>
                   Add
                 </Button>

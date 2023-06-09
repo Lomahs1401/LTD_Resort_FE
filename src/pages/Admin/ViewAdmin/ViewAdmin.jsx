@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../../utils/theme";
-import { mockDataContacts } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { Modal } from "antd";
 import Draggable from "react-draggable";
 import styles from "./ViewAdmin.module.scss";
 import classNames from "classnames/bind";
-import UserProfile from "../../../components/UserProfile/UserProfile";
 import AuthUser from "../../../utils/AuthUser";
 
 const cx = classNames.bind(styles);
@@ -26,7 +24,6 @@ const ViewAdmin = () => {
   const { http } = AuthUser();
   const [openModal, setOpenModal] = useState(false);
   const [admin, setAdmin] = useState();
-  const [admins, setAdminS] = useState();
   const [base, setBase] = useState();
   const [listPosition, setlistPosition] = useState([]);
   const [listPeople, setListPeople] = useState([]);

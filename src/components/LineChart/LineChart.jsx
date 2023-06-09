@@ -1,18 +1,61 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
 import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../utils/theme";
-import { mockLineData as data } from "../../data/mockData";
+import { mockLineBill } from "../../data/mockData";
+import AuthUser from "../../utils/AuthUser";
 
-
-
-const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
+const LineChart = ({
+  isCustomLineColors = false,
+  isDashboard = false,
+  datas,
+}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { http } = AuthUser();
 
+  const [row2, setRow2] = useState({
+    total_money_bill_extra_service: [],
+    total_money_bill_room: [],
+    total_money_bill_service: [],
+  });
+
+  
+
+  const newData = [
+    {
+      id: "Room",
+      data: datas.total_money_bill_room.map((item) => ({
+        x: item.month,
+        y: item.total,
+      })),
+    },
+    {
+      id: "Service",
+      data: datas.total_money_bill_service.map((item) => ({
+        x: item.month,
+        y: item.total,
+      })),
+    },
+    {
+      id: "Extra",
+      data: datas.total_money_bill_extra_service.map((item) => ({
+        x: item.month,
+        y: item.total,
+      })),
+    },
+  ];
+
+
+  const colorss = [
+    tokens("dark").blueAccent[300],
+    tokens("dark").redAccent[200],
+    tokens("dark").greenAccent[500],
+  ];
   return (
     <ResponsiveLine
-      data={data}
+      data={ newData }
+      colors={colorss}
       theme={{
         axis: {
           domain: {
@@ -46,7 +89,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
           },
         },
       }}
-      colors={isDashboard ? { datum: "color" } : { scheme: "nivo" }} // added
+      // colors={isDashboard ? { datum: "color" } : { scheme: "nivo" }} // added
       margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
       xScale={{ type: "point" }}
       yScale={{
@@ -65,7 +108,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         tickSize: 0,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "transportation", // added
+        // legend: isDashboard ? undefined : "transportation", // added
         legendOffset: 36,
         legendPosition: "middle",
       }}
@@ -75,7 +118,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         tickSize: 3,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "count", // added
+        // legend: isDashboard ? undefined : "count", // added
         legendOffset: -40,
         legendPosition: "middle",
       }}

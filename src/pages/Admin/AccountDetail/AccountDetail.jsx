@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 import { Button, Form, Input, message } from "antd";
-import { FaCheckCircle, FaInfoCircle, FaUser } from "react-icons/fa";
 import { BiEdit, BiSave } from "react-icons/bi";
 import styles from "./AccountDetail.module.scss";
 import classNames from "classnames/bind";

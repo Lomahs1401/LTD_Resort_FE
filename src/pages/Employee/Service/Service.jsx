@@ -16,7 +16,6 @@ import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import Draggable from "react-draggable";
 import styles from "./Service.module.scss";
 import classNames from "classnames/bind";
-import UserProfile from "../../../components/UserProfile/UserProfile";
 
 const cx = classNames.bind(styles);
 
@@ -34,7 +33,6 @@ const Service = () => {
   const [openModal, setOpenModal] = useState(false);
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
-  const [avatarUrl, setAvatarUrl] = useState(null);
 
   function CustomToolbar() {
     return (
@@ -436,7 +434,7 @@ const Service = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") == "" ? (
+              ) : form.getFieldValue("name") === "" ? (
                 <Button type="primary" onClick={handleAdd}>
                   Add
                 </Button>

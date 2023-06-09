@@ -8,7 +8,6 @@ import {
 } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import { tokens } from "../../../utils/theme";
-import { mockDataRoomType } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { Form, Input, Modal, Select } from "antd";
@@ -620,7 +619,7 @@ const RoomType = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") == "" ? (
+              ) : form.getFieldValue("name") === "" ? (
                 <Button type="primary" onClick={handleAdd}>
                   Add
                 </Button>
@@ -712,7 +711,7 @@ const RoomType = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") == "" ? (
+              ) : form.getFieldValue("name") === "" ? (
                 <Button type="primary" onClick={handleAdd}>
                   Add
                 </Button>
@@ -804,7 +803,7 @@ const RoomType = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") == "" ? (
+              ) : form.getFieldValue("name") === "" ? (
                 <Button type="primary" onClick={handleAdd}>
                   Add
                 </Button>
@@ -965,7 +964,7 @@ const RoomType = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") == "" ? (
+              ) : form.getFieldValue("name") === "" ? (
                 <Button type="primary" onClick={handleAdd}>
                   Add
                 </Button>

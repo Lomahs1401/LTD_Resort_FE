@@ -94,7 +94,6 @@ function ImageGallery({ images = null, onChangeImages }) {
   // ---------------------------      Modal Draggable      ---------------------------
   const draggleRef = useRef(null);
   const [disabled, setDisabled] = useState(false);
-  const [disabledCreate, setdisabledCreate] = useState(false);
   const [bounds, setBounds] = useState({
     left: 0,
     top: 0,
