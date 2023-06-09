@@ -258,14 +258,14 @@ export const ServiceDetail = () => {
 
   useEffect(() => {
     const fetchData = () => {
-      http.get(`/auth/services/random/${serviceId}`)
+      http.get(`/customer/services/random/${serviceId}`)
         .then((resolve) => {
           setListRandomServices(resolve.data.list_random_services);
         })
         .catch((reject) => {
           console.log(reject);
         })
-      http.get(`/auth/services/${serviceId}`)
+      http.get(`/customer/services/${serviceId}`)
         .then((resolve) => {
           console.log(resolve);
           setServiceDetail(resolve.data.service);

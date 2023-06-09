@@ -5,12 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { prevProgressStep, removeTotalAmount, removeTotalPeople, removeTotalRooms } from '../../../redux/actions';
 import { Button, Divider, Form, Input, Select } from 'antd';
 import creditCard from '../../../img/credit-card.png'
-import { checkinDateSelector, checkoutDateSelector, totalAmountSelector, totalPeopleSelector, totalRoomsSelector } from '../../../redux/selectors';
+import { bookmarkRoomsSelector, checkinDateSelector, checkoutDateSelector, totalAmountSelector, totalPeopleSelector, totalRoomsSelector } from '../../../redux/selectors';
 import { toast } from 'react-toastify';
 import AuthUser from '../../../utils/AuthUser';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 const cx = classNames.bind(styles);
 
@@ -31,10 +32,14 @@ const Step2 = ({ current, setCurrent }) => {
   const dispatch = useDispatch();
   const checkinDate = useSelector(checkinDateSelector);
   const checkoutDate = useSelector(checkoutDateSelector);
-
+  const bookmarkRooms = useSelector(bookmarkRoomsSelector);
   const totalAmount = useSelector(totalAmountSelector);
   const totalRooms = useSelector(totalRoomsSelector);
   const totalPeople = useSelector(totalPeopleSelector);
+
+  const roomIds = bookmarkRooms.map((bookmarkRoom) => {
+    return bookmarkRoom.id;
+  });
 
   const [form] = Form.useForm();
   const [payTime, setPayTime] = useState(null);
@@ -139,9 +144,13 @@ const Step2 = ({ current, setCurrent }) => {
           checkoutDate: checkoutDate,
           tax: 0,
           discount: 0,
+          room_id: roomIds.join(', ')
         };
-    
-        http.post('/customer/save_payment_data', paymentData)
+
+        const timeStart = dayjs(checkinDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+        const timeEnd = dayjs(checkoutDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+
+        http.post(`/customer/store-bill-room/${timeStart}/${timeEnd}`, paymentData)
           .then((response) => {
             console.log(response);
           })
@@ -282,6 +291,7 @@ const Step2 = ({ current, setCurrent }) => {
                   message: 'Full name is required!',
                 },
               ]}
+              style={{display: 'none'}}
               hasFeedback
             >
               <Input placeholder={fullName} disabled />
@@ -295,6 +305,7 @@ const Step2 = ({ current, setCurrent }) => {
                   message: 'Total amount is required!',
                 },
               ]}
+              style={{display: 'none'}}
               hasFeedback
             >
               <Input placeholder={totalAmount} disabled />
@@ -308,6 +319,7 @@ const Step2 = ({ current, setCurrent }) => {
                   message: 'Total rooms is required!',
                 },
               ]}
+              style={{display: 'none'}}
               hasFeedback
             >
               <Input placeholder={totalRooms} disabled />
@@ -321,6 +333,7 @@ const Step2 = ({ current, setCurrent }) => {
                   message: 'Total people is required!',
                 },
               ]}
+              style={{display: 'none'}}
               hasFeedback
             >
               <Input placeholder={totalPeople} disabled />
