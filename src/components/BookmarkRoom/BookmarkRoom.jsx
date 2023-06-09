@@ -10,7 +10,7 @@ const cx = classNames.bind(styles);
 const BookmarkRoom = ({ 
   id, 
   roomName, 
-  status, 
+  status = '', 
   areaId, 
   floorId, 
   roomTypeId,

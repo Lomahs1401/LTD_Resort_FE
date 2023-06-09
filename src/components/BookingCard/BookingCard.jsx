@@ -124,7 +124,7 @@ const BookingCard = ({
 
   useEffect(() => {
     if (type === 'Room') {
-      http.get(`/auth/room-types/total-rooms/${id}`)
+      http.get(`/customer/room-types/total-rooms/${id}`)
       .then((resolve) => {
         setTotalRooms(resolve.data.number_of_rooms);
       })

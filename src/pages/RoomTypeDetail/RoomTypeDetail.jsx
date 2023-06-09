@@ -201,7 +201,9 @@ export const RoomTypeDetail = () => {
   const [roomTypeDetail, setRoomTypeDetail] = useState({});
   const [totalRooms, setTotalRooms] = useState(0);
 
-  const [listAreas, setListAreas] = useState([]);
+  const [listRoomsByRoomTypeId, setListRoomsByRoomTypeId] = useState([]);
+  const [listReservationRooms, setListReservationRooms] = useState([]);
+  const [loadedRoom, setLoadedRoom] = useState(false);
 
   // Fetch list image state
   const imageList = location.state?.imageList || [];
@@ -347,6 +349,37 @@ export const RoomTypeDetail = () => {
   const handleFindRoom = () => {
     dispatch(addCheckinDate(format(rangeDate[0].startDate, "dd/MM/yyyy")))
     dispatch(addCheckoutDate(format(rangeDate[0].endDate, "dd/MM/yyyy")))
+
+    const formData = new FormData();
+
+    formData.append('time_start', format(rangeDate[0].startDate, "yyyy-MM-dd"));
+    formData.append('time_end', format(rangeDate[0].endDate, "yyyy-MM-dd"));
+
+    http.post(`/customer/reserved-room/${roomTypeId}`, formData)
+      .then((resolve) => {
+        console.log(resolve);
+        if (resolve.data === "") {
+          setListReservationRooms([]);
+          console.log('Phong trong');
+        } else {
+          setListReservationRooms(resolve.data.data);
+        }
+      })
+      .catch((reject) => {
+        console.log(reject);
+      })
+
+    toast.success('Let\'s check available rooms', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: 0,
+      theme: "colored",
+    })
+
     document.getElementById('reservation-room').scrollIntoView({ behavior: 'smooth' })
   }
 
@@ -387,15 +420,19 @@ export const RoomTypeDetail = () => {
   }, [roomTypeId])
 
   useEffect(() => {
+    const formData = new FormData();
+    formData.append('time_start', format(rangeDate[0].startDate, "yyyy-MM-dd"));
+    formData.append('time_end', format(rangeDate[0].endDate, "yyyy-MM-dd"));
+
     const fetchData = () => {
-      http.get(`/auth/room-types/random/${roomTypeId}`)
+      http.get(`/customer/room-types/random/${roomTypeId}`)
         .then((resolve) => {
           setListRandomRoomTypes(resolve.data.list_random_room_types);
         })
         .catch((reject) => {
           console.log(reject);
         })
-      http.get(`/auth/room-types/${roomTypeId}`)
+      http.get(`/customer/room-types/${roomTypeId}`)
         .then((resolve) => {  
           setRoomTypeDetail(resolve.data.room_type);
         })
@@ -403,7 +440,7 @@ export const RoomTypeDetail = () => {
           console.log(reject);
         })
 
-      http.get(`/auth/room-types/total-rooms/${roomTypeId}`)
+      http.get(`/customer/room-types/total-rooms/${roomTypeId}`)
         .then((resolve) => {
           setTotalRooms(resolve.data.number_of_rooms);
         })
@@ -438,13 +475,28 @@ export const RoomTypeDetail = () => {
           console.log(error);
         })
 
-      http.get(`/auth/areas`)
+      http.get(`/customer/room-types/list-rooms/${roomTypeId}`)
         .then((resolve) => {
           console.log(resolve);
-          setListAreas(resolve.data.list_areas);
+          setListRoomsByRoomTypeId(resolve.data.data);
+          setLoadedRoom(true);
         })
         .catch((error) => {
           console.log(error);
+        })
+
+      http.post(`/customer/reserved-room/${roomTypeId}`, formData)
+        .then((resolve) => {
+          console.log(resolve);
+          if (resolve.data === "") {
+            setListReservationRooms([]);
+            console.log('Phong trong');
+          } else {
+            setListReservationRooms(resolve.data.data);
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
         })
     }
 
@@ -766,29 +818,37 @@ export const RoomTypeDetail = () => {
             <div id="reservation-room" className={cx("booking-container")}>
               <div className={cx("booking-container__left")}>
                 <div className={cx("booking-container__left-detail")}>
-                  <Slider {...bookingSettings}>
-                    {listAreas.map((area, index) => {
-                      return (
-                        <div key={index}>
-                          <BookingRoom
-                            areaId={area.id}
-                            areaName={area.area_name}
-                            roomTypeId={parseInt(roomTypeId)}
-                            roomTypeName={roomTypeDetail.room_type_name}
-                            roomSize={roomTypeDetail.room_size}
-                            totalRooms={totalRooms}
-                            numberCustomers={roomTypeDetail.number_customers}
-                            description={roomTypeDetail.description}
-                            image={roomTypeDetail.image}
-                            price={roomTypeDetail.price}
-                            pointRanking={roomTypeDetail.point_ranking}
-                            totalAverage={averageRating}
-                            totalFeedbacks={totalFeedbacks}
-                          />
-                        </div>
-                      )
-                    })}
-                  </Slider>
+                  {loadedRoom && (
+                    <Slider {...bookingSettings}>
+                      {listRoomsByRoomTypeId.map((area, index) => {
+                        const listFloors = area.floor;
+                        var reservationFloors = [];
+                        if (listReservationRooms.length !== 0) {
+                          reservationFloors = listReservationRooms[index].list_floors;
+                        }
+                        return (
+                          <div key={index}>
+                            <BookingRoom
+                              areaName={area.area_name}
+                              listFloors={listFloors}
+                              reservationFloors={reservationFloors}
+                              roomTypeId={parseInt(roomTypeId)}
+                              roomTypeName={roomTypeDetail.room_type_name}
+                              roomSize={roomTypeDetail.room_size}
+                              totalRooms={totalRooms}
+                              numberCustomers={roomTypeDetail.number_customers}
+                              description={roomTypeDetail.description}
+                              image={roomTypeDetail.image}
+                              price={roomTypeDetail.price}
+                              pointRanking={roomTypeDetail.point_ranking}
+                              totalAverage={averageRating}
+                              totalFeedbacks={totalFeedbacks}
+                            />
+                          </div>
+                        )
+                      })}
+                    </Slider>
+                  )}
                 </div>
               </div>
               <div className={cx("booking-container__right")}>
