@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import styles from "./Statistical.module.scss";
 import classNames from "classnames/bind";
 import { Select } from "antd";
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../utils/theme";
-import { mockTransactions } from "../../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import PersonIcon from "@mui/icons-material/Person";
 import HotelIcon from "@mui/icons-material/Hotel";
@@ -15,7 +14,6 @@ import LineChart from "../../../components/LineChart/LineChart";
 import PieChart from "../../../components/PieChart/PieChart";
 import BarChart from "../../../components/BarChart/BarChart";
 import StatBox from "../../../components/StatBox/StatBox";
-import ProgressCircle from "../../../components/ProgressCircle/ProgressCircle";
 import AuthUser from "../../../utils/AuthUser";
 
 const Statistical = () => {
@@ -129,6 +127,7 @@ const Statistical = () => {
         .get(`/admin/totalBillMonth-row2`)
         .then((resolve) => {
           setRow2_2(resolve.data.data);
+          
         })
         .catch((reject) => {
           console.log(reject);
@@ -155,7 +154,6 @@ const Statistical = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-console.log("aaa " , row3);
 
 
   return (

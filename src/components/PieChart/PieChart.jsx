@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material";
 import { mockPieData as data } from "../../data/mockData";
 import AuthUser from "../../utils/AuthUser";
 
-const PieChart = (datas) => {
+const PieChart = (datas = []) => {
   const theme = useTheme();
   // const colors = tokens(theme.palette.mode);
   const colorss = [
@@ -36,20 +36,27 @@ const PieChart = (datas) => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const newListEmployee = listEmployee.map((employee) => {
-    return {
-      id: employee.department_name,
-      label: employee.department_name,
-      value: employee.total_employee,
-    };
-  });
-  console.log("1 ",newListEmployee);
-  console.log("2 ",datas);
+  const newListEmployeebase = [
+    { id: '0', name: '0', total: 0 },
+    { id: '1', name: '0', total: 0 },
+    { id: '2', name: '0', total: 0 }
+  ];
+  let newListEmployee;
+  const data = datas.datas[0];
+  if (data) {
+    newListEmployee = data.map((employee) => {
+      return {
+        id: employee.id,
+        label: employee.id,
+        value: employee.total,
+      };
+    });
+  }
 
   return (
     <div style={{ width: "400px", height: "300px" }}>
       <ResponsivePie
-        data={newListEmployee}
+        data={data ? newListEmployee : newListEmployeebase}
         colors={colorss}
         margin={{ top: 40, right: 0, bottom: 80, left: 200 }}
         innerRadius={0.5}

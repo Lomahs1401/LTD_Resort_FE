@@ -1,4 +1,4 @@
-import React, {  useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, useTheme, Button } from "@mui/material";
 import {
   DataGrid,
@@ -13,12 +13,16 @@ import dayjs from "dayjs";
 import { tokens } from "../../../utils/theme";
 import { mockDataTeam } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
+import Swal from "sweetalert2";
 import { AiFillEdit, AiFillDelete, AiOutlineUserAdd } from "react-icons/ai";
 import styles from "./Staff.module.scss";
 import classNames from "classnames/bind";
 import { FaUser } from "react-icons/fa";
 import Draggable from "react-draggable";
 import AuthUser from "../../../utils/AuthUser";
+import { toast } from "react-toastify";
+import FormattedDate from "../../../utils/FormattedDate";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
@@ -32,9 +36,12 @@ const Staff = () => {
       span: 18,
     },
   };
-
+  const navigate = useNavigate();
   const [openModalStaff, setOpenModalStaff] = useState(false);
+  const [openModalAccount, setOpenModalAccount] = useState(false);
   const [values, setValues] = useState({});
+  const [account, setAccount] = useState({});
+  const [base, setBase] = useState();
   const [listStaffWork, setListStaffWork] = useState([]);
   const [listStaffQuit, setListStaffQuit] = useState([]);
   const [listStaff, setListStaff] = useState();
@@ -42,7 +49,8 @@ const Staff = () => {
   const [listPosition, setListPosition] = useState([]);
   const [Staff, setStaff] = useState();
   const [status, setStatus] = useState(true);
-  const dateFormat = "DD-MM-YYYY";
+  const [id, setID] = useState();
+  const dateFormat = "YYYY-MM-DD";
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [form] = Form.useForm();
@@ -73,25 +81,21 @@ const Staff = () => {
   };
 
   const handleSelect = (value) => {
-    
-
-      http
-        .get(`admin/list-position/${value}/${1}`)
-        .then((resolve) => {
-          setListPosition(resolve.data.list_position);
-        })
-        .catch((reject) => {
-          console.log(reject);
-        });
-    
-  }
+    http
+      .get(`admin/list-position/${value}/${1}`)
+      .then((resolve) => {
+        setListPosition(resolve.data.list_position);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+  };
 
   const handleSelectBirthDate = (date, dateString) => {
     form.setFieldValue("birthday", date);
   };
 
   const handleCreate = () => {
-
     setdisabledCreate(false);
     setOpenModalStaff(true);
     form.setFieldValue("fullName", "");
@@ -102,17 +106,16 @@ const Staff = () => {
     form.setFieldValue("address", "");
     form.setFieldValue("accountbank", "");
     form.setFieldValue("namebank", "");
-    form.setFieldValue("dayStart", null);
-    form.setFieldValue("dayQuit", null);
     form.setFieldValue("position", null);
+    form.setFieldValue("department", null);
     setValues();
+    setBase(false);
   };
 
   const fetchStaff = (id) => {
     http
       .get(`/admin/find-employee/${id}`)
       .then((resolve) => {
-
         setStaff(resolve.data.data);
       })
       .catch((reject) => {
@@ -121,10 +124,10 @@ const Staff = () => {
   };
 
   const handleEdit = (params) => {
-
     setdisabledCreate(false);
     const { row } = params;
     fetchStaff(row.id);
+    setID(row.id);
     form.setFieldValue("fullName", Staff?.name);
     form.setFieldValue("gender", Staff?.gender);
     form.setFieldValue("birthDate", null);
@@ -136,11 +139,27 @@ const Staff = () => {
     form.setFieldValue("position", Staff?.position_name);
     form.setFieldValue("department", Staff?.department_name);
     setOpenModalStaff(true);
+    setBase(true);
   };
 
   const handleDelete = (params) => {
     console.log(params);
-    setOpenModalStaff(true);
+    const { row } = params;
+
+    http
+      .patch(`/admin/quit-employee/${row.id}`)
+      .then(() => {
+        Swal.fire(
+          "Update!",
+          "You have successfully Delete your profile",
+          "success"
+        ).then(() => {
+          navigate(0);
+        });
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
   };
 
   const handleDoubleClickCell = (params) => {
@@ -171,21 +190,90 @@ const Staff = () => {
     setOpenModalStaff(false);
   };
 
-  const handleAdd = () => {
-    console.log("Add");
-  };
-
-  const handleSumbit = () => {
-    console.log("Sumbit");
-  };
-
   const onFinish = (values) => {
-    console.log("Success:", values);
+    const {
+      fullName,
+      gender,
+      birthDate,
+      ID_Card,
+      address,
+      phone,
+      accountbank,
+      namebank,
+      department,
+      position,
+    } = values;
+    const formData = new FormData();
+    if (base) {
+      console.log("Success: edit", values);
+
+      formData.append("full_name", fullName);
+      formData.append("gender", gender);
+      formData.append("birthday", FormattedDate(birthDate));
+      formData.append("CMND", ID_Card);
+      formData.append("position_name", position);
+
+      http
+        .patch(`/admin/update-employee/${id}`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully update your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    } else {
+      console.log("Success: add", values);
+
+      formData.append("full_name", fullName);
+      formData.append("gender", gender);
+      formData.append("birthday", FormattedDate(birthDate));
+      formData.append("CMND", ID_Card);
+      formData.append("address", address);
+      formData.append("phone", phone);
+      formData.append("account_bank", accountbank);
+      formData.append("name_bank", namebank);
+      formData.append("department_name", department);
+      formData.append("position_name", position);
+
+      http
+        .post(`/admin/store-employee`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully add your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log("Error response:", reject.response);
+          console.log("Error status code:", reject.response.status);
+          console.log("Error message:", reject.message);
+          console.log(reject);
+        });
+    }
   };
 
   // Failed case
   const onFinishFailed = (error) => {
     console.log("Failed:", error);
+    toast.error("Update failed!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
   };
 
   const columns = [
@@ -246,11 +334,7 @@ const Staff = () => {
             </Button>
           </Box>
         ) : (
-          <Box display="flex" borderRadius="4px">
-            <Button startIcon={<AiFillDelete />} onClick={handleDeleteClick}>
-              {" "}
-            </Button>
-          </Box>
+          <div />
         );
       },
     },
@@ -284,7 +368,7 @@ const Staff = () => {
   useEffect(() => {
     const fetchData = () => {
       http
-        .get(`/admin/list-employee/${0}`,)
+        .get(`/admin/list-employee/${0}`)
         .then((resolve) => {
           console.log(resolve);
           setListStaffWork(resolve.data.list_employee);
@@ -456,9 +540,9 @@ const Staff = () => {
               <div>{form.getFieldValue("gender")}</div>
             ) : (
               <Select placeholder="Please select gender">
-                <Select.Option value="Male">Male</Select.Option>
-                <Select.Option value="Female">Female</Select.Option>
-                <Select.Option value="Other">Other</Select.Option>
+                <Select.Option value="Nam">Nam</Select.Option>
+                <Select.Option value="Nữ">Nữ</Select.Option>
+                <Select.Option value="Khác">Khác</Select.Option>
               </Select>
             )}
           </Form.Item>
@@ -631,15 +715,125 @@ const Staff = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("gender") === "" ? (
-                <Button type="primary" onClick={handleAdd}>
-                  Add
-                </Button>
               ) : (
-                <Button type="primary" onClick={handleSumbit}>
-                  Edit
+                <Button type="primary" htmlType="submit">
+                  {base ? <>Edit</> : <>Add</>}
                 </Button>
               )}
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title={
+          <div
+            style={{
+              width: "100%",
+              cursor: "move",
+              textAlign: "center",
+              marginBottom: 24,
+            }}
+            onMouseOver={() => {
+              setDisabled(false);
+            }}
+            onMouseOut={() => {
+              setDisabled(true);
+            }}
+          >
+            Account Info
+            <FaUser style={{ marginLeft: 16 }} />
+          </div>
+        }
+        open={openModalAccount}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+        modalRender={(modal) => (
+          <Draggable
+            disabled={disabled}
+            bounds={bounds}
+            onStart={(event, uiData) => onStart(event, uiData)}
+          >
+            <div ref={draggleRef}>{modal}</div>
+          </Draggable>
+        )}
+      >
+        <Form
+          {...staffInfoLayout}
+          form={form}
+          layout="horizontal"
+          name="staff_form"
+          labelAlign="right"
+          labelWrap="true"
+          size="middle"
+          autoComplete="off"
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          className={cx("modal-form")}
+          initialValues={{
+            username: account.username,
+            email: account.email,
+            password: account.password,
+          }}
+        >
+          <Form.Item
+            name="username"
+            label="User name"
+            rules={[
+              {
+                required: true,
+                message: "User name is required!",
+              },
+            ]}
+            hasFeedback
+            className={cx("form-attributes__item")}
+          >
+            <Input
+              placeholder={"Please fill user name"}
+              className={cx("form__content")}
+            />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            hasFeedback
+            className={cx("form-attributes__item")}
+            rules={[
+              {
+                required: true,
+                message: "Email is required!",
+              },
+            ]}
+          >
+            <Input
+              placeholder={"Please fill email"}
+              className={cx("form__content")}
+            />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            label="Password"
+            hasFeedback
+            className={cx("form-attributes__item")}
+            rules={[
+              {
+                required: true,
+                message: "Password is required!",
+              },
+            ]}
+          >
+            <Input
+              placeholder={"Please fill password"}
+              className={cx("form__content")}
+            />
+          </Form.Item>
+
+          <Form.Item wrapperCol={24}>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button type="primary" htmlType="submit">
+                Add
+              </Button>
             </div>
           </Form.Item>
         </Form>

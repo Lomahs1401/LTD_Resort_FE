@@ -28,7 +28,10 @@
   font-weight: 600;
 }
 .modal-form {
-  max-width: 600px;
+  // max-width: 600px;
+}
+.modal{
+  width: 800px !important;
 }
 .form-attributes {
   &__item {

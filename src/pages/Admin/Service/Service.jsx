@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 import {
   DataGrid,
@@ -16,10 +17,13 @@ import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import Draggable from "react-draggable";
 import styles from "./Service.module.scss";
 import classNames from "classnames/bind";
+import AuthUser from "../../../utils/AuthUser";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
-const Service = () => {
+const Service = (data) => {
   const Layout = {
     labelCol: {
       span: 6,
@@ -28,12 +32,21 @@ const Service = () => {
       span: 18,
     },
   };
+  const location = useLocation();
+  const { state } = location;
+  const navigate = useNavigate();
+  const { http } = AuthUser();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [openModal, setOpenModal] = useState(false);
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
+  const [listService, setListService] = useState([]);
+  const [listType, setListType] = useState([]);
+  const [service, setService] = useState();
   const [avatarUrl, setAvatarUrl] = useState(null);
+  const [base, setBase] = useState();
+  const [id, setID] = useState();
 
   function CustomToolbar() {
     return (
@@ -125,10 +138,23 @@ const Service = () => {
     form.setFieldValue("description", "");
     form.setFieldValue("price", "");
     form.setFieldValue("status", null);
-    form.setFieldValue("point","");
-    form.setFieldValue("type",null);
+    form.setFieldValue("point", "");
+    form.setFieldValue("type", null);
     setdisabledCreate(false);
     setValues({});
+    setBase(false);
+  };
+
+  const fetchService = async (id) => {
+    await http
+      .get(`/admin/show-service/${id}`)
+      .then((resolve) => {
+        console.log(resolve);
+        setService(resolve.data.service);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
   };
 
   const handleDoubleClickCell = (params) => {
@@ -150,6 +176,8 @@ const Service = () => {
     const { row } = params;
     console.log(row);
     setValues(row);
+    fetchService(row.id);
+    setID(row.id);
     form.setFieldValue("name", row.service_name);
     form.setFieldValue("description", row.description);
     form.setFieldValue("price", row.price);
@@ -158,25 +186,88 @@ const Service = () => {
     form.setFieldValue("type", row.id_type);
     setdisabledCreate(false);
     setOpenModal(true);
+    setBase(true);
   };
 
   const handleDelete = (params) => {
     console.log(params);
-    console.log("aaa");
-    setOpenModal(true);
-  };
-  // Handle add new info
-  const handleAdd = () => {
-    console.log("Add");
-  };
-  // Handle edit old info
-  const handleSumbit = () => {
-    console.log("Sumbit");
+    const { row } = params;
+
+    http
+      .patch(`/admin/cannel-service/${row.id}`)
+      .then(() => {
+        Swal.fire(
+          "Update!",
+          "You have successfully Delete your profile",
+          "success"
+        ).then(() => {
+          navigate(0);
+        });
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
   };
 
   // Successful case
   const onFinish = (values) => {
-    console.log("Success:", values);
+    const { name, description, status, image, price, point, type } = values;
+    const formData = new FormData();
+    if (base) {
+      console.log("Success: edit", values);
+
+      formData.append("service_name", name);
+      formData.append("description", description);
+      formData.append("price", price);
+      // formData.append("image", image);
+      formData.append("point_ranking", point);
+
+      http
+        .patch(`/admin/update-service/${id}`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully add your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log("Error response:", reject.response);
+          console.log("Error status code:", reject.response.status);
+          console.log("Error message:", reject.message);
+          console.log(reject);
+        });
+    } else {
+      console.log("Success: add", values);
+
+      formData.append("service_name", name);
+      formData.append("description", description);
+      formData.append("status", status);
+      // formData.append("image", image);
+      formData.append("price", price);
+      formData.append("point_ranking", point);
+      formData.append("service_type_id", type);
+
+      http
+        .post(`/admin/store-service`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully add your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log("Error response:", reject.response);
+          console.log("Error status code:", reject.response.status);
+          console.log("Error message:", reject.message);
+          console.log(reject);
+        });
+    }
   };
 
   // Failed case
@@ -208,6 +299,42 @@ const Service = () => {
       bottom: clientHeight - (targetRect.bottom - uiData.y),
     });
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await http
+        .get(`/admin/list-service`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListService(resolve.data.list_room_types);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      await http
+        .get(`/admin/list-service-type`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListType(resolve.data.list_room_types);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      if (state != null) {
+        await http
+          .get(`/admin/list-service-by-type/${state}`)
+          .then((resolve) => {
+            console.log(resolve);
+            setListService("resolve.data.list_room_types");
+          })
+          .catch((reject) => {
+            console.log(reject);
+          });
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className={cx("contact-wrapper")}>
@@ -246,11 +373,10 @@ const Service = () => {
       >
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataService}
+          rows={mockDataService ? listService : state}
           columns={columns}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
-
         />
       </Box>
       <Modal
@@ -397,7 +523,6 @@ const Service = () => {
               >
                 <Select.Option value={true}> True</Select.Option>
                 <Select.Option value={false}> False</Select.Option>
-
               </Select>
             </Form.Item>
           </div>
@@ -435,13 +560,9 @@ const Service = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") === "" ? (
-                <Button type="primary" onClick={handleAdd}>
-                  Add
-                </Button>
               ) : (
-                <Button type="primary" onClick={handleSumbit}>
-                  Edit
+                <Button type="primary" htmlType="submit">
+                  {base ? <>Edit</> : <>Add</>}
                 </Button>
               )}
             </div>

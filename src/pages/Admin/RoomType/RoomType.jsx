@@ -18,6 +18,8 @@ import ImageGallery from "../ImageGallery/ImageGallery";
 import styles from "./RoomType.module.scss";
 import classNames from "classnames/bind";
 import AuthUser from "../../../utils/AuthUser";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
@@ -30,15 +32,18 @@ const RoomType = () => {
       span: 18,
     },
   };
+  const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { http } = AuthUser();
   const [id, setId] = useState();
+  const [idUpdate, setIdUpdate] = useState();
   const [listRoom, setListRoom] = useState([]);
   const [listRoomType, setListRoomType] = useState([]);
   const [listRoomArea, setListRoomArea] = useState([]);
   const [listRoomFloor, setListRoomFloor] = useState([]);
   const [base, setBase] = useState(true);
+  const [editAdd, setEditAdd] = useState();
   const [openModal, setOpenModal] = useState(false);
   const [openModalRoom, setOpenModalRoom] = useState(false);
   const [openModalArea, setOpenModalArea] = useState(false);
@@ -197,34 +202,41 @@ const RoomType = () => {
     setOpenModal(true);
     form.setFieldValue("name", "");
     setdisabledCreate(false);
+    setEditAdd(false);
     setValues({});
   };
+
   const handleCreateRoom = () => {
     console.log("create");
     setOpenModalRoom(true);
     form.setFieldValue("name", "");
     setdisabledCreate(false);
     setValues({});
+    setEditAdd(false);
   };
+
   const handleCreateArea = () => {
     console.log("create");
     setOpenModalArea(true);
     form.setFieldValue("name", "");
     setdisabledCreate(false);
-
+    setEditAdd(false);
     setValues({});
   };
+
   const handleCreateFloor = () => {
     console.log("create");
     setOpenModalFloor(true);
     form.setFieldValue("name", "");
     setdisabledCreate(false);
-
+    setEditAdd(false);
     setValues({});
   };
+
   const handleEdit = (params) => {
     setdisabledCreate(false);
     const { row } = params;
+    setIdUpdate(row.id);
     form.setFieldValue("typename", row.room_type_name);
     form.setFieldValue("size", row.room_size);
     form.setFieldValue("capacity", row.number_customers);
@@ -234,13 +246,12 @@ const RoomType = () => {
     form.setFieldValue("floor", row.floor_name);
     form.setFieldValue("area", row.area_name);
     form.setFieldValue("roomType", id);
+    setEditAdd(true);
     if (base) {
       setOpenModal(true);
-    }
-    else{
+    } else {
       setOpenModalRoom(true);
     }
-    
   };
 
   const handleDelete = (params) => {
@@ -296,22 +307,143 @@ const RoomType = () => {
     setOpenModalArea(false);
     setOpenModalFloor(false);
   };
-  // Handle add new info
-  const handleAdd = () => {
-    console.log("Add");
-  };
-  // Handle edit old info
-  const handleSumbit = () => {
-    console.log("Sumbit");
-  };
 
   // Successful case
-  const onFinish = (values) => {
-    console.log("Success:", values);
+  const onFinishType = (values) => {
+    const { name, size, capacity, describe, image, price, point } = values;
+    const formData = new FormData();
+    if (editAdd) {
+      console.log("Success: Type edit", values);
+    } else {
+      console.log("Success: Type add", values);
+      formData.append("room_type_name", name);
+      formData.append("room_size", size);
+      formData.append("number_customers", capacity);
+      formData.append("description", describe);
+      formData.append("image", image);
+      formData.append("price", price);
+      formData.append("point_ranking", point);
+      http
+        .post(`/admin/store-room-type`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully add your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    }
+  };
+  const onFinishArea = (values) => {
+    const { name } = values;
+    const formData = new FormData();
+    console.log("Success: Area", values);
+
+    formData.append("area_name", name);
+
+    http
+      .post(`/admin/store-area`, formData)
+      .then(() => {
+        Swal.fire(
+          "Update!",
+          "You have successfully add your profile",
+          "success"
+        ).then(() => {
+          navigate(0);
+        });
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+  };
+  const onFinishFloor = (values) => {
+    const { name } = values;
+    const formData = new FormData();
+    console.log("Success: Floor", values);
+    formData.append("floor_name", name);
+    http
+      .post(`/admin/store-floor`, formData)
+      .then(() => {
+        Swal.fire(
+          "Update!",
+          "You have successfully add your profile",
+          "success"
+        ).then(() => {
+          navigate(0);
+        });
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+  };
+  const onFinishRoom = (values) => {
+    const { room_name, area, floor, roomType } = values;
+    const formData = new FormData();
+    if (editAdd) {
+      console.log("Success: Room edit", values);
+      formData.append("room_name", room_name);
+      formData.append("room_type_id", roomType);
+      formData.append("area_id", area);
+      formData.append("floor_id", floor);
+
+      http
+        .patch(`/update-room/${idUpdate}`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully add your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log("Error response:", reject.response);
+          console.log("Error status code:", reject.response.status);
+          console.log("Error message:", reject.message);
+          console.log(reject);
+        });
+
+    } else {
+      console.log("Success: Room add", values);
+      formData.append("room_name", room_name);
+      formData.append("room_type_id", roomType);
+      formData.append("area_id", area);
+      formData.append("floor_id", floor);
+
+      http
+        .post(`/admin/store-room`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully add your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    }
   };
 
   // Failed case
-  const onFinishFailed = (error) => {
+  const onFinishFailedType = (error) => {
+    console.log("Failed:", error);
+  };
+  const onFinishFailedArea = (error) => {
+    console.log("Failed:", error);
+  };
+  const onFinishFailedFloor = (error) => {
+    console.log("Failed:", error);
+  };
+  const onFinishFailedRoom = (error) => {
     console.log("Failed:", error);
   };
 
@@ -468,8 +600,8 @@ const RoomType = () => {
           labelWrap="true"
           size="large"
           autoComplete="off"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
+          onFinish={onFinishType}
+          onFinishFailed={onFinishFailedType}
           className={cx("modal-form")}
           initialValues={{
             typename: values?.type_name,
@@ -619,13 +751,9 @@ const RoomType = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") === "" ? (
-                <Button type="primary" onClick={handleAdd}>
-                  Add
-                </Button>
               ) : (
-                <Button type="primary" onClick={handleSumbit}>
-                  Edit
+                <Button type="primary" htmlType="submit">
+                  {editAdd ? <>Edit</> : <>Add</>}
                 </Button>
               )}
             </div>
@@ -674,8 +802,8 @@ const RoomType = () => {
           labelWrap="true"
           size="large"
           autoComplete="off"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
+          onFinish={onFinishArea}
+          onFinishFailed={onFinishFailedArea}
           className={cx("modal-form")}
           initialValues={{
             name: values?.name,
@@ -709,17 +837,9 @@ const RoomType = () => {
             }}
           >
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              {disabledCreate ? (
-                <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") === "" ? (
-                <Button type="primary" onClick={handleAdd}>
-                  Add
-                </Button>
-              ) : (
-                <Button type="primary" onClick={handleSumbit}>
-                  Edit
-                </Button>
-              )}
+              <Button type="primary" htmlType="submit">
+                Add
+              </Button>
             </div>
           </Form.Item>
         </Form>
@@ -766,8 +886,8 @@ const RoomType = () => {
           labelWrap="true"
           size="large"
           autoComplete="off"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
+          onFinish={onFinishFloor}
+          onFinishFailed={onFinishFailedFloor}
           className={cx("modal-form")}
           initialValues={{
             name: values?.name,
@@ -801,17 +921,9 @@ const RoomType = () => {
             }}
           >
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              {disabledCreate ? (
-                <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") === "" ? (
-                <Button type="primary" onClick={handleAdd}>
-                  Add
-                </Button>
-              ) : (
-                <Button type="primary" onClick={handleSumbit}>
-                  Edit
-                </Button>
-              )}
+              <Button type="primary" htmlType="submit">
+                Add
+              </Button>
             </div>
           </Form.Item>
         </Form>
@@ -858,8 +970,8 @@ const RoomType = () => {
           labelWrap="true"
           size="large"
           autoComplete="off"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
+          onFinish={onFinishRoom}
+          onFinishFailed={onFinishFailedRoom}
           className={cx("modal-form")}
           initialValues={{
             roomName: values?.room_name,
@@ -964,13 +1076,9 @@ const RoomType = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") === "" ? (
-                <Button type="primary" onClick={handleAdd}>
-                  Add
-                </Button>
               ) : (
-                <Button type="primary" onClick={handleSumbit}>
-                  Edit
+                <Button type="primary" htmlType="submit">
+                  {editAdd ? <>Edit</> : <>Add</>}
                 </Button>
               )}
             </div>
