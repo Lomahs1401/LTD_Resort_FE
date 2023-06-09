@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Statistical.module.scss";
 import classNames from "classnames/bind";
-
+import { Select } from "antd";
 import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../utils/theme";
 import { mockTransactions } from "../../../data/mockData";
@@ -16,12 +16,147 @@ import PieChart from "../../../components/PieChart/PieChart";
 import BarChart from "../../../components/BarChart/BarChart";
 import StatBox from "../../../components/StatBox/StatBox";
 import ProgressCircle from "../../../components/ProgressCircle/ProgressCircle";
+import AuthUser from "../../../utils/AuthUser";
 
 const Statistical = () => {
   const cx = classNames.bind(styles);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const currentYear = new Date().getFullYear();
+  const startYear = 2010;
+  const years = [];
+  const { http } = AuthUser();
+  const [yearss, setYearss] = useState(currentYear);
+  const [row1, setRow1] = useState({
+    total_customer: 0,
+    total_employee: 0,
+    total_feedback: 0,
+    total_money: 0,
+  });
+  const [row2, setRow2] = useState({
+    total_money_bill_extra_service: [],
+    total_money_bill_room: [],
+    total_money_bill_service: [],
+  });
+  const [row2_2, setRow2_2] = useState([]);
+  const [row3, setRow3] = useState([]);
+  const [row3_3, setRow3_3] = useState([]);
+
+  for (let year = startYear; year <= currentYear; year++) {
+    years.push(year);
+  }
+
+  const fetchRow2 = async (year) => {
+    await http
+      .get(`/admin/totalBill-row2/${year}`)
+      .then((resolve) => {
+        setRow2({
+          total_money_bill_extra_service:
+            resolve.data.total_money_bill_extra_service,
+          total_money_bill_room: resolve.data.total_money_bill_room,
+          total_money_bill_service: resolve.data.total_money_bill_service,
+        });
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+  };
+  const fetchRow3 = async (year) => {
+    await http
+      .get(`/admin/totalFeedback-row3/${year}`)
+      .then((resolve) => {
+        setRow3(resolve.data.Total_feedback);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+  };
+
+  const billSum = row2.total_money_bill_extra_service.reduce((sum, item) => {
+    return sum + item.total;
+  }, 0);
+  const roomSum = row2.total_money_bill_room.reduce((sum, item) => {
+    return sum + item.total;
+  }, 0);
+  const extaSum = row2.total_money_bill_room.reduce((sum, item) => {
+    return sum + item.total;
+  }, 0);
+  const totalSum = billSum + roomSum + extaSum;
+
+  const handleSelect = (selectedOption) => {
+    // Xử lý sự kiện khi người dùng chọn option
+    fetchRow2(selectedOption);
+    setYearss(selectedOption);
+  };
+  const handleSelectYear = (selectedOption) => {
+    // Xử lý sự kiện khi người dùng chọn option
+    fetchRow3(selectedOption);
+    setYearss(selectedOption);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await http
+        .get(`/admin/total-row1`)
+        .then((resolve) => {
+          setRow1({
+            total_customer: resolve.data.total_customer,
+            total_employee: resolve.data.total_employee,
+            total_feedback: resolve.data.total_feedback,
+            total_money: resolve.data.total_money,
+          });
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      await http
+        .get(`/admin/totalBill-row2/${currentYear}`)
+        .then((resolve) => {
+          setRow2({
+            total_money_bill_extra_service:
+              resolve.data.total_money_bill_extra_service,
+            total_money_bill_room: resolve.data.total_money_bill_room,
+            total_money_bill_service: resolve.data.total_money_bill_service,
+          });
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+
+      await http
+        .get(`/admin/totalBillMonth-row2`)
+        .then((resolve) => {
+          setRow2_2(resolve.data.data);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+
+      await http
+        .get(`/admin/totalFeedback-row3/${currentYear}`)
+        .then((resolve) => {
+          setRow3(resolve.data.Total_feedback);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+
+      await http
+        .get(`/admin/totalEmployeeMonth-row3`)
+        .then((resolve) => {
+          setRow3_3(resolve.data.data);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+console.log("aaa " , row3);
+
 
   return (
     <Box marginX="20px" height="80%">
@@ -46,7 +181,7 @@ const Statistical = () => {
           justifyContent="center"
         >
           <StatBox
-            title="12,361"
+            title={row1.total_customer}
             subtitle="Number Of Customer"
             progress="null"
             // increase="+14%"
@@ -65,8 +200,8 @@ const Statistical = () => {
           justifyContent="center"
         >
           <StatBox
-            title="431,225"
-            subtitle="Room Rent"
+            title={row1.total_employee}
+            subtitle="Number Of Employee"
             progress="null"
             // increase="+21%"
             icon={
@@ -84,7 +219,7 @@ const Statistical = () => {
           justifyContent="center"
         >
           <StatBox
-            title="32,441"
+            title={row1.total_feedback}
             subtitle="Comment"
             progress="null"
             // increase="+5%"
@@ -103,8 +238,8 @@ const Statistical = () => {
           justifyContent="center"
         >
           <StatBox
-            title="1,325,134"
-            subtitle="Facility"
+            title={row1.total_money}
+            subtitle="Bank"
             progress="null"
             // increase="+43%"
             icon={
@@ -142,10 +277,18 @@ const Statistical = () => {
                 fontWeight="bold"
                 color={colors.greenAccent[500]}
               >
-                $59,342.32
+                $ {totalSum}
               </Typography>
             </Box>
             <Box>
+              <Select
+                placeholder="Please select Year"
+                options={years.map((year) => ({
+                  label: year.toString(),
+                  value: year,
+                }))}
+                onChange={handleSelect}
+              />
               <IconButton>
                 <DownloadOutlinedIcon
                   sx={{ fontSize: "26px", color: colors.greenAccent[500] }}
@@ -154,7 +297,7 @@ const Statistical = () => {
             </Box>
           </Box>
           <Box height="250px" m="-20px 0 0 0">
-            <LineChart isDashboard={true} />
+            <LineChart isDashboard={true} datas={row2} />
           </Box>
         </Box>
 
@@ -167,7 +310,7 @@ const Statistical = () => {
           <Typography variant="h5" fontWeight="600">
             Departmental Employee
           </Typography>
-          <PieChart />
+          <PieChart datas={row2_2}/>
         </Box>
 
         {/* ROW 3 */}
@@ -176,15 +319,32 @@ const Statistical = () => {
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
         >
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            sx={{ padding: "30px 30px 0 30px" }}
+          <Box
+            mt="25px"
+            p="0 30px"
+            display="flex "
+            justifyContent="space-between"
+            alignItems="center"
           >
-            Employee Status
-          </Typography>
+            <Box>
+              <Typography variant="h5" fontWeight="600">
+                Employee Status
+              </Typography>
+            </Box>
+            <Box>
+              <Select
+                placeholder="Please select Year"
+                options={years.map((year) => ({
+                  label: year.toString(),
+                  value: year,
+                }))}
+                onChange={handleSelectYear}
+              />
+            </Box>
+          </Box>
+
           <Box height="250px" mt="-20px">
-            <BarChart isDashboard={true} />
+            <BarChart isDashboard={true} datas={row3} />
           </Box>
         </Box>
         <Box
@@ -194,24 +354,9 @@ const Statistical = () => {
           p="30px"
         >
           <Typography variant="h5" fontWeight="600">
-            Campaign
+            Departmental Employee
           </Typography>
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            mt="25px"
-          >
-            <ProgressCircle size="125" />
-            <Typography
-              variant="h5"
-              color={colors.greenAccent[500]}
-              sx={{ mt: "15px" }}
-            >
-              $48,352 revenue generated
-            </Typography>
-            <Typography>Includes extra misc expenditures and costs</Typography>
-          </Box>
+          <PieChart datas={row3_3}/>
         </Box>
       </Box>
     </Box>

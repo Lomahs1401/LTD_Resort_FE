@@ -1,21 +1,60 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
 import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../utils/theme";
 import { mockLineBill } from "../../data/mockData";
+import AuthUser from "../../utils/AuthUser";
 
-
-
-const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
+const LineChart = ({
+  isCustomLineColors = false,
+  isDashboard = false,
+  datas,
+}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { http } = AuthUser();
+
+  const [row2, setRow2] = useState({
+    total_money_bill_extra_service: [],
+    total_money_bill_room: [],
+    total_money_bill_service: [],
+  });
+
+  
+
+  const newData = [
+    {
+      id: "Room",
+      data: datas.total_money_bill_room.map((item) => ({
+        x: item.month,
+        y: item.total,
+      })),
+    },
+    {
+      id: "Service",
+      data: datas.total_money_bill_service.map((item) => ({
+        x: item.month,
+        y: item.total,
+      })),
+    },
+    {
+      id: "Extra",
+      data: datas.total_money_bill_extra_service.map((item) => ({
+        x: item.month,
+        y: item.total,
+      })),
+    },
+  ];
 
 
-
-  const colorss = [tokens("dark").blueAccent[300], tokens("dark").redAccent[200], tokens("dark").greenAccent[500]];
+  const colorss = [
+    tokens("dark").blueAccent[300],
+    tokens("dark").redAccent[200],
+    tokens("dark").greenAccent[500],
+  ];
   return (
     <ResponsiveLine
-      data={mockLineBill}
+      data={ newData }
       colors={colorss}
       theme={{
         axis: {

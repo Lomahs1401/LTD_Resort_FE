@@ -3,15 +3,15 @@ import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../../utils/theme";
 import { mockBarWorker } from "../../data/mockData";
 
-const BarChart = ({ isDashboard = false }) => {
+const BarChart = ({ isDashboard = false ,datas }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const colorss = [tokens("dark").greenAccent[300], tokens("dark").redAccent[200]];
+  const colorss = [tokens("dark").greenAccent[500], tokens("dark").greenAccent[300], tokens("dark").blueAccent[400], tokens("dark").redAccent[300], tokens("dark").redAccent[500] ];
 
   return (
     <ResponsiveBar
-      data={mockBarWorker}
+      data={datas}
       theme={{
         // added
         axis: {
@@ -41,10 +41,9 @@ const BarChart = ({ isDashboard = false }) => {
           },
         },
       }}
-      // keys={["hot dog", "burger", "sandwich", "kebab", "fries", "donut"]}
-      keys={["employeesWorking", "employeesResigned"]}
+      keys={["Feedback 5", "Feedback 4","Feedback 3","Feedback 2","Feedback 1"]}
       indexBy="month"
-      groupMode="grouped"
+      groupMode="stacked"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       valueScale={{ type: "linear" }}

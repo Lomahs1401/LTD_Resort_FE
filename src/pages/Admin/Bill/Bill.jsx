@@ -147,6 +147,7 @@ const Bill = () => {
       title: "Room",
       content: (
         <DataGrid
+          getRowId={(row) => row.code}
           onCellDoubleClick={handleDoubleClickCell}
           rows={room ? room : mockDataRoom}
           columns={columnsRoom}
@@ -159,6 +160,7 @@ const Bill = () => {
       title: "Service",
       content: (
         <DataGrid
+          getRowId={(row) => row.code}
           onCellDoubleClick={handleDoubleClickCell}
           rows={mockDatabillService.filter(
             (item) => item.id_customer === Customer?.id
@@ -173,6 +175,7 @@ const Bill = () => {
       title: "Extra Service",
       content: (
         <DataGrid
+          getRowId={(row) => row.code}
           onCellDoubleClick={handleDoubleClickCell}
           rows={mockDatabillService.filter(
             (item) => item.id_customer === Customer?.id
@@ -214,10 +217,9 @@ const Bill = () => {
       await http
         .get(`/admin/show-customer/${id}`)
         .then((resolve) => {
-          
           setCustomer(resolve.data.data);
-          console.log("hhuhu" ,resolve);
-          console.log("aaa" , resolve.data.data);
+          console.log("hhuhu", resolve);
+          console.log("aaa", resolve.data.data);
         })
         .catch((reject) => {
           console.log(reject);
@@ -250,7 +252,7 @@ const Bill = () => {
 
   useEffect(() => {
     const fetchImage = async () => {
-      console.log("asa", Customer)
+      console.log("asa", Customer);
       if (Customer?.avatar) {
         const storage = getStorage();
         const storageRef = ref(storage, Customer.avatar);

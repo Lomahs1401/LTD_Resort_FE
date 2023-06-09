@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material";
 import { mockPieData as data } from "../../data/mockData";
 import AuthUser from "../../utils/AuthUser";
 
-const PieChart = () => {
+const PieChart = (datas) => {
   const theme = useTheme();
   // const colors = tokens(theme.palette.mode);
   const colorss = [
@@ -43,6 +43,8 @@ const PieChart = () => {
       value: employee.total_employee,
     };
   });
+  console.log("1 ",newListEmployee);
+  console.log("2 ",datas);
 
   return (
     <div style={{ width: "400px", height: "300px" }}>
