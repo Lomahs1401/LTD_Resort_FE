@@ -79,6 +79,7 @@ const Customer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     
   }, []);
+  console.log("cc" , listCustomers)
 
 
   return (

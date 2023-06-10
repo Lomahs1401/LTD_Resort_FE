@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Box } from "@mui/material";
 import {
   DataGrid,
@@ -8,23 +8,20 @@ import {
 } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import { tokens } from "../../../utils/theme";
-import { mockDataServiceType } from "../../../data/mockData";
+import { mockDataRoomArea } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import { useTheme } from "@mui/material";
 import { Form, Input, Modal } from "antd";
 import { GrAdd } from "react-icons/gr";
 import Draggable from "react-draggable";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import styles from "./ServiceType.module.scss";
+import styles from "./BillRoom.module.scss";
 import classNames from "classnames/bind";
-import AuthUser from "../../../utils/AuthUser";
-import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
-const ServiceType = () => {
-  const layout = {
+const BillRoom = () => {
+  const Layout = {
     labelCol: {
       span: 6,
     },
@@ -32,17 +29,11 @@ const ServiceType = () => {
       span: 18,
     },
   };
-  const navigate = useNavigate();
-  const { http } = AuthUser();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [openModal, setOpenModal] = useState(false);
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
-  const [listType, setListType] = useState([]);
-  const [service, setService] = useState([]);
-  const [base, setBase] = useState();
-  const [id, setID] = useState();
 
   function CustomToolbar() {
     return (
@@ -60,14 +51,8 @@ const ServiceType = () => {
     { field: "id", headerName: "ID", flex: 0.5 },
 
     {
-      field: "service_type_name",
-      headerName: "Type Name",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "number_services",
-      headerName: "Number Services",
+      field: "area_name",
+      headerName: "Name",
       flex: 1,
       cellClassName: "name-column--cell",
     },
@@ -104,16 +89,14 @@ const ServiceType = () => {
     setOpenModal(true);
     form.setFieldValue("name", "");
     setdisabledCreate(false);
-    setBase(false);
+
     setValues({});
   };
   const handleEdit = (params) => {
     setdisabledCreate(false);
     const { row } = params;
-    setID(row.id);
-    form.setFieldValue("typename", row.service_type_name);
-    form.setFieldValue("size", row.number_services);
-    setBase(true);
+    form.setFieldValue("name", row.area_name);
+
     setOpenModal(true);
   };
 
@@ -121,38 +104,12 @@ const ServiceType = () => {
     setOpenModal(true);
   };
 
-  const fetchService = async (id) => {
-    await http
-      .get(`/admin/list-service-by-type/${id}`)
-      .then((resolve) => {
-        console.log(resolve);
-        setService();
-      })
-      .catch((reject) => {
-        console.log(reject);
-      });
-  };
-
-  const handleCellClick = (params) => {
-    const { row } = params;
-    const field = params.field;
-    if (field !== "accessLevel" ) {
-      console.log(row);
-      fetchService(row.id);
-      navigate("/admin/service" ,{ state: row.id });
-    }
-  };
   const handleDoubleClickCell = (params) => {
     const { row } = params;
     setdisabledCreate(true);
-    console.log(row);
+
     setValues(row);
-    form.setFieldValue("typename", row.type_name);
-    form.setFieldValue("size", row.size);
-    form.setFieldValue("capacity", row.capacity);
-    form.setFieldValue("describe", row.describe);
-    form.setFieldValue("price", row.price);
-    form.setFieldValue("point", row.point_ranking);
+    form.setFieldValue("name", row.area_name);
 
     setOpenModal(true);
   };
@@ -165,39 +122,18 @@ const ServiceType = () => {
   const handleCancel = () => {
     setOpenModal(false);
   };
+  // Handle add new info
+  const handleAdd = () => {
+    console.log("Add");
+  };
+  // Handle edit old info
+  const handleSumbit = () => {
+    console.log("Sumbit");
+  };
 
   // Successful case
   const onFinish = (values) => {
-    const { typename, size } = values;
-    const formData = new FormData();
-
-    if (base) {
-      console.log("Success: edit", values);
-    } else {
-      console.log("Success: add", values);
-
-      formData.append("service_name", typename);
-
-      console.log("form: add", formData);
-
-      http
-        .post(`/admin/store-service-type`, formData)
-        .then(() => {
-          Swal.fire(
-            "Update!",
-            "You have successfully add your profile",
-            "success"
-          ).then(() => {
-            navigate(0);
-          });
-        })
-        .catch((reject) => {
-          console.log("Error response:", reject.response);
-          console.log("Error status code:", reject.response.status);
-          console.log("Error message:", reject.message);
-          console.log(reject);
-        });
-    }
+    console.log("Success:", values);
   };
 
   // Failed case
@@ -230,26 +166,9 @@ const ServiceType = () => {
     });
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await http
-        .get(`/admin/list-service-type`)
-        .then((resolve) => {
-          setListType(resolve.data.list_room_types);
-        })
-        .catch((reject) => {
-          console.log(reject);
-        });
-    };
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-
-
   return (
     <div className={cx("contact-wrapper")}>
-      <Header title="SERVICE TYPE" subtitle="List of Service Type" />
+      <Header title="BILL" subtitle="List of Bill" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -283,9 +202,8 @@ const ServiceType = () => {
         }}
       >
         <DataGrid
-          onCellClick={handleCellClick}
           onCellDoubleClick={handleDoubleClickCell}
-          rows={listType}
+          rows={mockDataRoomArea}
           columns={columns}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
@@ -307,7 +225,7 @@ const ServiceType = () => {
               setDisabled(true);
             }}
           >
-            Service type Info
+            Area Room Info
           </div>
         }
         open={openModal}
@@ -325,7 +243,7 @@ const ServiceType = () => {
         )}
       >
         <Form
-          {...layout}
+          {...Layout}
           form={form}
           layout="horizontal"
           name="profile_form"
@@ -337,118 +255,23 @@ const ServiceType = () => {
           onFinishFailed={onFinishFailed}
           className={cx("modal-form")}
           initialValues={{
-            typename: values?.type_name,
-            size: values?.size,
-            capacity: values?.capacity,
-            describe: values?.describe,
-            price: values?.price,
-            point: values?.point_ranking,
+            name: values?.name,
           }}
         >
-          <div className={cx("service-attributes")}>
+          <div className={cx("room-attributes")}>
             <Form.Item
-              name="typename"
-              label="Type Name"
+              name="name"
+              label="Name"
               rules={[
                 {
                   required: true,
-                  message: "Type name is required!",
+                  message: "Name area is required!",
                 },
               ]}
               hasFeedback
             >
               <Input
-                placeholder={"Please fill type name"}
-                disabled={disabledCreate}
-              />
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="size"
-              label="Size(m2)"
-              rules={[
-                {
-                  required: true,
-                  message: "Size is required!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input
-                placeholder={"Please fill the size"}
-                disabled={disabledCreate}
-              />
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="capacity"
-              label="Capacity"
-              rules={[
-                {
-                  required: true,
-                  message: "The capacity is required!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input
-                placeholder={"Please fill the capacity"}
-                disabled={disabledCreate}
-              />
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="describe"
-              label="Describe"
-              rules={[
-                {
-                  required: true,
-                  message: "Describe is required!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input
-                placeholder={"Please fill describe"}
-                disabled={disabledCreate}
-              />
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="price"
-              label="Price"
-              rules={[
-                {
-                  required: true,
-                  message: "Price is required!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input
-                placeholder={"Please fill the price"}
-                disabled={disabledCreate}
-              />
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="point"
-              label="Point Ranking"
-              rules={[
-                {
-                  required: true,
-                  message: "The point is required!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input
-                placeholder={"Please fill The point"}
+                placeholder={"Please fill area name"}
                 disabled={disabledCreate}
               />
             </Form.Item>
@@ -465,9 +288,13 @@ const ServiceType = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
+              ) : form.getFieldValue("name") === "" ? (
+                <Button type="primary" onClick={handleAdd}>
+                  Add
+                </Button>
               ) : (
-                <Button type="primary" htmlType="submit">
-                  {base ? <>Edit</> : <>Add</>}
+                <Button type="primary" onClick={handleSumbit}>
+                  Edit
                 </Button>
               )}
             </div>
@@ -478,4 +305,4 @@ const ServiceType = () => {
   );
 };
 
-export default ServiceType;
+export default BillRoom;

@@ -68,16 +68,18 @@ const Bill = () => {
     await http
       .get(`/auth/show-bill-room-detail/${id}`)
       .then((resolve) => {
+        console.log(resolve);
+
         const newData = resolve.data.bill_room_detail.map((item, index) => {
           return { ...item, id: index.toString() };
         });
+
         setRoomDetails(newData);
       })
       .catch((reject) => {
         console.log(reject);
       });
-  };
-
+  }
   const fetchExtra = async (id) => {
     await http
       .get(`/auth/show-bill-extra-service-details/${id}`)
@@ -94,14 +96,14 @@ const Bill = () => {
         console.log(reject);
       });
   };
-  console.log("eextra", extraServiceDetail);
+
 
   const handleDoubleClickCell_1 = (params) => {
     const { row } = params;
     console.log(row);
     setValues(row);
-    fetchRoom(row.code);
-    form.setFieldValue("id", row.code);
+    fetchRoom(row.id);
+    form.setFieldValue("id", row.id);
     form.setFieldValue("total_amount", row.total_amount);
     form.setFieldValue("total_room", row.total_room);
     form.setFieldValue("total_people", row.total_people);
@@ -169,7 +171,7 @@ const Bill = () => {
 
   //data columns
   const columnsRoom = [
-    { field: "code", headerName: "ID", flex: 0.5 },
+    { field: "id", headerName: "ID", flex: 0.5 },
     {
       field: "time_start",
       headerName: "Time Start",
@@ -241,7 +243,7 @@ const Bill = () => {
     },
   ];
   const columnsService = [
-    { field: "code", headerName: "ID", flex: 0.5 },
+    { field: "id", headerName: "ID", flex: 0.5 },
     {
       field: "service",
       headerName: "Service Name",
@@ -343,7 +345,6 @@ const Bill = () => {
       title: "Room",
       content: (
         <DataGrid
-          getRowId={(row) => row.code}
           onCellDoubleClick={handleDoubleClickCell_1}
           rows={room ? room : mockDataRoom}
           columns={columnsRoom}
@@ -356,7 +357,6 @@ const Bill = () => {
       title: "Service",
       content: (
         <DataGrid
-          getRowId={(row) => row.code}
           rows={service ? service : mockDatabillService}
           columns={columnsService}
           className={cx("table")}

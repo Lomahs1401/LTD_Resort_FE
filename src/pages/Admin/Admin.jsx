@@ -24,6 +24,7 @@ import RoomType from "./RoomType/RoomType";
 import Equiment from "./Equipment/Equipment";
 import Service from "./Service/Service";
 import ServiceType from "./ServiceType/ServiceType";
+import FeedBack from "./FeedBack/FeedBack";
 import Statistical from "./Statistical/Statistical";
 import AccordionDetails from "./AccountDetail/AccountDetail";
 import Calendar from "./Calendar/Calendar";
@@ -60,6 +61,7 @@ const Admin = () => {
               <Route path="/equipment" element={<Equiment />} />
               <Route path="/service" element={<Service />} />
               <Route path="/servicetype" element={<ServiceType />} />
+              <Route path="/feedback" element={<FeedBack />} />
               <Route path="/statistical" element={<Statistical />} />
 
               {/* <Route path="/createservice" element={< CreateService />} /> */}

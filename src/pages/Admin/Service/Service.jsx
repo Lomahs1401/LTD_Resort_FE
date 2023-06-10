@@ -15,6 +15,7 @@ import { Form, Input, Modal, Select } from "antd";
 import { GrAdd } from "react-icons/gr";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import Draggable from "react-draggable";
+import ImageGallery from "../ImageGallery/ImageGallery";
 import styles from "./Service.module.scss";
 import classNames from "classnames/bind";
 import AuthUser from "../../../utils/AuthUser";
@@ -23,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
-const Service = (data) => {
+const Service = () => {
   const Layout = {
     labelCol: {
       span: 6,
@@ -47,6 +48,7 @@ const Service = (data) => {
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [base, setBase] = useState();
   const [id, setID] = useState();
+  const [images, setImages] = useState([]);
 
   function CustomToolbar() {
     return (
@@ -71,6 +73,14 @@ const Service = (data) => {
     return typeName || "";
   };
 
+  const handleUpdateImage = (updatedImages) => {
+    console.log(updatedImages); // Log mảng images đã được truyền lại từ ImageGallery
+    setImages(updatedImages); // Cập nhật mảng images trong component cha
+  };
+
+
+
+
   //data columns
   const columns = [
     { field: "id", headerName: "ID" },
@@ -90,10 +100,9 @@ const Service = (data) => {
       flex: 0.5,
     },
     {
-      field: "id_type",
+      field: "service_type_name",
       headerName: "Type",
       flex: 1,
-      valueFormatter: (params) => getTypeName(params.value),
     },
     {
       field: "accessLevel",
@@ -139,7 +148,7 @@ const Service = (data) => {
     form.setFieldValue("price", "");
     form.setFieldValue("status", null);
     form.setFieldValue("point", "");
-    form.setFieldValue("type", null);
+    form.setFieldValue("type", null)
     setdisabledCreate(false);
     setValues({});
     setBase(false);
@@ -211,7 +220,7 @@ const Service = (data) => {
 
   // Successful case
   const onFinish = (values) => {
-    const { name, description, status, image, price, point, type } = values;
+    const { name, description, status,  price, point, type } = values;
     const formData = new FormData();
     if (base) {
       console.log("Success: edit", values);
@@ -219,9 +228,10 @@ const Service = (data) => {
       formData.append("service_name", name);
       formData.append("description", description);
       formData.append("price", price);
-      // formData.append("image", image);
+      formData.append("image", images);
       formData.append("point_ranking", point);
 
+      console.log("form " , formData);
       http
         .patch(`/admin/update-service/${id}`, formData)
         .then(() => {
@@ -245,10 +255,12 @@ const Service = (data) => {
       formData.append("service_name", name);
       formData.append("description", description);
       formData.append("status", status);
-      // formData.append("image", image);
+      formData.append("image", images);
       formData.append("price", price);
       formData.append("point_ranking", point);
       formData.append("service_type_id", type);
+
+      console.log("form add" , formData);
 
       http
         .post(`/admin/store-service`, formData)
@@ -306,7 +318,7 @@ const Service = (data) => {
         .get(`/admin/list-service`)
         .then((resolve) => {
           console.log(resolve);
-          setListService(resolve.data.list_room_types);
+          setListService(resolve.data.list_service_types);
         })
         .catch((reject) => {
           console.log(reject);
@@ -325,7 +337,7 @@ const Service = (data) => {
           .get(`/admin/list-service-by-type/${state}`)
           .then((resolve) => {
             console.log(resolve);
-            setListService("resolve.data.list_room_types");
+            setListService(resolve.data.list_room_types);
           })
           .catch((reject) => {
             console.log(reject);
@@ -521,8 +533,8 @@ const Service = (data) => {
                 placeholder="Please select Status"
                 disabled={disabledCreate}
               >
-                <Select.Option value={true}> True</Select.Option>
-                <Select.Option value={false}> False</Select.Option>
+                <Select.Option value="AVAILABLE"> AVAILABLE</Select.Option>
+                <Select.Option value="UNAVAILABLE"> UNAVAILABLE</Select.Option>
               </Select>
             </Form.Item>
           </div>
@@ -546,6 +558,26 @@ const Service = (data) => {
                 }))}
                 disabled={disabledCreate}
               ></Select>
+            </Form.Item>
+          </div>
+
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="picture"
+              label="Picture"
+
+              // hasFeedback
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Room Type is required!",
+              //   },
+              // ]}
+            >
+              <ImageGallery
+                images={images}
+                onChangeImages={handleUpdateImage}
+              />
             </Form.Item>
           </div>
 

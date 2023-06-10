@@ -14,7 +14,8 @@ import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import {VscFeedback} from "react-icons/vsc"
 import {FaMoneyBillWaveAlt} from "react-icons/fa"
 import {MdDeviceUnknown} from "react-icons/md"
-import { getDownloadURL, ref, getStorage } from "firebase/storage";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "../../../utils/firebase"
 import AuthUser from "../../../utils/AuthUser";
 import { fontSize } from "@mui/system";
 
@@ -39,19 +40,21 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [admin,setAdmin] = useState();
+  const [employee,setEmployee] = useState();
   const [avatarUrl, setAvatarUrl] = useState("");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-  const {http} =AuthUser();
+  const {http , user} =AuthUser();
   
+  const avatarRef = ref(storage, user.avatar)
+
   useEffect(() => {
     const fetchData = async () => {
       await http
-        .get(`/admin/account-admin`)
+        .get(`/employee/account-employee`)
         .then((resolve) => {
           console.log(resolve);
-          setAdmin(resolve.data.customer);
+          setEmployee(resolve.data.customer);
         })
         .catch((reject) => {
           console.log(reject);
@@ -64,14 +67,13 @@ const Sidebar = () => {
 
   useEffect(() => {
     const fetchImage = async () => {
-      const storage = getStorage();
-      const storageRef = ref(storage, admin?.avatar);
-      const downloadUrl = await getDownloadURL(storageRef);
-      setAvatarUrl(downloadUrl);
+      getDownloadURL(avatarRef).then((url) => {
+        setAvatarUrl(url);
+      })
     };
 
     fetchImage();
-  }, [admin?.avatar]);
+  }, []);
 
   // if (!avatarUrl) {
   //   return <div>Loading...</div>;
@@ -144,10 +146,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  {admin?.username}
+                  {employee?.username}
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  {admin?.name}
+                  {employee?.name}
                 </Typography>
               </Box>
             </Box>
@@ -198,7 +200,7 @@ const Sidebar = () => {
        
             <Item
               title="Bill Room"
-              to="/employee/bill"
+              to="/employee/billroom"
               icon={<FaMoneyBillWaveAlt  style={{fontSize: 'x-large'}}/>}
               selected={selected}
               setSelected={setSelected}

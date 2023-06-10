@@ -5,9 +5,10 @@ import { Routes, Route } from "react-router-dom";
 import Topbar from "./Topbar/Topbar";
 import Sidebar from "./Sidebar/Sidebar";
 import Dashboard from "./Dashboard/Dashboard";
-import Customer from "./Customer/Customer";
-import Feedback from "./Feedback/Feedback";
-import Bill from "./Bill/Bill";
+import Customer from "./Customer/Customer"
+import Bill from "./Bill/Bill"
+import Feedback from "./FeedBack/FeedBack";
+import BillRoom from "./BillRoom/BillRoom";
 import Facility from "./Facility/Facility";
 import Service from "./Service/Service";
 import ExtraService from "./ExtraService/ExtraService";
@@ -36,8 +37,9 @@ const Employee = () => {
               <Route path="/" element={<Dashboard />} exact />
               <Route path="/details" element={<AccordionDetails />} />
               <Route path="/customer" element={<Customer />} />
-              <Route path="/feedback" element={<Feedback />} />
               <Route path="/bill" element={<Bill />} />
+              <Route path="/feedback" element={<Feedback />} />
+              <Route path="/billroom" element={<BillRoom />} />
               <Route path="/facility" element={<Facility />} />
               <Route path="/service" element={<Service />} />
               <Route path="/extraservice" element={<ExtraService />} />

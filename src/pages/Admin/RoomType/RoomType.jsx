@@ -80,7 +80,26 @@ const RoomType = () => {
       </GridToolbarContainer>
     );
   }
-  //data columns
+
+  const getAreaName = (areaName) => {
+    // Gọi hàm hoặc thực hiện các xử lý tìm tên area từ id area
+    // Ví dụ:
+    const areaNameID = listRoomArea.find(
+      (area) => area.area_name === areaName
+    )?.id;
+    return areaNameID || "";
+  };
+
+  const getFloorName = (floorName) => {
+    // Gọi hàm hoặc thực hiện các xử lý tìm tên area từ id area
+    // Ví dụ:
+    const floorNameID = listRoomFloor.find(
+      (floor) => floor.floor_name === floorName
+    )?.id;
+    return floorNameID || "";
+  };
+
+  // data columns
   const columnsType = [
     { field: "id", headerName: "ID", flex: 0.5 },
     {
@@ -127,7 +146,7 @@ const RoomType = () => {
       width: 200,
       renderCell: (params) => {
         const handleEditClick = () => {
-          handleEdit(params);
+          handleEditType(params);
         };
 
         const handleDeleteClick = () => {
@@ -176,7 +195,7 @@ const RoomType = () => {
       width: 200,
       renderCell: (params) => {
         const handleEditClick = () => {
-          handleEdit(params);
+          handleEditRoom(params);
         };
 
         const handleDeleteClick = () => {
@@ -200,7 +219,11 @@ const RoomType = () => {
   const handleCreate = () => {
     console.log("create");
     setOpenModal(true);
-    form.setFieldValue("name", "");
+    form.setFieldValue("typename", "");
+    form.setFieldValue("size", "");
+    form.setFieldValue("capacity", "");
+    form.setFieldValue("price", "");
+    form.setFieldValue("point", "");
     setdisabledCreate(false);
     setEditAdd(false);
     setValues({});
@@ -209,7 +232,11 @@ const RoomType = () => {
   const handleCreateRoom = () => {
     console.log("create");
     setOpenModalRoom(true);
-    form.setFieldValue("name", "");
+
+    form.setFieldValue("roomName", "");
+    form.setFieldValue("floor", null);
+    form.setFieldValue("area", null);
+    form.setFieldValue("roomType", null);
     setdisabledCreate(false);
     setValues({});
     setEditAdd(false);
@@ -233,7 +260,7 @@ const RoomType = () => {
     setValues({});
   };
 
-  const handleEdit = (params) => {
+  const handleEditType = (params) => {
     setdisabledCreate(false);
     const { row } = params;
     setIdUpdate(row.id);
@@ -242,16 +269,23 @@ const RoomType = () => {
     form.setFieldValue("capacity", row.number_customers);
     form.setFieldValue("price", row.price);
     form.setFieldValue("point", row.point_ranking);
+
+    setEditAdd(true);
+
+    setOpenModal(true);
+  };
+
+  const handleEditRoom = (params) => {
+    setdisabledCreate(false);
+    const { row } = params;
+    setIdUpdate(row.id_room);
     form.setFieldValue("roomName", row.room_name);
-    form.setFieldValue("floor", row.floor_name);
-    form.setFieldValue("area", row.area_name);
+    form.setFieldValue("floor", getFloorName(row.floor_name));
+    form.setFieldValue("area", getAreaName(row.area_name));
     form.setFieldValue("roomType", id);
     setEditAdd(true);
-    if (base) {
-      setOpenModal(true);
-    } else {
-      setOpenModalRoom(true);
-    }
+
+    setOpenModalRoom(true);
   };
 
   const handleDelete = (params) => {
@@ -320,7 +354,7 @@ const RoomType = () => {
       formData.append("room_size", size);
       formData.append("number_customers", capacity);
       formData.append("description", describe);
-      formData.append("image", image);
+      formData.append("image", images);
       formData.append("price", price);
       formData.append("point_ranking", point);
       http
@@ -382,17 +416,18 @@ const RoomType = () => {
       });
   };
   const onFinishRoom = (values) => {
-    const { room_name, area, floor, roomType } = values;
+    const { roomName, area, floor, roomType } = values;
     const formData = new FormData();
     if (editAdd) {
-      console.log("Success: Room edit", values);
-      formData.append("room_name", room_name);
+      console.log("Success: Room edit", values, idUpdate);
+
+      formData.append("room_name", roomName);
       formData.append("room_type_id", roomType);
       formData.append("area_id", area);
       formData.append("floor_id", floor);
 
       http
-        .patch(`/update-room/${idUpdate}`, formData)
+        .patch(`/admin/update-room/${idUpdate}`, formData)
         .then(() => {
           Swal.fire(
             "Update!",
@@ -403,15 +438,11 @@ const RoomType = () => {
           });
         })
         .catch((reject) => {
-          console.log("Error response:", reject.response);
-          console.log("Error status code:", reject.response.status);
-          console.log("Error message:", reject.message);
           console.log(reject);
         });
-
     } else {
       console.log("Success: Room add", values);
-      formData.append("room_name", room_name);
+      formData.append("room_name", roomName);
       formData.append("room_type_id", roomType);
       formData.append("area_id", area);
       formData.append("floor_id", floor);
@@ -444,7 +475,7 @@ const RoomType = () => {
     console.log("Failed:", error);
   };
   const onFinishFailedRoom = (error) => {
-    console.log("Failed:", error);
+    console.log("Failed: aaa", error);
   };
 
   // ---------------------------      Modal Draggable      ---------------------------
