@@ -12,22 +12,14 @@ import Department from "./Department/Department"
 import ViewAdmin from "./ViewAdmin/ViewAdmin";
 import Customer from "./Customer/Customer";
 import Bill from "./Bill/Bill";
-import Bar from "./Bar/Bar";
-import Form from "./Form/Form";
-import Line from "./Line/Line";
-import Pie from "./Pie/Pie";
-import FAQ from "./FAQ/FAQ";
-import Room from "./Room/Room";
-import RoomArea from "./RoomArea/RoomArea";
-import RoomFloor from "./RoomFloor/RoomFloor";
 import RoomType from "./RoomType/RoomType";
 import Equiment from "./Equipment/Equipment";
 import Service from "./Service/Service";
 import ServiceType from "./ServiceType/ServiceType";
 import FeedBack from "./FeedBack/FeedBack";
+import News from "./News/News"
 import Statistical from "./Statistical/Statistical";
 import AccordionDetails from "./AccountDetail/AccountDetail";
-import Calendar from "./Calendar/Calendar";
 import styles from "./Admin.module.scss";
 import classNames from "classnames/bind";
 
@@ -63,18 +55,8 @@ const Admin = () => {
               <Route path="/servicetype" element={<ServiceType />} />
               <Route path="/feedback" element={<FeedBack />} />
               <Route path="/statistical" element={<Statistical />} />
-
-              {/* <Route path="/createservice" element={< CreateService />} /> */}
-              
-              <Route path="/form" element={<Form />} />
-              <Route path="/bar" element={<Bar />} />
-              <Route path="/pie" element={<Pie />} />
-              <Route path="/line" element={<Line />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/calendar" element={<Calendar />} />
-
+              <Route path="/news" element={<News />} />
               <Route path="/details" element={<AccordionDetails />} />
-
               {/* <Route path="/geography" element={<Geography />} /> */}
             </Routes>
           </main>

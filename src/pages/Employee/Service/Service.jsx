@@ -1,21 +1,24 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Box } from "@mui/material";
 import {
   DataGrid,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
 } from "@mui/x-data-grid";
+import { Button } from "@mui/material";
 import { tokens } from "../../../utils/theme";
-import { mockDataService, mockDataServiceType } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
-import { useTheme, Button } from "@mui/material";
-import { Form, Input, Modal, Select } from "antd";
-import { GrAdd } from "react-icons/gr";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import { useTheme } from "@mui/material";
+import { Form, Input, Modal, Steps } from "antd";
+import { FaCheck, FaHistory, FaClipboardList } from "react-icons/fa";
 import Draggable from "react-draggable";
+import {
+  AiFillEdit,
+  AiFillDelete,
+  AiOutlineCheck,
+  AiOutlineClose,
+} from "react-icons/ai";
 import styles from "./Service.module.scss";
 import classNames from "classnames/bind";
+import AuthUser from "../../../utils/AuthUser";
 
 const cx = classNames.bind(styles);
 
@@ -30,139 +33,61 @@ const Service = () => {
   };
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [current, setCurrent] = useState(0);
+  const [bill, setBill] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [cancel, setCancel] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [openModalChecking, setOpenModalChecking] = useState(false);
+
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
+  const { http } = AuthUser();
 
-  function CustomToolbar() {
-    return (
-      <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        {/* <GridToolbarDensitySelector />
-        <GridToolbarExport /> */}
-        <Button startIcon={<GrAdd />} onClick={handleCreate}>
-          Create
-        </Button>
-      </GridToolbarContainer>
-    );
-  }
-
-  const getTypeName = (typeId) => {
-    // Gọi hàm hoặc thực hiện các xử lý tìm tên area từ id area
-    // Ví dụ:
-    const typeName = mockDataServiceType.find(
-      (type) => type.id === typeId
-    )?.type_name;
-    return typeName || "";
+  const onChange = (value) => {
+    setCurrent(value);
   };
 
-  //data columns
-  const columns = [
-    { field: "id", headerName: "ID" },
-    { field: "service_name", headerName: "Service", flex: 0.5 },
-    {
-      field: "price",
-      headerName: "Price",
-      flex: 0.5,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "point_ranking",
-      headerName: "Point",
-      type: "number",
-      headerAlign: "left",
-      align: "left",
-      flex: 0.5,
-    },
-    {
-      field: "id_type",
-      headerName: "Type",
-      flex: 1,
-      valueFormatter: (params) => getTypeName(params.value),
-    },
-    {
-      field: "accessLevel",
-      headerName: "Access Level",
-      width: 200,
-      renderCell: (params) => {
-        const handleEditClick = () => {
-          handleEdit(params);
-        };
+ 
 
-        const handleDeleteClick = () => {
-          handleDelete(params);
-        };
+  const handlGetCode = (params) => {
+    setdisabledCreate(false);
 
-        return (
-          <Box display="flex" borderRadius="4px">
-            <Button startIcon={<AiFillEdit />} onClick={handleEditClick}>
-              {" "}
-            </Button>
-            <Button startIcon={<AiFillDelete />} onClick={handleDeleteClick}>
-              {" "}
-            </Button>
-          </Box>
-        );
-      },
-    },
-  ];
+    setOpenModalChecking(true);
+  };
+
+  const handlAccept = (params) => {
+    setdisabledCreate(false);
+
+    setOpenModalChecking(true);
+  };
+
+  const handlReject = (params) => {
+    setdisabledCreate(false);
+
+    setOpenModalChecking(true);
+  };
+
+
+  const handleDoubleClickCell = (params) => {
+    const { row } = params;
+    setdisabledCreate(true);
+
+    setValues(row);
+    form.setFieldValue("name", row.area_name);
+
+    setOpenModal(true);
+  };
 
   const handleOk = () => {
     setOpenModal(false);
+    setOpenModalChecking(false);
   };
 
   // Handle click button "X" of modal
   const handleCancel = () => {
     setOpenModal(false);
-  };
-
-  const handleCreate = () => {
-    console.log("create");
-    setOpenModal(true);
-    form.setFieldValue("name", "");
-    form.setFieldValue("description", "");
-    form.setFieldValue("price", "");
-    form.setFieldValue("status", null);
-    form.setFieldValue("point","");
-    form.setFieldValue("type",null);
-    setdisabledCreate(false);
-    setValues({});
-  };
-
-  const handleDoubleClickCell = (params) => {
-    const { row } = params;
-    console.log(row);
-    form.setFieldValue("name", row.service_name);
-    form.setFieldValue("description", row.description);
-    form.setFieldValue("price", row.price);
-    form.setFieldValue("status", row.status);
-    form.setFieldValue("point", row.point_ranking);
-    form.setFieldValue("type", row.id_type);
-    setdisabledCreate(true);
-
-    setOpenModal(true);
-  };
-
-  const handleEdit = (params) => {
-    setdisabledCreate(false);
-    const { row } = params;
-    console.log(row);
-    setValues(row);
-    form.setFieldValue("name", row.service_name);
-    form.setFieldValue("description", row.description);
-    form.setFieldValue("price", row.price);
-    form.setFieldValue("status", row.status);
-    form.setFieldValue("point", row.point_ranking);
-    form.setFieldValue("type", row.id_type);
-    setdisabledCreate(false);
-    setOpenModal(true);
-  };
-
-  const handleDelete = (params) => {
-    console.log(params);
-    console.log("aaa");
-    setOpenModal(true);
+    setOpenModalChecking(false);
   };
   // Handle add new info
   const handleAdd = () => {
@@ -172,6 +97,225 @@ const Service = () => {
   const handleSumbit = () => {
     console.log("Sumbit");
   };
+
+  //data columns
+  const columnsBill = [
+    { field: "code", headerName: "ID", flex: 0.5 },
+    {
+      field: "full_name",
+      headerName: "Name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "phone",
+      headerName: "Phone",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "payment_method",
+      headerName: "Payment",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "total_amount",
+      headerName: "Total Amount",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "tax",
+      headerName: "Tax",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "book_time",
+      headerName: "Book Time",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "quantity",
+      headerName: "Quantity",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "accessLevel",
+      headerName: "Access Level",
+      width: 150,
+      renderCell: (params) => {
+        const handleCodeClick = () => {
+          handlGetCode(params);
+        };
+
+        return (
+          <Box display="flex" borderRadius="4px">
+            <Button startIcon={<AiFillEdit />} onClick={handleCodeClick}>
+              {" "}
+            </Button>
+          </Box>
+        );
+      },
+    },
+  ];
+  const columnsHistory = [
+    { field: "code", headerName: "ID", flex: 0.5 },
+    {
+      field: "full_name",
+      headerName: "Name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "phone",
+      headerName: "Phone",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "payment_method",
+      headerName: "Payment",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "total_amount",
+      headerName: "Total Amount",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "tax",
+      headerName: "Tax",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "book_time",
+      headerName: "Book Time",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "quantity",
+      headerName: "Quantity",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+  ];
+  const columnsCancel = [
+    { field: "code", headerName: "ID", flex: 0.5 },
+    {
+      field: "full_name",
+      headerName: "Name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "phone",
+      headerName: "Phone",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "payment_method",
+      headerName: "Payment",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "total_amount",
+      headerName: "Total Amount",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "tax",
+      headerName: "Tax",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "book_time",
+      headerName: "Book Time",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "quantity",
+      headerName: "Quantity",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "accessLevel",
+      headerName: "Access Level",
+      width: 200,
+      renderCell: (params) => {
+        const handleAcceptClick = () => {
+          handlAccept(params);
+        };
+        const handleRejectClick = () => {
+          handlReject(params);
+        };
+        return (
+          <Box display="flex" borderRadius="4px">
+            <Button startIcon={<AiOutlineCheck />} onClick={handleAcceptClick}>
+              {" "}
+            </Button>
+            <Button startIcon={<AiOutlineClose />} onClick={handleRejectClick}>
+              {" "}
+            </Button>
+          </Box>
+        );
+      },
+    },
+  ];
+  const items = [
+    {
+      title: "Bill",
+      content: (
+        <DataGrid
+          getRowId={(row) => row.core}
+          onCellDoubleClick={handleDoubleClickCell}
+          rows={bill}
+          columns={columnsBill}
+          className={cx("table")}
+        />
+      ),
+      icon: <FaCheck />,
+    },
+    {
+      title: "History",
+      content: (
+        <DataGrid
+          getRowId={(row) => row.core}
+          onCellDoubleClick={handleDoubleClickCell}
+          rows={history}
+          columns={columnsHistory}
+          className={cx("table")}
+        />
+      ),
+      icon: <FaHistory />,
+    },
+    {
+      title: "Cancel",
+      content: (
+        <DataGrid
+          getRowId={(row) => row.core}
+          onCellDoubleClick={handleDoubleClickCell}
+          rows={cancel}
+          columns={columnsCancel}
+          className={cx("table")}
+        />
+      ),
+      icon: <FaClipboardList />,
+    },
+  ];
 
   // Successful case
   const onFinish = (values) => {
@@ -208,6 +352,50 @@ const Service = () => {
     });
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      await http
+        .get(`/employee/list-bill-service`)
+        .then((resolve) => {
+          setBill(resolve.data.bill_room);
+          if (resolve.data.status === 404) {
+            setBill([]);
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      await http
+        .get(`/employee/list-history-service`)
+        .then((resolve) => {
+          setHistory(resolve.data.bill_room);
+          if (resolve.data.status === 404) {
+            setHistory([]);
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+          setHistory([]);
+        });
+      await http
+        .get(`/employee/list-cancel-service`)
+        .then((resolve) => {
+          setCancel(resolve.data.bill_room);
+          if (resolve.data.status === 404) {
+            setCancel([]);
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  console.log("service 1", bill);
+  console.log("2", history);
+  console.log("3", cancel);
+
   return (
     <div className={cx("contact-wrapper")}>
       <Header title="SERVICE" subtitle="List of Service" />
@@ -243,14 +431,13 @@ const Service = () => {
           },
         }}
       >
-        <DataGrid
-          onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataService}
-          columns={columns}
-          components={{ Toolbar: CustomToolbar }}
-          className={cx("table")}
-
+        <Steps
+          current={current}
+          items={items}
+          type="navigation"
+          onChange={onChange}
         />
+        {items[current].content}
       </Box>
       <Modal
         title={
@@ -268,7 +455,7 @@ const Service = () => {
               setDisabled(true);
             }}
           >
-            Service Room Info
+            Area Room Info
           </div>
         }
         open={openModal}
@@ -298,128 +485,25 @@ const Service = () => {
           onFinishFailed={onFinishFailed}
           className={cx("modal-form")}
           initialValues={{
-            name: values?.service_name,
-            description: values?.description,
-            price: values?.price,
-            status: values?.status,
-            point: values?.point_ranking,
-            type: values?.id_type,
+            name: values?.name,
           }}
         >
-          <div className={cx("service-attributes")}>
+          <div className={cx("room-attributes")}>
             <Form.Item
               name="name"
               label="Name"
               rules={[
                 {
                   required: true,
-                  message: "Name Service is required!",
+                  message: "Name area is required!",
                 },
               ]}
               hasFeedback
             >
               <Input
-                placeholder={"Please fill floor service"}
+                placeholder={"Please fill area name"}
                 disabled={disabledCreate}
               />
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="price"
-              label="Price"
-              rules={[
-                {
-                  required: true,
-                  message: "Price is required!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input
-                placeholder={"Please fill the price"}
-                disabled={disabledCreate}
-              />
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="point"
-              label="Point Ranking"
-              rules={[
-                {
-                  required: true,
-                  message: "Point Rankingis required!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input
-                placeholder={"Please fill the point"}
-                disabled={disabledCreate}
-              />
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="description"
-              label="Description"
-              rules={[
-                {
-                  required: true,
-                  message: "Description is required!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input
-                placeholder={"Please write the description"}
-                disabled={disabledCreate}
-              />
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="status"
-              label="Status"
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Status is required!",
-                },
-              ]}
-            >
-              <Select
-                placeholder="Please select Status"
-                disabled={disabledCreate}
-              >
-                <Select.Option value={true}> True</Select.Option>
-                <Select.Option value={false}> False</Select.Option>
-
-              </Select>
-            </Form.Item>
-          </div>
-          <div className={cx("service-attributes")}>
-            <Form.Item
-              name="type"
-              label="Type"
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Service Type is required!",
-                },
-              ]}
-            >
-              <Select
-                placeholder="Please select service type"
-                options={mockDataServiceType.map((ele) => ({
-                  label: ele.type_name,
-                  value: ele.id,
-                }))}
-                disabled={disabledCreate}
-              ></Select>
             </Form.Item>
           </div>
 
@@ -443,6 +527,88 @@ const Service = () => {
                   Edit
                 </Button>
               )}
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title={
+          <div
+            style={{
+              width: "100%",
+              cursor: "move",
+              textAlign: "center",
+              marginBottom: 24,
+            }}
+            onMouseOver={() => {
+              setDisabled(false);
+            }}
+            onMouseOut={() => {
+              setDisabled(true);
+            }}
+          >
+            Checking
+          </div>
+        }
+        open={openModalChecking}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+        modalRender={(modal) => (
+          <Draggable
+            disabled={disabled}
+            bounds={bounds}
+            onStart={(event, uiData) => onStart(event, uiData)}
+          >
+            <div ref={draggleRef}>{modal}</div>
+          </Draggable>
+        )}
+      >
+        <Form
+          {...Layout}
+          form={form}
+          layout="horizontal"
+          name="profile_form"
+          labelAlign="right"
+          labelWrap="true"
+          size="large"
+          autoComplete="off"
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          className={cx("modal-form")}
+          initialValues={{}}
+        >
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="Code"
+              label="Code"
+              rules={[
+                {
+                  required: true,
+                  message: "Code is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill code"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+
+          <Form.Item
+            wrapperCol={24}
+            style={{
+              display: "flex",
+              width: "60%",
+              justifyContent: "flex-end",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button type="primary" htmlType="submit">
+                Confirm
+              </Button>
             </div>
           </Form.Item>
         </Form>

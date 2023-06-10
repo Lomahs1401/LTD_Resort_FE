@@ -243,14 +243,27 @@ const News = () => {
           },
         }}
       >
-        <DataGrid
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}F>
+          <h1>Trang web đang trong quá trình phát triển</h1>
+          <p>
+            Xin lỗi vì sự bất tiện này! Chúng tôi đang làm việc chăm chỉ để hoàn
+            thiện trang web.
+          </p>
+          <p>
+            Xin hãy kiên nhẫn chờ đợi và quay lại sau để kiểm tra các cập nhật
+            mới nhất.
+          </p>
+          <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/29ffb84b-d25c-4a6f-a34b-0b486d359941/d5ggmwh-4d170265-e369-409c-9354-4e92b07bc227.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzI5ZmZiODRiLWQyNWMtNGE2Zi1hMzRiLTBiNDg2ZDM1OTk0MVwvZDVnZ213aC00ZDE3MDI2NS1lMzY5LTQwOWMtOTM1NC00ZTkyYjA3YmMyMjcuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.yp5encYqxHCRaP_PDNgz9Fhumajh7GhvY0Y4STf6suA"  />
+
+        </div>
+        {/* <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
           rows={mockDataService}
           columns={columns}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
 
-        />
+        /> */}
       </Box>
       <Modal
         title={

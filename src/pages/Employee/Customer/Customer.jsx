@@ -55,10 +55,8 @@ const Customer = () => {
     },
   ];
 
-  const handleDoubleClickCell = (params, ev) => {
-    const { row } = params;
-    console.log(row);
-    
+  const handleDoubleClickCell = (params) => {
+    const { row } = params;    
     // Chuyển hướng đến trang hóa đơn
     navigate("/employee/bill", { state: row });
   };
@@ -68,7 +66,6 @@ const Customer = () => {
     const fetchData = () =>{
       http.get('/employee/list-customer')
       .then((resolve) => {
-        console.log("aaa" ,resolve);
         setListCustomers(resolve.data.list_customers);
       })
       .catch((reject) => {
@@ -79,7 +76,6 @@ const Customer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     
   }, []);
-  console.log("cc" , listCustomers)
 
 
   return (

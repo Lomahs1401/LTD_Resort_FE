@@ -306,7 +306,7 @@ const Statistical = () => {
           p="30px"
         >
           <Typography variant="h5" fontWeight="600">
-            Departmental Employee
+            Month Bill
           </Typography>
           <PieChart datas={row2_2}/>
         </Box>
@@ -326,7 +326,7 @@ const Statistical = () => {
           >
             <Box>
               <Typography variant="h5" fontWeight="600">
-                Employee Status
+                Feedback Status
               </Typography>
             </Box>
             <Box>
@@ -352,7 +352,7 @@ const Statistical = () => {
           p="30px"
         >
           <Typography variant="h5" fontWeight="600">
-            Departmental Employee
+            Employee Status
           </Typography>
           <PieChart datas={row3_3}/>
         </Box>

@@ -82,7 +82,6 @@ const FeedBack = () => {
     await http
       .get(`/auth/feedback/${id}`)
       .then((response) => {
-        console.log(response);
         setDetails(response.data.feedback);
       })
       .catch((error) => {
@@ -124,9 +123,7 @@ const FeedBack = () => {
 
 
   const handleDelete = (params) => {
-    console.log(params);
     const { row } = params;
-
     http
       .delete(`/auth/detele-feedback/${row.id}`)
       .then(() => {
@@ -447,7 +444,6 @@ const FeedBack = () => {
       http
         .get(`/employee/list-feedbacks-employee`)
         .then((resolve) => {
-          console.log(resolve);
           setListFeedBackOnRoom(resolve.data.list_feedback_room);
           setListFeedBackOnService(resolve.data.list_feedback_service);
           setListFeedBackRoom(resolve.data.list_feedback_room);
@@ -459,7 +455,6 @@ const FeedBack = () => {
       http
         .get(`/auth/list-not-feedbacks`)
         .then((resolve) => {
-          console.log(resolve);
           setListFeedBackOffRoom(resolve.data.list_feedback_room);
           setListFeedBackOffService(resolve.data.list_feedback_service);
         })

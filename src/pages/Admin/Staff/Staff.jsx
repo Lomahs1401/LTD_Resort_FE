@@ -70,6 +70,24 @@ const Staff = () => {
       </GridToolbarContainer>
     );
   }
+  const getDepartmentName = (Departmentid) => {
+    // Gọi hàm hoặc thực hiện các xử lý tìm tên area từ id area
+    // Ví dụ:
+    const DepartmentName = listDepartment.find(
+      (department) => department.id === Departmentid
+    )?.department_name;
+    return DepartmentName || "";
+  };
+
+  const getPositionName = (Positionid) => {
+    // Gọi hàm hoặc thực hiện các xử lý tìm tên area từ id area
+    // Ví dụ:
+    const PositionName = listPosition.find(
+      (position) => position.id === Positionid
+    )?.position_name;
+    return PositionName || "";
+  };
+
 
   const handleWork = () => {
     setListStaff(listStaffWork);
@@ -228,7 +246,6 @@ const Staff = () => {
           console.log(reject);
         });
     } else {
-      console.log("Success: add", values);
 
       formData.append("full_name", fullName);
       formData.append("gender", gender);
@@ -238,8 +255,8 @@ const Staff = () => {
       formData.append("phone", phone);
       formData.append("account_bank", accountbank);
       formData.append("name_bank", namebank);
-      formData.append("department_name", department);
-      formData.append("position_name", position);
+      formData.append("department_name", getDepartmentName(department));
+      formData.append("position_name",position);
 
       http
         .post(`/admin/store-employee`, formData)
@@ -261,6 +278,7 @@ const Staff = () => {
     }
   };
 
+  console.log("position", listPosition);
   // Failed case
   const onFinishFailed = (error) => {
     console.log("Failed:", error);
@@ -703,7 +721,7 @@ const Staff = () => {
                 placeholder="Please select Type room"
                 options={listPosition.map((ele) => ({
                   label: ele.position_name,
-                  value: ele.id,
+                  value: ele.position_name,
                 }))}
                 disabled={disabledCreate}
                 onChange={handleSelect}

@@ -10,7 +10,7 @@ import Bill from "./Bill/Bill"
 import Feedback from "./FeedBack/FeedBack";
 import BillRoom from "./BillRoom/BillRoom";
 import Facility from "./Facility/Facility";
-import Service from "./Service/Service";
+import Service from "./Service/Service"
 import ExtraService from "./ExtraService/ExtraService";
 import News from "./News/News";
 import AccordionDetails from "./AccountDetail/AccountDetail";

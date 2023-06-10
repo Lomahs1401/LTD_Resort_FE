@@ -82,8 +82,7 @@ const RoomType = () => {
   }
 
   const getAreaName = (areaName) => {
-    // Gọi hàm hoặc thực hiện các xử lý tìm tên area từ id area
-    // Ví dụ:
+    
     const areaNameID = listRoomArea.find(
       (area) => area.area_name === areaName
     )?.id;
@@ -91,8 +90,7 @@ const RoomType = () => {
   };
 
   const getFloorName = (floorName) => {
-    // Gọi hàm hoặc thực hiện các xử lý tìm tên area từ id area
-    // Ví dụ:
+ 
     const floorNameID = listRoomFloor.find(
       (floor) => floor.floor_name === floorName
     )?.id;

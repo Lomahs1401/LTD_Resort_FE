@@ -68,8 +68,6 @@ const Bill = () => {
     await http
       .get(`/auth/show-bill-room-detail/${id}`)
       .then((resolve) => {
-        console.log(resolve);
-
         const newData = resolve.data.bill_room_detail.map((item, index) => {
           return { ...item, id: index.toString() };
         });
@@ -89,7 +87,7 @@ const Bill = () => {
             return { ...item, id: index.toString() };
           }
         );
-        console.log(resolve);
+
         setExtraServiceDetail(newData);
       })
       .catch((reject) => {
@@ -100,7 +98,6 @@ const Bill = () => {
 
   const handleDoubleClickCell_1 = (params) => {
     const { row } = params;
-    console.log(row);
     setValues(row);
     fetchRoom(row.id);
     form.setFieldValue("id", row.id);
@@ -138,7 +135,7 @@ const Bill = () => {
 
   const handleDoubleClickCell_3 = (params) => {
     const { row } = params;
-    console.log(row);
+
     setValues(row);
     fetchExtra(row.id);
 
@@ -408,24 +405,24 @@ const Bill = () => {
         .get(`/employee/show-customer/${id}`)
         .then((resolve) => {
           setCustomer(resolve.data.data);
-          console.log("hhuhu", resolve);
-          console.log("aaa", resolve.data.data);
+
         })
         .catch((reject) => {
           console.log(reject);
         });
       await http
-        .get(`/admin/get-total-amount/${id}`)
+        .get(`/employee/get-total-amount/${id}`)
         .then((resolve) => {
           setTotal(resolve.data.total_amount);
+        
         })
         .catch((reject) => {
           console.log(reject);
         });
       await http
-        .get(`/admin/show-bill-customer/${id}`)
+        .get(`/employee/show-bill-customer/${id}`)
         .then((resolve) => {
-          console.log(resolve);
+
           if (resolve.status === 200) {
             setRoom(resolve.data.bill_room);
             setService(resolve.data.bill_service);
@@ -441,7 +438,6 @@ const Bill = () => {
   }, []);
   useEffect(() => {
     const fetchImage = async () => {
-      console.log("asa", Customer);
       if (Customer?.avatar) {
         const storage = getStorage();
         const storageRef = ref(storage, Customer.avatar);
@@ -457,7 +453,6 @@ const Bill = () => {
     return <div>Loading...</div>;
   }
 
-  console.log("aa", extraService);
   return (
     <div className={cx("contact-wrapper")}>
       <Header title="INFO" subtitle="List of " />
@@ -705,17 +700,6 @@ const Bill = () => {
             <Form.Item
               name="total_amount"
               label="Total Amount"
-              hasFeedback
-              valuePropName="children"
-              className={cx("form-attributes__item")}
-            >
-              <div disabled={true} className={cx("input")} />
-            </Form.Item>
-          </div>
-          <div className={cx("form-attributes")}>
-            <Form.Item
-              name="total_room"
-              label="Total Room"
               hasFeedback
               valuePropName="children"
               className={cx("form-attributes__item")}

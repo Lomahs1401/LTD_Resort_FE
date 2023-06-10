@@ -1,22 +1,24 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Box } from "@mui/material";
 import {
   DataGrid,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import { tokens } from "../../../utils/theme";
-import { mockDataRoomArea } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import { useTheme } from "@mui/material";
-import { Form, Input, Modal } from "antd";
-import { GrAdd } from "react-icons/gr";
+import { Form, Input, Modal, Steps } from "antd";
+import { FaCheck, FaHistory, FaClipboardList } from "react-icons/fa";
 import Draggable from "react-draggable";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import {
+  AiFillEdit,
+  AiFillDelete,
+  AiOutlineCheck,
+  AiOutlineClose,
+} from "react-icons/ai";
 import styles from "./BillRoom.module.scss";
 import classNames from "classnames/bind";
+import AuthUser from "../../../utils/AuthUser";
 
 const cx = classNames.bind(styles);
 
@@ -31,77 +33,40 @@ const BillRoom = () => {
   };
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [current, setCurrent] = useState(0);
+  const [bill, setBill] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [cancel, setCancel] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [openModalChecking, setOpenModalChecking] = useState(false);
+
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
+  const { http } = AuthUser();
 
-  function CustomToolbar() {
-    return (
-      <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <Button startIcon={<GrAdd />} onClick={handleCreate}>
-          Create
-        </Button>
-      </GridToolbarContainer>
-    );
-  }
-  //data columns
-  const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-
-    {
-      field: "area_name",
-      headerName: "Name",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-
-    {
-      field: "accessLevel",
-      headerName: "Access Level",
-      width: 200,
-      renderCell: (params) => {
-        const handleEditClick = () => {
-          handleEdit(params);
-        };
-
-        const handleDeleteClick = () => {
-          handleDelete(params);
-        };
-
-        return (
-          <Box display="flex" borderRadius="4px">
-            <Button startIcon={<AiFillEdit />} onClick={handleEditClick}>
-              {" "}
-            </Button>
-            <Button startIcon={<AiFillDelete />} onClick={handleDeleteClick}>
-              {" "}
-            </Button>
-          </Box>
-        );
-      },
-    },
-  ];
-
-  const handleCreate = () => {
-    console.log("create");
-    setOpenModal(true);
-    form.setFieldValue("name", "");
-    setdisabledCreate(false);
-
-    setValues({});
-  };
-  const handleEdit = (params) => {
-    setdisabledCreate(false);
-    const { row } = params;
-    form.setFieldValue("name", row.area_name);
-
-    setOpenModal(true);
+  const onChange = (value) => {
+    setCurrent(value);
   };
 
-  const handleDelete = (params) => {
-    setOpenModal(true);
+
+
+
+  const handlGetCode = (params) => {
+    setdisabledCreate(false);
+
+    setOpenModalChecking(true);
+  };
+
+  const handlAccept = (params) => {
+    setdisabledCreate(false);
+
+    setOpenModalChecking(true);
+  };
+
+  const handlReject = (params) => {
+    setdisabledCreate(false);
+
+    setOpenModalChecking(true);
   };
 
   const handleDoubleClickCell = (params) => {
@@ -116,11 +81,13 @@ const BillRoom = () => {
 
   const handleOk = () => {
     setOpenModal(false);
+    setOpenModalChecking(false);
   };
 
   // Handle click button "X" of modal
   const handleCancel = () => {
     setOpenModal(false);
+    setOpenModalChecking(false);
   };
   // Handle add new info
   const handleAdd = () => {
@@ -130,6 +97,222 @@ const BillRoom = () => {
   const handleSumbit = () => {
     console.log("Sumbit");
   };
+
+  //data columns
+  const columnsBill = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    {
+      field: "full_name",
+      headerName: "Name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "phone",
+      headerName: "Phone",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "payment_method",
+      headerName: "Payment",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "total_amount",
+      headerName: "Total Amount",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "tax",
+      headerName: "Tax",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "time_start",
+      headerName: "Time Start",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "time_end",
+      headerName: "time_end",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "accessLevel",
+      headerName: "Access Level",
+      width: 150,
+      renderCell: (params) => {
+        const handleCodeClick = () => {
+          handlGetCode(params);
+        };
+
+        return (
+          <Box display="flex" borderRadius="4px">
+            <Button startIcon={<AiFillEdit />} onClick={handleCodeClick}>
+              {" "}
+            </Button>
+          </Box>
+        );
+      },
+    },
+  ];
+  const columnsHistory = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    {
+      field: "full_name",
+      headerName: "Name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "phone",
+      headerName: "Phone",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "payment_method",
+      headerName: "Payment",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "total_amount",
+      headerName: "Total Amount",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "tax",
+      headerName: "Tax",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "time_start",
+      headerName: "Time Start",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "time_end",
+      headerName: "time_end",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+  ];
+  const columnsCancel = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    {
+      field: "full_name",
+      headerName: "Name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "phone",
+      headerName: "Phone",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "payment_method",
+      headerName: "Payment",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "total_amount",
+      headerName: "Total Amount",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "tax",
+      headerName: "Tax",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "time_start",
+      headerName: "Time Start",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "time_end",
+      headerName: "time_end",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "accessLevel",
+      headerName: "Access Level",
+      width: 200,
+      renderCell: (params) => {
+        const handleAcceptClick = () => {
+          handlAccept(params);
+        };
+        const handleRejectClick = () => {
+          handlReject(params);
+        };
+        return (
+          <Box display="flex" borderRadius="4px">
+            <Button startIcon={<AiOutlineCheck />} onClick={handleAcceptClick}>
+              {" "}
+            </Button>
+            <Button startIcon={<AiOutlineClose />} onClick={handleRejectClick}>
+              {" "}
+            </Button>
+          </Box>
+        );
+      },
+    },
+  ];
+  const items = [
+    {
+      title: "Bill",
+      content: (
+        <DataGrid
+          onCellDoubleClick={handleDoubleClickCell}
+          rows={bill}
+          columns={columnsBill}
+          className={cx("table")}
+        />
+      ),
+      icon: <FaCheck />,
+    },
+    {
+      title: "History",
+      content: (
+        <DataGrid
+          onCellDoubleClick={handleDoubleClickCell}
+          rows={bill}
+          columns={columnsHistory}
+          className={cx("table")}
+        />
+      ),
+      icon: <FaHistory />,
+    },
+    {
+      title: "Cancel",
+      content: (
+        <DataGrid
+          onCellDoubleClick={handleDoubleClickCell}
+          rows={bill}
+          columns={columnsCancel}
+          className={cx("table")}
+        />
+      ),
+      icon: <FaClipboardList />,
+    },
+  ];
 
   // Successful case
   const onFinish = (values) => {
@@ -166,6 +349,50 @@ const BillRoom = () => {
     });
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      await http
+        .get(`/employee/list-bill-room`)
+        .then((resolve) => {
+          setBill(resolve.data.bill_room);
+          if (resolve.data.status === 404) {
+            setBill([]);
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      await http
+        .get(`/employee/list-history-room`)
+        .then((resolve) => {
+          setHistory(resolve.data.bill_room);
+          if (resolve.data.status === 404) {
+            setHistory([]);
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+          setHistory([]);
+        });
+      await http
+        .get(`/employee/list-cancel-room`)
+        .then((resolve) => {
+          setCancel(resolve.data.bill_room);
+          if (resolve.data.status === 404) {
+            setCancel([]);
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  console.log("1", bill);
+  console.log("2", history);
+  console.log("3", cancel);
+
   return (
     <div className={cx("contact-wrapper")}>
       <Header title="BILL" subtitle="List of Bill" />
@@ -201,13 +428,13 @@ const BillRoom = () => {
           },
         }}
       >
-        <DataGrid
-          onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataRoomArea}
-          columns={columns}
-          components={{ Toolbar: CustomToolbar }}
-          className={cx("table")}
+        <Steps
+          current={current}
+          items={items}
+          type="navigation"
+          onChange={onChange}
         />
+        {items[current].content}
       </Box>
       <Modal
         title={
@@ -297,6 +524,88 @@ const BillRoom = () => {
                   Edit
                 </Button>
               )}
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title={
+          <div
+            style={{
+              width: "100%",
+              cursor: "move",
+              textAlign: "center",
+              marginBottom: 24,
+            }}
+            onMouseOver={() => {
+              setDisabled(false);
+            }}
+            onMouseOut={() => {
+              setDisabled(true);
+            }}
+          >
+            Checking
+          </div>
+        }
+        open={openModalChecking}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+        modalRender={(modal) => (
+          <Draggable
+            disabled={disabled}
+            bounds={bounds}
+            onStart={(event, uiData) => onStart(event, uiData)}
+          >
+            <div ref={draggleRef}>{modal}</div>
+          </Draggable>
+        )}
+      >
+        <Form
+          {...Layout}
+          form={form}
+          layout="horizontal"
+          name="profile_form"
+          labelAlign="right"
+          labelWrap="true"
+          size="large"
+          autoComplete="off"
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          className={cx("modal-form")}
+          initialValues={{}}
+        >
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="Code"
+              label="Code"
+              rules={[
+                {
+                  required: true,
+                  message: "Code is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill code"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+
+          <Form.Item
+            wrapperCol={24}
+            style={{
+              display: "flex",
+              width: "60%",
+              justifyContent: "flex-end",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button type="primary" htmlType="submit">
+                Confirm
+              </Button>
             </div>
           </Form.Item>
         </Form>
