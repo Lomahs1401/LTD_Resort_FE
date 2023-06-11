@@ -17,6 +17,8 @@ import {
 import styles from "./BillRoom.module.scss";
 import classNames from "classnames/bind";
 import AuthUser from "../../../utils/AuthUser";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const cx = classNames.bind(styles);
 
@@ -29,6 +31,7 @@ const BillRoom = () => {
       span: 18,
     },
   };
+  const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [current, setCurrent] = useState(0);
@@ -37,7 +40,7 @@ const BillRoom = () => {
   const [cancel, setCancel] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [openModalChecking, setOpenModalChecking] = useState(false);
-
+  const [id, setID] = useState();
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
   const { http } = AuthUser();
@@ -48,20 +51,51 @@ const BillRoom = () => {
 
   const handlGetCode = (params) => {
     setdisabledCreate(false);
-
+    const { row } = params;
+    setID(row.id);
     setOpenModalChecking(true);
+  };
+
+  const handlGetCheckOut = (params) => {
+    setdisabledCreate(false);
+    const { row } = params;
+    setID(row.id);
+
+    http
+      .patch(`/employee/get-checkout-room/${id}`)
+      .then(() => {
+        Swal.fire(
+          "Update!",
+          "You have successfully checkout your profile",
+          "success"
+        ).then(() => {
+          navigate(0);
+        });
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
   };
 
   const handlAccept = (params) => {
-    setdisabledCreate(false);
-
-    setOpenModalChecking(true);
+    const { row } = params;
+   
+    http
+      .delete(`/employee/delete-bill-room/${row.id}`)
+      .then(() => {
+        Swal.fire(
+          "Update!",
+          "success"
+        ).then(() => {
+          navigate(0);
+        });
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
   };
 
   const handlReject = (params) => {
-    setdisabledCreate(false);
-
-    setOpenModalChecking(true);
   };
 
   const handleDoubleClickCell = (params) => {
@@ -96,14 +130,6 @@ const BillRoom = () => {
   const handleCancel = () => {
     setOpenModal(false);
     setOpenModalChecking(false);
-  };
-  // Handle add new info
-  const handleAdd = () => {
-    console.log("Add");
-  };
-  // Handle edit old info
-  const handleSumbit = () => {
-    console.log("Sumbit");
   };
 
   //data columns
@@ -154,15 +180,24 @@ const BillRoom = () => {
     {
       field: "accessLevel",
       headerName: "Access Level",
-      width: 150,
+      width: 170,
       renderCell: (params) => {
         const handleCodeClick = () => {
           handlGetCode(params);
+        };
+        const handleCheckOutClick = () => {
+          handlGetCheckOut(params);
         };
 
         return (
           <Box display="flex" borderRadius="4px">
             <Button startIcon={<AiFillEdit />} onClick={handleCodeClick}>
+              {" "}
+            </Button>
+            <Button
+              startIcon={<AiOutlineCheck />}
+              onClick={handleCheckOutClick}
+            >
               {" "}
             </Button>
           </Box>
@@ -325,6 +360,28 @@ const BillRoom = () => {
   // Successful case
   const onFinish = (values) => {
     console.log("Success:", values);
+    const { code } = values;
+    const formData = new FormData();
+    formData.append("bill_code", code);
+    http
+      .patch(`/employee/get-checkin-room/${id}`, formData)
+      .then((resolve) => {
+        console.log(resolve.data.message);
+        if (resolve.data.message == "bill checkin Successfully") {
+          Swal.fire(
+            "Update!",
+            "You have successfully update your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        } else {
+          Swal.fire("Fail");
+        }
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
   };
 
   // Failed case
@@ -397,9 +454,6 @@ const BillRoom = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log("1", bill);
-  console.log("2", history);
-  console.log("3", cancel);
 
   return (
     <div className={cx("contact-wrapper")}>
@@ -699,7 +753,7 @@ const BillRoom = () => {
         >
           <div className={cx("room-attributes")}>
             <Form.Item
-              name="Code"
+              name="code"
               label="Code"
               rules={[
                 {

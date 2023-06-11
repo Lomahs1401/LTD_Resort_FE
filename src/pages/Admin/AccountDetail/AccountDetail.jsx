@@ -40,7 +40,10 @@ const AccountDetail = () => {
     formData.append("CMND", admin.CMND);
     formData.append("address", admin.address);
     formData.append("phone", admin.phone);
-    formData.append("image", "https://via.placeholder.com/640x480.png/00cc22?text=quo");
+    formData.append(
+      "image",
+      "https://via.placeholder.com/640x480.png/00cc22?text=quo"
+    );
 
     http
       .patch(`/admin/update-admin`, formData)
@@ -120,8 +123,6 @@ const AccountDetail = () => {
           </button> */}
         </div>
 
- 
-
         <Form
           form={form}
           layout="horizontal"
@@ -133,7 +134,6 @@ const AccountDetail = () => {
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           className={cx("modal-form")}
-     
         >
           <Form.Item wrapperCol={24}>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -160,7 +160,9 @@ const AccountDetail = () => {
             </div>
           </Form.Item>
           <div className={cx("info")}>
-            <div className={cx("info__img")}></div>
+            <div className={cx("info__img")}>
+              <img src={admin?.image} alt="Avatar" />
+            </div>
             <div className={cx("info__admin")}>
               <div
                 style={{
@@ -185,7 +187,6 @@ const AccountDetail = () => {
                       <Input
                         placeholder={"Please fill full name"}
                         className={cx("content-text")}
-                       
                       />
                     )}
                   </Form.Item>

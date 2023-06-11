@@ -18,7 +18,8 @@ import {
 import styles from "./Service.module.scss";
 import classNames from "classnames/bind";
 import AuthUser from "../../../utils/AuthUser";
-
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 const cx = classNames.bind(styles);
 
 const Service = () => {
@@ -30,6 +31,8 @@ const Service = () => {
       span: 18,
     },
   };
+  const navigate = useNavigate();
+
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [current, setCurrent] = useState(0);
@@ -38,6 +41,7 @@ const Service = () => {
   const [cancel, setCancel] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [openModalChecking, setOpenModalChecking] = useState(false);
+  const [id, setID] = useState();
 
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
@@ -49,16 +53,25 @@ const Service = () => {
 
   const handlGetCode = (params) => {
     setdisabledCreate(false);
-
+    const { row } = params;
+    setID(row.id);
     setOpenModalChecking(true);
   };
 
   const handlAccept = (params) => {
-    setdisabledCreate(false);
+    const { row } = params;
 
-    setOpenModalChecking(true);
+    http
+      .delete(`/employee/delete-bill-service/${row.id}`)
+      .then(() => {
+        Swal.fire("Update!", "success").then(() => {
+          navigate(0);
+        });
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
   };
-
   const handlReject = (params) => {
     setdisabledCreate(false);
 
@@ -279,7 +292,7 @@ const Service = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={bill}
+          rows={mockDataService}
           columns={columnsBill}
           className={cx("table")}
         />
@@ -291,7 +304,7 @@ const Service = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={history}
+          rows={mockDataService}
           columns={columnsHistory}
           className={cx("table")}
         />
@@ -303,7 +316,7 @@ const Service = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={cancel}
+          rows={mockDataService}
           columns={columnsCancel}
           className={cx("table")}
         />
@@ -315,6 +328,28 @@ const Service = () => {
   // Successful case
   const onFinish = (values) => {
     console.log("Success:", values);
+    const { code } = values;
+    const formData = new FormData();
+    formData.append("bill_code", code);
+    http
+      .patch(`/employee/get-checkin-service/${id}`, formData)
+      .then((resolve) => {
+        console.log(resolve.data.message);
+        if (resolve.data.message === "bill checkin Successfully") {
+          Swal.fire(
+            "Update!",
+            "You have successfully update your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        } else {
+          Swal.fire("Fail");
+        }
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
   };
 
   // Failed case
@@ -666,7 +701,7 @@ const Service = () => {
         >
           <div className={cx("room-attributes")}>
             <Form.Item
-              name="Code"
+              name="code"
               label="Code"
               rules={[
                 {
