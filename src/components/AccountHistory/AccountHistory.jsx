@@ -426,7 +426,7 @@ const AccountHistory = () => {
       cellClassName: "name-column--cell",
       renderCell: (params) => (
         <Typography color={colors.greenAccent[500]}>
-          {params.row.total_amount}
+          {currency(params.row.total_amount)}
         </Typography>
       ),
     },
