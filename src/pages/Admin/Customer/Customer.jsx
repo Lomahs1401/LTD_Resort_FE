@@ -1,4 +1,4 @@
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
@@ -12,7 +12,7 @@ import AuthUser from "../../../utils/AuthUser";
 const cx = classNames.bind(styles);
 
 const Customer = () => {
-  const {http} = AuthUser();
+  const { http } = AuthUser();
   const [listCustomers, setListCustomers] = useState([]);
   const navigate = useNavigate();
   const theme = useTheme();
@@ -58,29 +58,27 @@ const Customer = () => {
   const handleDoubleClickCell = (params, ev) => {
     const { row } = params;
     console.log(row);
-    
+
     // Chuyển hướng đến trang hóa đơn
     navigate("/admin/bill", { state: row });
   };
 
   //fetch api
   useEffect(() => {
-    const fetchData = () =>{
-      http.get('/admin/list-customer')
-      .then((resolve) => {
-        console.log(resolve);
-        setListCustomers(resolve.data.list_customers);
-      })
-      .catch((reject) => {
-        console.log(reject);
-      })
-    }
-    fetchData()
+    const fetchData = () => {
+      http
+        .get("/admin/list-customer")
+        .then((resolve) => {
+          console.log(resolve);
+          setListCustomers(resolve.data.list_customers);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    
   }, []);
-  console.log("cc" , listCustomers)
-
 
   return (
     <div className={cx("invoices-wrapper")}>

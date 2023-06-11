@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Box } from "@mui/material";
-import {
-  DataGrid,
-} from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
+import { mockDataService } from "../../../data/mockData";
 import { Button } from "@mui/material";
 import { tokens } from "../../../utils/theme";
 import Header from "../../../components/Header/Header";
@@ -48,8 +47,6 @@ const Service = () => {
     setCurrent(value);
   };
 
- 
-
   const handlGetCode = (params) => {
     setdisabledCreate(false);
 
@@ -68,14 +65,23 @@ const Service = () => {
     setOpenModalChecking(true);
   };
 
-
   const handleDoubleClickCell = (params) => {
     const { row } = params;
     setdisabledCreate(true);
 
     setValues(row);
-    form.setFieldValue("name", row.area_name);
-
+    form.setFieldValue("full_name", row.full_name);
+    form.setFieldValue("birthday", row.birthday);
+    form.setFieldValue("phone", row.phone);
+    form.setFieldValue("quantity", row.quantity);
+    form.setFieldValue("total_amount", row.total_amount);
+    form.setFieldValue("book_time", row.book_time);
+    form.setFieldValue("payment_method", row.payment_method);
+    form.setFieldValue("pay_time", row.pay_time);
+    form.setFieldValue("tax", row.tax);
+    form.setFieldValue("discount", row.discount);
+    form.setFieldValue("service", row.service);
+    form.setFieldValue("service_type", row.service_type);
     setOpenModal(true);
   };
 
@@ -89,18 +95,10 @@ const Service = () => {
     setOpenModal(false);
     setOpenModalChecking(false);
   };
-  // Handle add new info
-  const handleAdd = () => {
-    console.log("Add");
-  };
-  // Handle edit old info
-  const handleSumbit = () => {
-    console.log("Sumbit");
-  };
 
   //data columns
   const columnsBill = [
-    { field: "code", headerName: "ID", flex: 0.5 },
+    { field: "id", headerName: "ID", flex: 0.5 },
     {
       field: "full_name",
       headerName: "Name",
@@ -163,7 +161,7 @@ const Service = () => {
     },
   ];
   const columnsHistory = [
-    { field: "code", headerName: "ID", flex: 0.5 },
+    { field: "id", headerName: "ID", flex: 0.5 },
     {
       field: "full_name",
       headerName: "Name",
@@ -208,7 +206,7 @@ const Service = () => {
     },
   ];
   const columnsCancel = [
-    { field: "code", headerName: "ID", flex: 0.5 },
+    { field: "id", headerName: "ID", flex: 0.5 },
     {
       field: "full_name",
       headerName: "Name",
@@ -280,7 +278,6 @@ const Service = () => {
       title: "Bill",
       content: (
         <DataGrid
-          getRowId={(row) => row.core}
           onCellDoubleClick={handleDoubleClickCell}
           rows={bill}
           columns={columnsBill}
@@ -293,7 +290,6 @@ const Service = () => {
       title: "History",
       content: (
         <DataGrid
-          getRowId={(row) => row.core}
           onCellDoubleClick={handleDoubleClickCell}
           rows={history}
           columns={columnsHistory}
@@ -306,7 +302,6 @@ const Service = () => {
       title: "Cancel",
       content: (
         <DataGrid
-          getRowId={(row) => row.core}
           onCellDoubleClick={handleDoubleClickCell}
           rows={cancel}
           columns={columnsCancel}
@@ -455,7 +450,7 @@ const Service = () => {
               setDisabled(true);
             }}
           >
-            Area Room Info
+            Service Info
           </div>
         }
         open={openModal}
@@ -488,47 +483,138 @@ const Service = () => {
             name: values?.name,
           }}
         >
-          <div className={cx("room-attributes")}>
+          <div className={cx("form-attributes")}>
             <Form.Item
-              name="name"
-              label="Name"
-              rules={[
-                {
-                  required: true,
-                  message: "Name area is required!",
-                },
-              ]}
+              name="full_name"
+              label="Customer Name"
               hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
             >
-              <Input
-                placeholder={"Please fill area name"}
-                disabled={disabledCreate}
-              />
+              <div disabled={true} className={cx("input")} />
             </Form.Item>
           </div>
-
-          <Form.Item
-            wrapperCol={24}
-            style={{
-              display: "flex",
-              width: "60%",
-              justifyContent: "flex-end",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              {disabledCreate ? (
-                <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") === "" ? (
-                <Button type="primary" onClick={handleAdd}>
-                  Add
-                </Button>
-              ) : (
-                <Button type="primary" onClick={handleSumbit}>
-                  Edit
-                </Button>
-              )}
-            </div>
-          </Form.Item>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="birthday"
+              label="Birthday"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="phone"
+              label="Phone"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="service"
+              label="Service"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="service_type"
+              label="Service Type"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="quantity"
+              label="Quantity"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="total_amount"
+              label="Total Amount"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="book_time"
+              label="Book Time"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="payment_method"
+              label="Payment"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="pay_time"
+              label="Pay Time"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="tax"
+              label="Tax"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
+          <div className={cx("form-attributes")}>
+            <Form.Item
+              name="discount"
+              label="Discount"
+              hasFeedback
+              valuePropName="children"
+              className={cx("form-attributes__item")}
+            >
+              <div disabled={true} className={cx("input")} />
+            </Form.Item>
+          </div>
         </Form>
       </Modal>
       <Modal

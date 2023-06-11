@@ -23,6 +23,7 @@ import AuthUser from "../../../utils/AuthUser";
 import { toast } from "react-toastify";
 import FormattedDate from "../../../utils/FormattedDate";
 import { useNavigate } from "react-router-dom";
+import moment from 'moment';
 
 const cx = classNames.bind(styles);
 
@@ -36,12 +37,30 @@ const Staff = () => {
       span: 18,
     },
   };
+  const initialFormValues = {
+    fullName: "",
+    gender: "",
+    birthDate: "",
+    ID_Card: "",
+    address: "",
+    phone: "",
+    accountbank: "",
+    namebank: "",
+    department: "",
+    position: "",
+    username: "",
+    password: "",
+    email: "",
+  };
   const navigate = useNavigate();
   const [openModalStaff, setOpenModalStaff] = useState(false);
   const [openModalAccount, setOpenModalAccount] = useState(false);
   const [values, setValues] = useState({});
   const [account, setAccount] = useState({});
   const [base, setBase] = useState();
+  const [formValues, setFormValues] = useState(initialFormValues);
+  const [formAccount, setFormAccount] = useState(initialFormValues);
+  const [staffAccount, setStaffAccount] = useState([]);
   const [listStaffWork, setListStaffWork] = useState([]);
   const [listStaffQuit, setListStaffQuit] = useState([]);
   const [listStaff, setListStaff] = useState();
@@ -49,11 +68,14 @@ const Staff = () => {
   const [listPosition, setListPosition] = useState([]);
   const [Staff, setStaff] = useState();
   const [status, setStatus] = useState(true);
+  const [accept, setAccept] = useState(false);
+  const [emailError, setEmailError] = useState("");
   const [id, setID] = useState();
   const dateFormat = "YYYY-MM-DD";
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [form] = Form.useForm();
+  const [form1] = Form.useForm();
 
   function CustomToolbar() {
     return (
@@ -78,16 +100,16 @@ const Staff = () => {
     )?.department_name;
     return DepartmentName || "";
   };
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
 
-  const getPositionName = (Positionid) => {
-    // Gọi hàm hoặc thực hiện các xử lý tìm tên area từ id area
-    // Ví dụ:
-    const PositionName = listPosition.find(
-      (position) => position.id === Positionid
-    )?.position_name;
-    return PositionName || "";
+    // Kiểm tra điều kiện hợp lệ cho email
+    if (!email.includes("@")) {
+      setEmailError("Email is invalid!");
+    } else {
+      setEmailError("");
+    }
   };
-
 
   const handleWork = () => {
     setListStaff(listStaffWork);
@@ -141,27 +163,33 @@ const Staff = () => {
       });
   };
 
-  const handleEdit = (params) => {
+  const handleEdit =  async (params) => {
     setdisabledCreate(false);
     const { row } = params;
-    fetchStaff(row.id);
-    setID(row.id);
-    form.setFieldValue("fullName", Staff?.name);
-    form.setFieldValue("gender", Staff?.gender);
-    form.setFieldValue("birthDate", null);
-    form.setFieldValue("phone", Staff?.phone);
-    form.setFieldValue("ID_Card", Staff?.CMND);
-    form.setFieldValue("address", Staff?.address);
-    form.setFieldValue("accountbank", Staff?.account_bank);
-    form.setFieldValue("namebank", Staff?.name_bank);
-    form.setFieldValue("position", Staff?.position_name);
-    form.setFieldValue("department", Staff?.department_name);
+    await http
+      .get(`/admin/find-employee/${row.id}`)
+      .then((resolve) => {
+        setStaff(resolve.data.data);
+        const birthDate = moment(resolve.data.data?.birthday, 'YYYY-MM-DD');
+        form.setFieldValue("fullName", resolve.data.data?.name);
+        form.setFieldValue("gender", resolve.data.data?.gender);
+        form.setFieldValue("birthDate", birthDate);
+        form.setFieldValue("phone", resolve.data.data?.phone);
+        form.setFieldValue("ID_Card", resolve.data.data?.CMND);
+        form.setFieldValue("address", resolve.data.data?.address);
+        form.setFieldValue("accountbank", resolve.data.data?.account_bank);
+        form.setFieldValue("namebank", resolve.data.data?.name_bank);
+        form.setFieldValue("position", resolve.data.data?.position_name);
+        form.setFieldValue("department", resolve.data.data?.department_name);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
     setOpenModalStaff(true);
     setBase(true);
   };
 
   const handleDelete = (params) => {
-    console.log(params);
     const { row } = params;
 
     http
@@ -180,35 +208,47 @@ const Staff = () => {
       });
   };
 
-  const handleDoubleClickCell = (params) => {
+  const handleDoubleClickCell = async (params) => {
     setdisabledCreate(true);
     const { row } = params;
-
-    fetchStaff(row.id);
-    form.setFieldValue("fullName", Staff?.name);
-    form.setFieldValue("gender", Staff?.gender);
-    form.setFieldValue("birthDate", Staff?.birthday);
-    form.setFieldValue("phone", Staff?.phone);
-    form.setFieldValue("ID_Card", Staff?.CMND);
-    form.setFieldValue("address", Staff?.address);
-    form.setFieldValue("accountbank", Staff?.account_bank);
-    form.setFieldValue("namebank", Staff?.name_bank);
-    form.setFieldValue("position", Staff?.position_name);
-    form.setFieldValue("department", Staff?.department_name);
+    await http
+      .get(`/admin/find-employee/${row.id}`)
+      .then((resolve) => {
+        setStaff(resolve.data.data);
+        const birthDate = moment(resolve.data.data?.birthday, 'YYYY-MM-DD');
+        form.setFieldValue("fullName", resolve.data.data?.name);
+        form.setFieldValue("gender", resolve.data.data?.gender);
+        form.setFieldValue("birthDate", birthDate);
+        form.setFieldValue("phone", resolve.data.data?.phone);
+        form.setFieldValue("ID_Card", resolve.data.data?.CMND);
+        form.setFieldValue("address", resolve.data.data?.address);
+        form.setFieldValue("accountbank", resolve.data.data?.account_bank);
+        form.setFieldValue("namebank", resolve.data.data?.name_bank);
+        form.setFieldValue("position", resolve.data.data?.position_name);
+        form.setFieldValue("department", resolve.data.data?.department_name);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
 
     setOpenModalStaff(true);
   };
 
   const handleOk = () => {
     setOpenModalStaff(false);
+    setOpenModalAccount(false);
   };
 
   // Handle click button "X" of modal
   const handleCancel = () => {
     setOpenModalStaff(false);
+    setOpenModalAccount(false);
   };
+  useEffect(() => {}, [Staff]);
 
-  const onFinish = (values) => {
+  useEffect(() => {}, [accept]);
+
+  const onFinish = async (values) => {
     const {
       fullName,
       gender,
@@ -221,15 +261,114 @@ const Staff = () => {
       department,
       position,
     } = values;
+
     const formData = new FormData();
+
     if (base) {
       console.log("Success: edit", values);
-
       formData.append("full_name", fullName);
       formData.append("gender", gender);
       formData.append("birthday", FormattedDate(birthDate));
       formData.append("CMND", ID_Card);
       formData.append("position_name", position);
+
+      await http
+        .get(`/admin/store-account-employee/${position}`)
+        .then((resolve) => {
+          setAccept(resolve.data.message);
+          if (resolve.data.message) {
+            setOpenModalAccount(true);
+          } else {
+            http
+              .patch(`/admin/update-employee/${id}`, formData)
+              .then(() => {
+                Swal.fire(
+                  "Update!",
+                  "You have successfully update your profile",
+                  "success"
+                ).then(() => {
+                  navigate(0);
+                });
+              })
+              .catch((reject) => {
+                console.log(reject);
+              });
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    } else {
+      await http
+        .get(`/admin/store-account-employee/${position}`)
+        .then((resolve) => {
+          console.log(resolve);
+          if (resolve.data.message) {
+            setOpenModalAccount(true);
+          } else {
+            formData.append("full_name", fullName);
+            formData.append("gender", gender);
+            formData.append("birthday", FormattedDate(birthDate));
+            formData.append("CMND", ID_Card);
+            formData.append("address", address);
+            formData.append("phone", phone);
+            formData.append("account_bank", accountbank);
+            formData.append("name_bank", namebank);
+            formData.append("department_name", getDepartmentName(department));
+            formData.append("position_name", position);
+
+            http
+              .post(`/admin/store-employee`, formData)
+              .then(() => {
+                Swal.fire(
+                  "Update!",
+                  "You have successfully add your profile",
+                  "success"
+                ).then(() => {
+                  navigate(0);
+                });
+              })
+              .catch((reject) => {
+                console.log("Error response:", reject.response);
+                console.log("Error status code:", reject.response.status);
+                console.log("Error message:", reject.message);
+                console.log(reject);
+              });
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    }
+  };
+
+  const onFinishAccount = (values) => {
+    const {
+      fullName,
+      gender,
+      birthDate,
+      ID_Card,
+      address,
+      phone,
+      accountbank,
+      namebank,
+      department,
+      position,
+      username,
+      password,
+      email,
+    } = values;
+    const formData = new FormData();
+
+    if (base) {
+      formData.append("full_name", fullName);
+      formData.append("gender", gender);
+      formData.append("birthday", FormattedDate(birthDate));
+      formData.append("CMND", ID_Card);
+      formData.append("position_name", position);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("email", email);
 
       http
         .patch(`/admin/update-employee/${id}`, formData)
@@ -246,7 +385,6 @@ const Staff = () => {
           console.log(reject);
         });
     } else {
-
       formData.append("full_name", fullName);
       formData.append("gender", gender);
       formData.append("birthday", FormattedDate(birthDate));
@@ -256,7 +394,10 @@ const Staff = () => {
       formData.append("account_bank", accountbank);
       formData.append("name_bank", namebank);
       formData.append("department_name", getDepartmentName(department));
-      formData.append("position_name",position);
+      formData.append("position_name", position);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("email", email);
 
       http
         .post(`/admin/store-employee`, formData)
@@ -277,8 +418,6 @@ const Staff = () => {
         });
     }
   };
-
-  console.log("position", listPosition);
   // Failed case
   const onFinishFailed = (error) => {
     console.log("Failed:", error);
@@ -293,6 +432,8 @@ const Staff = () => {
       theme: "colored",
     });
   };
+
+  const onFinishFaileAccount = (values) => {};
 
   const columns = [
     {
@@ -718,17 +859,15 @@ const Staff = () => {
               <div>{form.getFieldValue("position")}</div>
             ) : (
               <Select
-                placeholder="Please select Type room"
+                placeholder="Please select Position room"
                 options={listPosition.map((ele) => ({
                   label: ele.position_name,
                   value: ele.position_name,
                 }))}
                 disabled={disabledCreate}
-                onChange={handleSelect}
               ></Select>
             )}
           </Form.Item>
-
           <Form.Item wrapperCol={24}>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
@@ -786,8 +925,8 @@ const Staff = () => {
           labelWrap="true"
           size="middle"
           autoComplete="off"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
+          onFinish={onFinishAccount}
+          onFinishFailed={onFinishFaileAccount}
           className={cx("modal-form")}
           initialValues={{
             username: account.username,
@@ -823,10 +962,13 @@ const Staff = () => {
                 message: "Email is required!",
               },
             ]}
+            validateStatus={emailError ? "error" : ""}
+            help={emailError}
           >
             <Input
               placeholder={"Please fill email"}
               className={cx("form__content")}
+              onChange={handleEmailChange}
             />
           </Form.Item>
           <Form.Item
