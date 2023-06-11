@@ -19,9 +19,6 @@ const cx = classNames.bind(styles)
 
 const BookingProgress = () => {
   
-  const [, setTotalAmount] = useState();
-  const [, setTotalRooms] = useState();
-  const [, setTotalPeople] = useState();
   const { user } = AuthUser();
   const avatar = useSelector(avatarSelector);
   const [current, setCurrent] = useState(useSelector(progressStepSelector));
@@ -33,9 +30,6 @@ const BookingProgress = () => {
       content: <Step1
         current={current}
         setCurrent={setCurrent}
-        setTotalAmount={setTotalAmount}
-        setTotalRooms={setTotalRooms}
-        setTotalPeople={setTotalPeople}
       />,
       icon: <BsFillCalendarCheckFill />,
     },

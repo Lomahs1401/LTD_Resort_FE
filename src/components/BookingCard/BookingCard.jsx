@@ -181,7 +181,7 @@ const BookingCard = ({
               <div className={cx("middle-content__top")}>
                 <span>
                   <FaUser size={20} className={cx("middle-content__top-icon")} />
-                  {capacity} persons
+                  {capacity} person
                 </span>
                 <span>
                   <FaBed size={20} className={cx("middle-content__top-icon")} />

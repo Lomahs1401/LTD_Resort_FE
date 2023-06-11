@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styles from './Step1.module.scss'
 import classNames from "classnames/bind";
 import { useDispatch, useSelector } from 'react-redux';
-import { bookmarkRoomsSelector, checkinDateSelector, checkoutDateSelector, roomTypesSelector, servicesSelector } from '../../../redux/selectors';
+import { checkinDateSelector, checkoutDateSelector, } from '../../../redux/selectors';
 import BookingReview from '../../../components/BookingReview/BookingReview';
 import { Divider } from 'antd';
 import { BsFillTelephoneFill } from 'react-icons/bs';
@@ -14,80 +14,36 @@ import checkout from "../../../img/chekout.png"
 import coins from "../../../img/coins.png"
 import currency from '../../../utils/currency';
 import AuthUser from '../../../utils/AuthUser';
-import { addTotalAmount, addTotalPeople, addTotalRooms, nextProgressStep } from '../../../redux/actions';
+import { addTotalAmount, nextProgressStep } from '../../../redux/actions';
 
 const cx = classNames.bind(styles);
 
-const Step1 = ({ current, setCurrent, setTotalAmount, setTotalRooms, setTotalPeople }) => {
+const Step1 = ({ current, setCurrent }) => {
+  const dayjs = require('dayjs');
+  const customParseFormat = require('dayjs/plugin/customParseFormat');
+  dayjs.extend(customParseFormat);
 
-  const roomTypes = useSelector(roomTypesSelector);
-  const services = useSelector(servicesSelector);
   const checkinDate = useSelector(checkinDateSelector);
   const checkoutDate = useSelector(checkoutDateSelector);
-  const bookmarkRooms = useSelector(bookmarkRoomsSelector);
+  const timeStart = dayjs(checkinDate, "DD/MM/YYYY").locale('vi').format('YYYY-MM-DD');
+  const timeEnd = dayjs(checkoutDate, "DD/MM/YYYY").locale('vi').format('YYYY-MM-DD');
 
   const dispatch = useDispatch();
-  const [customerInfo, setCustomerInfo] = useState();
-
-  const checkinParts = checkinDate.split("/");
-  const checkoutParts = checkoutDate.split("/");
-
-  const startDate = new Date(checkinParts[2], checkinParts[1] - 1, checkinParts[0]);
-  const endDate = new Date(checkoutParts[2], checkoutParts[1] - 1, checkoutParts[0]);
-
-  const timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
-  const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  const [customerInfo, setCustomerInfo] = useState(0);
+  const [numberOfDays, setNumberOfDays] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalPeople, setTotalPeople] = useState(0);
+  const [totalRoom, setTotalRoom] = useState(0);
+  const [totalService, setTotalService] = useState(0);
+  const [listReservationRooms, setListReservationRooms] = useState([]);
+  const [listReservationServices, setListReservationServices] = useState([]);
 
   const { http } = AuthUser();
 
-  const calculateTotalPrice = () => {
-    let totalPrice = 0;
-
-    bookmarkRooms.forEach(bookmarkRoom => {
-      const { roomTypeId } = bookmarkRoom;
-      const roomType = roomTypes.find(type => type.id === roomTypeId);
-
-      if (roomType) {
-        totalPrice += roomType.price * daysDiff;
-      }
-    });
-
-    if (services.length > 0) {
-      services.forEach((service) => {
-        totalPrice += service.price
-      })
-    }
-
-    return totalPrice;
-  };
-
-  const calculateTotalPeople = () => {
-    let totalPeople = 0;
-
-    bookmarkRooms.forEach(bookmarkRoom => {
-      const { roomTypeId } = bookmarkRoom;
-      const roomType = roomTypes.find(type => type.id === roomTypeId);
-
-      if (roomType) {
-        totalPeople += roomType.numberCustomers;
-      }
-    });
-
-    return totalPeople;
-  };
-
   const handleConfirmInfo = () => {
-    const totalAmount = calculateTotalPrice();
-    const totalRooms = bookmarkRooms.length;
-    const totalPeople = calculateTotalPeople()
-    setTotalAmount(totalAmount);
-    setTotalRooms(totalRooms);
-    setTotalPeople(totalPeople);
     setCurrent(current + 1);
     dispatch(nextProgressStep(current + 1));
     dispatch(addTotalAmount(totalAmount));
-    dispatch(addTotalRooms(totalRooms));
-    dispatch(addTotalPeople(totalPeople));
   }
 
   useEffect(() => {
@@ -96,6 +52,21 @@ const Step1 = ({ current, setCurrent, setTotalAmount, setTotalRooms, setTotalPeo
         .then((resolve) => {
           console.log(resolve);
           setCustomerInfo(resolve.data.customer);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
+
+      http.get(`/customer/show-bill-not-pay-by-customer/${timeStart}/${timeEnd}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setNumberOfDays(resolve.data.numberOfDays);
+          setTotalAmount(resolve.data.total_money);
+          setTotalPeople(resolve.data.total_people);
+          setTotalRoom(resolve.data.total_room);
+          setTotalService(resolve.data.bill_service_count);
+          setListReservationRooms(resolve.data.reservation_rooms);
+          setListReservationServices(resolve.data.service_bill_pay);
         })
         .catch((reject) => {
           console.log(reject);
@@ -111,34 +82,32 @@ const Step1 = ({ current, setCurrent, setTotalAmount, setTotalRooms, setTotalPeo
       <div className={cx("booking-step-wrapper__left")}>
         <h2>List Room Types Booking</h2>
         {
-          roomTypes.map((roomType) => {
+          listReservationRooms.map((reservationRoom) => {
             return (
-              <div key={roomType.id} className={cx("booking-review-wrapper")}>
+              <div key={reservationRoom.id} className={cx("booking-review-wrapper")}>
                 <BookingReview
-                  image={roomType.image}
-                  title={roomType.roomTypeName}
-                  price={roomType.price}
+                  image={reservationRoom.image}
+                  title={reservationRoom.room_type_name}
+                  price={reservationRoom.price}
                   ranking={5}
-                  pointRanking={roomType.pointRanking}
+                  pointRanking={reservationRoom.point_ranking}
                   type='Room'
-                  numberCustomers={roomType.numberCustomers}
-                  roomSize={roomType.roomSize}
-                  totalRooms={roomType.totalRooms}
-                  totalAverage={roomType.totalAverage}
-                  totalReviews={roomType.totalFeedbacks}
+                  numberCustomers={reservationRoom.number_customers}
+                  roomSize={reservationRoom.room_size}
+                  totalRooms={reservationRoom.number_customers}
+                  totalAverage={reservationRoom.average_rating_room_type}
+                  totalReviews={reservationRoom.total_feedback}
                 />
                 <div className={cx("booking-rooms")}>
                   <h2>List Rooms: </h2>
                   <div className={cx("booking-rooms__data")}>
-                    {
-                      bookmarkRooms.map((bookmarkRoom) => {
-                        if (bookmarkRoom.roomTypeId === roomType.id) {
-                          return (
-                            <button className={cx("room-info")}>
-                              <p>{bookmarkRoom.roomName}</p>
-                            </button>
-                          )
-                        }
+                    {                     
+                      reservationRoom.room.map((room) => {
+                        return (
+                          <button className={cx("room-info")}>
+                            <p>{room.room_name}</p>
+                          </button>
+                        )
                       })
                     }
                   </div>
@@ -148,24 +117,24 @@ const Step1 = ({ current, setCurrent, setTotalAmount, setTotalRooms, setTotalPeo
           })
         }
         {
-          services.length > 0 && (
+          listReservationServices.length > 0 && (
             <>
               <Divider className={cx("seperate-line")} />
               <h2>List Services Booking</h2>
               {
-                services.map((service) => {
+                listReservationServices.map((service) => {
                   return (
                     <div key={service.id} className={cx("booking-review-wrapper")}>
                       <BookingReview
                         id={service.id}
                         image={service.image}
-                        title={service.serviceName}
+                        title={service.service_name}
                         price={service.price}
-                        ranking={service.totalAverage}
-                        pointRanking={service.pointRanking}
+                        ranking={service.average_rating_service}
+                        pointRanking={service.point_ranking}
                         type='Service'
-                        totalAverage={service.totalAverage}
-                        totalReviews={service.totalFeedbacks}
+                        totalAverage={service.average_rating_service}
+                        totalReviews={service.total_feedback}
                       />
                     </div>
                   )
@@ -203,7 +172,7 @@ const Step1 = ({ current, setCurrent, setTotalAmount, setTotalRooms, setTotalPeo
               <h3>Number of days</h3>
             </div>
             <button className={cx("btn-info")}>
-              <p>{daysDiff}</p>
+              <p>{numberOfDays}</p>
             </button>
           </div>
           <div className={cx("booking-check-info__totalrooms")}>
@@ -212,7 +181,7 @@ const Step1 = ({ current, setCurrent, setTotalAmount, setTotalRooms, setTotalPeo
               <h3>Total rooms</h3>
             </div>
             <button className={cx("btn-info")}>
-              <p>{bookmarkRooms.length}</p>
+              <p>{totalRoom}</p>
             </button>
           </div>
           <div className={cx("booking-check-info__totalservices")}>
@@ -221,7 +190,7 @@ const Step1 = ({ current, setCurrent, setTotalAmount, setTotalRooms, setTotalPeo
               <h3>Total services</h3>
             </div>
             <button className={cx("btn-info")}>
-              <p>{services.length}</p>
+              <p>{totalService}</p>
             </button>
           </div>
           <div className={cx("booking-check-info__totalpeople")}>
@@ -230,7 +199,7 @@ const Step1 = ({ current, setCurrent, setTotalAmount, setTotalRooms, setTotalPeo
               <h3>Total People</h3>
             </div>
             <button className={cx("btn-info")}>
-              <p>{calculateTotalPeople()}</p>
+              <p>{totalPeople}</p>
             </button>
           </div>
         </div>
@@ -268,7 +237,7 @@ const Step1 = ({ current, setCurrent, setTotalAmount, setTotalRooms, setTotalPeo
           <div className={cx("booking-total-price")}>
             <div className={cx("booking-total-price__title")}>
               <img src={coins} alt={'Coin'} />
-              <h3>Total Amount: <span style={{color: '#f35221', fontSize: 24, fontWeight: 'bold'}}>{currency(calculateTotalPrice())}</span></h3>
+              <h3>Total Amount: <span style={{ color: '#f35221', fontSize: 24, fontWeight: 'bold' }}>{currency(totalAmount)}</span></h3>
             </div>
             <h2 className={cx("booking-total-price__total")}></h2>
           </div>

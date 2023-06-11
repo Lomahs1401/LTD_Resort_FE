@@ -59,6 +59,17 @@
     }
 }
 
+.booking-amount {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 40px;
+}
+
+.booking-price {
+    color: #ff8682;
+}
+
 .room-info {
     background-color: white;
     border-radius: 5px;
@@ -66,7 +77,6 @@
     padding: 4px;
     width: 50px;
     transition: 0.3s;
-    float: left;
 
     > p {
         color: #14274A;
