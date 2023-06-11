@@ -214,10 +214,9 @@ const Staff = () => {
       .get(`/admin/find-employee/${row.id}`)
       .then((resolve) => {
         setStaff(resolve.data.data);
-        const birthDate = moment(resolve.data.data?.birthday, 'YYYY-MM-DD');
         form.setFieldValue("fullName", resolve.data.data?.name);
         form.setFieldValue("gender", resolve.data.data?.gender);
-        form.setFieldValue("birthDate", birthDate);
+        form.setFieldValue("birthDate", null);
         form.setFieldValue("phone", resolve.data.data?.phone);
         form.setFieldValue("ID_Card", resolve.data.data?.CMND);
         form.setFieldValue("address", resolve.data.data?.address);
