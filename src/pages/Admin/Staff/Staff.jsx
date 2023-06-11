@@ -166,6 +166,9 @@ const Staff = () => {
   const handleEdit =  async (params) => {
     setdisabledCreate(false);
     const { row } = params;
+
+    setID(row.id);
+
     await http
       .get(`/admin/find-employee/${row.id}`)
       .then((resolve) => {
@@ -357,7 +360,7 @@ const Staff = () => {
       email,
     } = values;
     const formData = new FormData();
-
+    console.log(id);
     if (base) {
       formData.append("full_name", fullName);
       formData.append("gender", gender);
