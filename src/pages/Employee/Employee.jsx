@@ -7,11 +7,11 @@ import Sidebar from "./Sidebar/Sidebar";
 import Dashboard from "./Dashboard/Dashboard";
 import Customer from "./Customer/Customer"
 import Bill from "./Bill/Bill"
-import Feedback from "./FeedBack/FeedBack";
+import Feedback from "./FeedBack1/FeedBack1";
 import BillRoom from "./BillRoom/BillRoom";
 import Facility from "./Facility/Facility";
 import Service from "./Service/Service"
-import ExtraService from "./ExtraService/ExtraService";
+import ExtraService from "./ExtraService/ExtraService"
 import News from "./News/News";
 import AccordionDetails from "./AccountDetail/AccountDetail";
 import styles from "./Employee.module.scss";

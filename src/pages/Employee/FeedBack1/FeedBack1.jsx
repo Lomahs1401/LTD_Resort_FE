@@ -16,7 +16,7 @@ import { mockDataTeam } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import Swal from "sweetalert2";
 import { AiFillEdit, AiFillDelete, AiOutlineUserAdd } from "react-icons/ai";
-import styles from "./FeedBack.module.scss";
+import styles from "./FeedBack1.module.scss";
 import classNames from "classnames/bind";
 import { FaUser } from "react-icons/fa";
 import Draggable from "react-draggable";
@@ -28,7 +28,7 @@ import { Details } from "@mui/icons-material";
 
 const cx = classNames.bind(styles);
 
-const FeedBack = () => {
+const FeedBack1 = () => {
   const { http } = AuthUser();
   const staffInfoLayout = {
     labelCol: {
@@ -749,4 +749,4 @@ const FeedBack = () => {
   );
 };
 
-export default FeedBack;
+export default FeedBack1;

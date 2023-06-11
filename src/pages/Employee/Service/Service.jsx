@@ -292,7 +292,7 @@ const Service = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataService}
+          rows={bill}
           columns={columnsBill}
           className={cx("table")}
         />
@@ -304,7 +304,7 @@ const Service = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataService}
+          rows={history}
           columns={columnsHistory}
           className={cx("table")}
         />
@@ -316,7 +316,7 @@ const Service = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataService}
+          rows={cancel}
           columns={columnsCancel}
           className={cx("table")}
         />
