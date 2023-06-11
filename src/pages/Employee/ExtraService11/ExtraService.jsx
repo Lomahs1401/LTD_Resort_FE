@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState, useRef } from "react";
 import { Box } from "@mui/material";
 import {
   DataGrid,
@@ -7,25 +6,22 @@ import {
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
+import { Button } from "@mui/material";
 import { tokens } from "../../../utils/theme";
-import { mockDataService, mockDataServiceType } from "../../../data/mockData";
+import { mockDataServiceType } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
-import { useTheme, Button } from "@mui/material";
-import { Form, Input, Modal, Select } from "antd";
+import { useTheme } from "@mui/material";
+import { Form, Input, Modal } from "antd";
 import { GrAdd } from "react-icons/gr";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import Draggable from "react-draggable";
-import ImageGallery from "../ImageGallery/ImageGallery";
+import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import styles from "./ExtraService.module.scss";
 import classNames from "classnames/bind";
-import AuthUser from "../../../utils/AuthUser";
-import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
 const ExtraService = () => {
-  const Layout = {
+  const layout = {
     labelCol: {
       span: 6,
     },
@@ -33,47 +29,34 @@ const ExtraService = () => {
       span: 18,
     },
   };
-  const location = useLocation();
-  const { state } = location;
-  const navigate = useNavigate();
-  const { http } = AuthUser();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [openModal, setOpenModal] = useState(false);
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
-  const [listService, setListService] = useState([]);
-  const [listType, setListType] = useState([]);
-  const [service, setService] = useState();
-  const [avatarUrl, setAvatarUrl] = useState(null);
-  const [base, setBase] = useState();
-  const [id, setID] = useState();
-  const [images, setImages] = useState([]);
 
   function CustomToolbar() {
     return (
       <GridToolbarContainer>
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
-
         <Button startIcon={<GrAdd />} onClick={handleCreate}>
           Create
         </Button>
       </GridToolbarContainer>
     );
   }
-
   //data columns
   const columns = [
-    { field: "id", headerName: "ID" },
-    { field: "extra_service_name", headerName: "Service", flex: 0.5 },
+    { field: "id", headerName: "ID", flex: 0.5 },
+
     {
-      field: "price",
-      headerName: "Price",
-      flex: 0.5,
+      field: "type_name",
+      headerName: "Name",
+      flex: 1,
       cellClassName: "name-column--cell",
     },
-    
+
     {
       field: "accessLevel",
       headerName: "Access Level",
@@ -82,9 +65,17 @@ const ExtraService = () => {
         const handleEditClick = () => {
           handleEdit(params);
         };
+
+        const handleDeleteClick = () => {
+          handleDelete(params);
+        };
+
         return (
           <Box display="flex" borderRadius="4px">
             <Button startIcon={<AiFillEdit />} onClick={handleEditClick}>
+              {" "}
+            </Button>
+            <Button startIcon={<AiFillDelete />} onClick={handleDeleteClick}>
               {" "}
             </Button>
           </Box>
@@ -92,6 +83,41 @@ const ExtraService = () => {
       },
     },
   ];
+
+  const handleCreate = () => {
+    console.log("create");
+    setOpenModal(true);
+    form.setFieldValue("name", "");
+    setdisabledCreate(false);
+
+    setValues({});
+  };
+  const handleEdit = (params) => {
+    setdisabledCreate(false);
+    const { row } = params;
+    form.setFieldValue("name", row.area_name);
+
+    setOpenModal(true);
+  };
+
+  const handleDelete = (params) => {
+    setOpenModal(true);
+  };
+
+  const handleDoubleClickCell = (params) => {
+    const { row } = params;
+    setdisabledCreate(true);
+    console.log(row);
+    setValues(row);
+    form.setFieldValue("typename", row.type_name);
+    form.setFieldValue("size", row.size);
+    form.setFieldValue("capacity", row.capacity);
+    form.setFieldValue("describe", row.describe);
+    form.setFieldValue("price", row.price);
+    form.setFieldValue("point", row.point_ranking);
+
+    setOpenModal(true);
+  };
 
   const handleOk = () => {
     setOpenModal(false);
@@ -101,124 +127,18 @@ const ExtraService = () => {
   const handleCancel = () => {
     setOpenModal(false);
   };
-
-  const handleCreate = () => {
-    console.log("create");
-    setOpenModal(true);
-    form.setFieldValue("name", "");
-    form.setFieldValue("description", "");
-    form.setFieldValue("price", "");
-    form.setFieldValue("status", null);
-    form.setFieldValue("point", "");
-    form.setFieldValue("type", null);
-    setdisabledCreate(false);
-    setValues({});
-    setBase(false);
+  // Handle add new info
+  const handleAdd = () => {
+    console.log("Add");
   };
-
-  const fetchService = async (id) => {
-    await http
-      .get(`/admin/show-extra-service/${id}`)
-      .then((resolve) => {
-        console.log(resolve);
-        setService(resolve.data.data);
-      })
-      .catch((reject) => {
-        console.log(reject);
-      });
-  };
-
-  const handleDoubleClickCell = (params) => {
-    const { row } = params;
-    console.log(row);
-    form.setFieldValue("extra_service_name", row.extra_service_name);
-    form.setFieldValue("description", row.description);
-    form.setFieldValue("price", row.price);
-    setdisabledCreate(true);
-
-    setOpenModal(true);
-  };
-
-  const handleEdit = (params) => {
-    setdisabledCreate(false);
-    const { row } = params;
-    console.log(row);
-    setValues(row);
-    fetchService(row.id);
-    setID(row.id);
-    form.setFieldValue("name", row.service_name);
-    form.setFieldValue("description", row.description);
-    form.setFieldValue("price", row.price);
-    form.setFieldValue("status", row.status);
-    form.setFieldValue("point", row.point_ranking);
-    form.setFieldValue("type", row.id_type);
-    setdisabledCreate(false);
-    setOpenModal(true);
-    setBase(true);
+  // Handle edit old info
+  const handleSumbit = () => {
+    console.log("Sumbit");
   };
 
   // Successful case
   const onFinish = (values) => {
-    const { name, description, status, price, point, type } = values;
-    const formData = new FormData();
-    if (base) {
-      console.log("Success: edit", values);
-
-      formData.append("service_name", name);
-      formData.append("description", description);
-      formData.append("price", price);
-      formData.append("image", images);
-      formData.append("point_ranking", point);
-
-      console.log("form ", formData);
-      http
-        .patch(`/admin/update-service/${id}`, formData)
-        .then(() => {
-          Swal.fire(
-            "Update!",
-            "You have successfully add your profile",
-            "success"
-          ).then(() => {
-            navigate(0);
-          });
-        })
-        .catch((reject) => {
-          console.log("Error response:", reject.response);
-          console.log("Error status code:", reject.response.status);
-          console.log("Error message:", reject.message);
-          console.log(reject);
-        });
-    } else {
-      console.log("Success: add", values);
-
-      formData.append("service_name", name);
-      formData.append("description", description);
-      formData.append("status", status);
-      formData.append("image", images);
-      formData.append("price", price);
-      formData.append("point_ranking", point);
-      formData.append("service_type_id", type);
-
-      console.log("form add", formData);
-
-      http
-        .post(`/admin/store-service`, formData)
-        .then(() => {
-          Swal.fire(
-            "Update!",
-            "You have successfully add your profile",
-            "success"
-          ).then(() => {
-            navigate(0);
-          });
-        })
-        .catch((reject) => {
-          console.log("Error response:", reject.response);
-          console.log("Error status code:", reject.response.status);
-          console.log("Error message:", reject.message);
-          console.log(reject);
-        });
-    }
+    console.log("Success:", values);
   };
 
   // Failed case
@@ -250,27 +170,6 @@ const ExtraService = () => {
       bottom: clientHeight - (targetRect.bottom - uiData.y),
     });
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await http
-        .get(`/employee/show-list-extra-service`)
-        .then((resolve) => {
-          if (resolve.data.status === "200") {
-            console.log(resolve);
-            setListService(resolve.data.data);
-          }
-          else{
-            setListService([]);
-          }
-        })
-        .catch((reject) => {
-          console.log(reject);
-        });
-    };
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className={cx("contact-wrapper")}>
@@ -307,13 +206,33 @@ const ExtraService = () => {
           },
         }}
       >
-        <DataGrid
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+          F
+        >
+          <h1>Trang web đang trong quá trình phát triển</h1>
+          <p>
+            Xin lỗi vì sự bất tiện này! Chúng tôi đang làm việc chăm chỉ để hoàn
+            thiện trang web.
+          </p>
+          <p>
+            Xin hãy kiên nhẫn chờ đợi và quay lại sau để kiểm tra các cập nhật
+            mới nhất.
+          </p>
+          <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/29ffb84b-d25c-4a6f-a34b-0b486d359941/d5ggmwh-4d170265-e369-409c-9354-4e92b07bc227.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzI5ZmZiODRiLWQyNWMtNGE2Zi1hMzRiLTBiNDg2ZDM1OTk0MVwvZDVnZ213aC00ZDE3MDI2NS1lMzY5LTQwOWMtOTM1NC00ZTkyYjA3YmMyMjcuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.yp5encYqxHCRaP_PDNgz9Fhumajh7GhvY0Y4STf6suA" />
+        </div>
+        {/* <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={listService}
+          rows={mockDataServiceType}
           columns={columns}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
-        />
+
+        /> */}
       </Box>
       <Modal
         title={
@@ -331,7 +250,7 @@ const ExtraService = () => {
               setDisabled(true);
             }}
           >
-            Service Room Info
+            Service type Info
           </div>
         }
         open={openModal}
@@ -349,7 +268,7 @@ const ExtraService = () => {
         )}
       >
         <Form
-          {...Layout}
+          {...layout}
           form={form}
           layout="horizontal"
           name="profile_form"
@@ -361,25 +280,82 @@ const ExtraService = () => {
           onFinishFailed={onFinishFailed}
           className={cx("modal-form")}
           initialValues={{
-            extra_service_name: values?.extra_service_name,
-            description: values?.description,
+            typename: values?.type_name,
+            size: values?.size,
+            capacity: values?.capacity,
+            describe: values?.describe,
             price: values?.price,
+            point: values?.point_ranking,
           }}
         >
           <div className={cx("service-attributes")}>
             <Form.Item
-              name="extra_service_name"
-              label="Name"
+              name="typename"
+              label="Type Name"
               rules={[
                 {
                   required: true,
-                  message: "Name Service is required!",
+                  message: "Type name is required!",
                 },
               ]}
               hasFeedback
             >
               <Input
-                placeholder={"Please fill floor service"}
+                placeholder={"Please fill type name"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+          <div className={cx("service-attributes")}>
+            <Form.Item
+              name="size"
+              label="Size(m2)"
+              rules={[
+                {
+                  required: true,
+                  message: "Size is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill the size"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+          <div className={cx("service-attributes")}>
+            <Form.Item
+              name="capacity"
+              label="Capacity"
+              rules={[
+                {
+                  required: true,
+                  message: "The capacity is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill the capacity"}
+                disabled={disabledCreate}
+              />
+            </Form.Item>
+          </div>
+          <div className={cx("service-attributes")}>
+            <Form.Item
+              name="describe"
+              label="Describe"
+              rules={[
+                {
+                  required: true,
+                  message: "Describe is required!",
+                },
+              ]}
+              hasFeedback
+            >
+              <Input
+                placeholder={"Please fill describe"}
                 disabled={disabledCreate}
               />
             </Form.Item>
@@ -404,24 +380,22 @@ const ExtraService = () => {
           </div>
           <div className={cx("service-attributes")}>
             <Form.Item
-              name="description"
-              label="Description"
+              name="point"
+              label="Point Ranking"
               rules={[
                 {
                   required: true,
-                  message: "Description is required!",
+                  message: "The point is required!",
                 },
               ]}
               hasFeedback
             >
               <Input
-                placeholder={"Please write the description"}
+                placeholder={"Please fill The point"}
                 disabled={disabledCreate}
               />
             </Form.Item>
           </div>
-          
-        
 
           <Form.Item
             wrapperCol={24}
@@ -434,9 +408,13 @@ const ExtraService = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
+              ) : form.getFieldValue("name") === "" ? (
+                <Button type="primary" onClick={handleAdd}>
+                  Add
+                </Button>
               ) : (
-                <Button type="primary" htmlType="submit">
-                  {base ? <>Edit</> : <>Add</>}
+                <Button type="primary" onClick={handleSumbit}>
+                  Edit
                 </Button>
               )}
             </div>
