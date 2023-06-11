@@ -16,7 +16,7 @@ import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import { getDownloadURL, ref } from "firebase/storage";
 import AuthUser from "../../../utils/AuthUser";
-import { storage } from "../../../utils/firebase"
+import { storage } from "../../../utils/firebase";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -45,7 +45,7 @@ const Sidebar = () => {
   const [selected, setSelected] = useState("Dashboard");
   const { http, user } = AuthUser();
 
-  const avatarRef = ref(storage, user.avatar)
+  const avatarRef = ref(storage, user.avatar);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,7 +67,7 @@ const Sidebar = () => {
     const fetchImage = async () => {
       getDownloadURL(avatarRef).then((url) => {
         setAvatarUrl(url);
-      })
+      });
     };
 
     fetchImage();
@@ -254,7 +254,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-       
+
             <Typography
               variant="h6"
               color={colors.grey[300]}
@@ -269,64 +269,6 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            
-            <Item
-              title="Profile Form"
-              to="/admin/form"
-              icon={<PersonOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Calendar"
-              to="/admin/calendar"
-              icon={<CalendarTodayOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="FAQ Page"
-              to="/admin/faq"
-              icon={<HelpOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
-            {/* <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Charts
-            </Typography> */}
-            {/* <Item
-              title="Bar Chart"
-              to="/admin/bar"
-              icon={<BarChartOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Pie Chart"
-              to="/admin/pie"
-              icon={<PieChartOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Line Chart"
-              to="/admin/line"
-              icon={<TimelineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
-            {/* <Item
-              title="Geography Chart"
-              to="/admin/geography"
-              icon={<MapOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
           </Box>
         </Menu>
       </ProSidebar>

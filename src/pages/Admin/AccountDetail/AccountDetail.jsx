@@ -40,7 +40,10 @@ const AccountDetail = () => {
     formData.append("CMND", admin.CMND);
     formData.append("address", admin.address);
     formData.append("phone", admin.phone);
-    formData.append("image", "https://via.placeholder.com/640x480.png/00cc22?text=quo");
+    formData.append(
+      "image",
+      "https://via.placeholder.com/640x480.png/00cc22?text=quo"
+    );
 
     http
       .patch(`/admin/update-admin`, formData)
@@ -120,74 +123,6 @@ const AccountDetail = () => {
           </button> */}
         </div>
 
-        <div className={cx("info")}>
-          <div className={cx("info__img")}>
-            <img src={admin?.image} alt="Avatar" />
-          </div>
-          <div className={cx("info__admin")}>
-            <div
-              style={{
-                width: "50%",
-              }}
-            >
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Name</div>
-                  <div className={cx("content-text")}>{admin?.name}</div>
-                </div>
-              </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Gender</div>
-                  <div className={cx("content-text")}>{admin?.gender}</div>
-                </div>
-              </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Birthday</div>
-                  <div className={cx("content-text")}>{admin?.birthday}</div>
-                </div>
-              </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Address</div>
-                  <div className={cx("content-text")}>{admin?.address}</div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>ID Card</div>
-                  <div className={cx("content-text")}>{admin?.CMND}</div>
-                </div>
-              </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Phone</div>
-                  <div className={cx("content-text")}>{admin?.phone}</div>
-                </div>
-              </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Position</div>
-                  <div className={cx("content-text")}>
-                    {admin?.position_name}
-                  </div>
-                </div>
-              </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Department</div>
-                  <div className={cx("content-text")}>
-                    {admin?.department_name}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <Form
           form={form}
           layout="horizontal"
@@ -199,7 +134,6 @@ const AccountDetail = () => {
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           className={cx("modal-form")}
-     
         >
           <Form.Item wrapperCol={24}>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -226,7 +160,9 @@ const AccountDetail = () => {
             </div>
           </Form.Item>
           <div className={cx("info")}>
-            <div className={cx("info__img")}></div>
+            <div className={cx("info__img")}>
+              <img src={admin?.image} alt="Avatar" />
+            </div>
             <div className={cx("info__admin")}>
               <div
                 style={{
@@ -251,7 +187,6 @@ const AccountDetail = () => {
                       <Input
                         placeholder={"Please fill full name"}
                         className={cx("content-text")}
-                       
                       />
                     )}
                   </Form.Item>

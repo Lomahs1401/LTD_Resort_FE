@@ -15,7 +15,7 @@ import { Form, Input, Modal } from "antd";
 import { GrAdd } from "react-icons/gr";
 import Draggable from "react-draggable";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import styles from "./Facility.module.scss";
+import styles from "./News.module.scss";
 import classNames from "classnames/bind";
 
 const cx = classNames.bind(styles);
@@ -169,7 +169,7 @@ const Facility = () => {
 
   return (
     <div className={cx("contact-wrapper")}>
-      <Header title="FACILITY" subtitle="List of Facility" />
+      <Header title="NEWS" subtitle="List of News" />
       <Box
         m="40px 0 0 0"
         height="75vh"

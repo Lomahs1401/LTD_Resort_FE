@@ -58,7 +58,6 @@ const Department = () => {
     const { row } = params;
     const field = params.field;
     if (field !== "department_name" && field !== "id") {
-      console.log(row);
       const data = {
         field: field,
         row: row,

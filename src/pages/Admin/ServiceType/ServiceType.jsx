@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Box } from "@mui/material";
 import {
   DataGrid,
@@ -17,6 +17,9 @@ import Draggable from "react-draggable";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import styles from "./ServiceType.module.scss";
 import classNames from "classnames/bind";
+import AuthUser from "../../../utils/AuthUser";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
@@ -28,12 +31,18 @@ const ServiceType = () => {
     wrapperCol: {
       span: 18,
     },
-  }
+  };
+  const navigate = useNavigate();
+  const { http } = AuthUser();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [openModal, setOpenModal] = useState(false);
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
+  const [listType, setListType] = useState([]);
+  const [service, setService] = useState([]);
+  const [base, setBase] = useState();
+  const [id, setID] = useState();
 
   function CustomToolbar() {
     return (
@@ -51,13 +60,18 @@ const ServiceType = () => {
     { field: "id", headerName: "ID", flex: 0.5 },
 
     {
-      field: "type_name",
-      headerName: "Name",
+      field: "service_type_name",
+      headerName: "Type Name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "number_services",
+      headerName: "Number Services",
       flex: 1,
       cellClassName: "name-column--cell",
     },
 
-   
     {
       field: "accessLevel",
       headerName: "Access Level",
@@ -90,14 +104,16 @@ const ServiceType = () => {
     setOpenModal(true);
     form.setFieldValue("name", "");
     setdisabledCreate(false);
-
+    setBase(false);
     setValues({});
   };
   const handleEdit = (params) => {
     setdisabledCreate(false);
     const { row } = params;
-    form.setFieldValue("name", row.area_name);
-
+    setID(row.id);
+    form.setFieldValue("typename", row.service_type_name);
+    form.setFieldValue("size", row.number_services);
+    setBase(true);
     setOpenModal(true);
   };
 
@@ -105,6 +121,27 @@ const ServiceType = () => {
     setOpenModal(true);
   };
 
+  const fetchService = async (id) => {
+    await http
+      .get(`/admin/list-service-by-type/${id}`)
+      .then((resolve) => {
+        console.log(resolve);
+        setService();
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+  };
+
+  const handleCellClick = (params) => {
+    const { row } = params;
+    const field = params.field;
+    if (field !== "accessLevel" ) {
+      console.log(row);
+      fetchService(row.id);
+      navigate("/admin/service" ,{ state: row.id });
+    }
+  };
   const handleDoubleClickCell = (params) => {
     const { row } = params;
     setdisabledCreate(true);
@@ -128,18 +165,39 @@ const ServiceType = () => {
   const handleCancel = () => {
     setOpenModal(false);
   };
-  // Handle add new info
-  const handleAdd = () => {
-    console.log("Add");
-  };
-  // Handle edit old info
-  const handleSumbit = () => {
-    console.log("Sumbit");
-  };
 
   // Successful case
   const onFinish = (values) => {
-    console.log("Success:", values);
+    const { typename, size } = values;
+    const formData = new FormData();
+
+    if (base) {
+      console.log("Success: edit", values);
+    } else {
+      console.log("Success: add", values);
+
+      formData.append("service_name", typename);
+
+      console.log("form: add", formData);
+
+      http
+        .post(`/admin/store-service-type`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully add your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log("Error response:", reject.response);
+          console.log("Error status code:", reject.response.status);
+          console.log("Error message:", reject.message);
+          console.log(reject);
+        });
+    }
   };
 
   // Failed case
@@ -171,6 +229,23 @@ const ServiceType = () => {
       bottom: clientHeight - (targetRect.bottom - uiData.y),
     });
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await http
+        .get(`/admin/list-service-type`)
+        .then((resolve) => {
+          setListType(resolve.data.list_room_types);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
 
   return (
     <div className={cx("contact-wrapper")}>
@@ -208,12 +283,12 @@ const ServiceType = () => {
         }}
       >
         <DataGrid
+          onCellClick={handleCellClick}
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataServiceType}
+          rows={listType}
           columns={columns}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
-
         />
       </Box>
       <Modal
@@ -264,7 +339,7 @@ const ServiceType = () => {
           initialValues={{
             typename: values?.type_name,
             size: values?.size,
-            capacity : values?.capacity ,
+            capacity: values?.capacity,
             describe: values?.describe,
             price: values?.price,
             point: values?.point_ranking,
@@ -310,7 +385,6 @@ const ServiceType = () => {
             <Form.Item
               name="capacity"
               label="Capacity"
-
               rules={[
                 {
                   required: true,
@@ -329,7 +403,6 @@ const ServiceType = () => {
             <Form.Item
               name="describe"
               label="Describe"
-
               rules={[
                 {
                   required: true,
@@ -348,7 +421,6 @@ const ServiceType = () => {
             <Form.Item
               name="price"
               label="Price"
-
               rules={[
                 {
                   required: true,
@@ -367,7 +439,6 @@ const ServiceType = () => {
             <Form.Item
               name="point"
               label="Point Ranking"
-
               rules={[
                 {
                   required: true,
@@ -382,7 +453,7 @@ const ServiceType = () => {
               />
             </Form.Item>
           </div>
-         
+
           <Form.Item
             wrapperCol={24}
             style={{
@@ -394,13 +465,9 @@ const ServiceType = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") === "" ? (
-                <Button type="primary" onClick={handleAdd}>
-                  Add
-                </Button>
               ) : (
-                <Button type="primary" onClick={handleSumbit}>
-                  Edit
+                <Button type="primary" htmlType="submit">
+                  {base ? <>Edit</> : <>Add</>}
                 </Button>
               )}
             </div>

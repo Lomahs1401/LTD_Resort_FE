@@ -1,9 +1,65 @@
 .contact-wrapper {
-    margin: 20px;
+  margin: 20px;
+}
+.info-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  &__left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+}
+
+.title-text {
+  font-size: 24px;
+  color: #9b9e9c;
+}
+
+.content-text {
+  color: black;
+  font-size: 28px;
+  position: relative;
+  width: fit-content;
+  font-weight: 600;
 }
 .modal-form {
-    max-width: 600px;
+  // max-width: 600px;
+}
+.modal{
+  width: 800px !important;
+}
+.form-attributes {
+  &__item {
+    margin: 0;
+  }
+}
+.input:disabled {
+  font-weight: 700 !important;
 }
 .table {
-    font-size: larger !important;
+  font-size: larger !important;
+}
+.content{
+  width: 100%;
+}
+.account-info-wrapper {
+  display: flex;
+  &__right {
+    width: 50% !important;
+    img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+    }
+  }
+  &__left {
+    width: 50% !important;
+    display: flex;
+    justify-content: space-between;
+  }
 }

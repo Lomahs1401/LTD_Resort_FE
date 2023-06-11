@@ -3,6 +3,7 @@ import { Box, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../../utils/theme";
+import { mockDataCustomer } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
 import styles from "./Customer.module.scss";
 import classNames from "classnames/bind";
@@ -28,46 +29,43 @@ const Customer = () => {
       cellClassName: "name-column--cell",
     },
     {
+      field: "gender",
+      headerName: "Gender",
+      flex: 1,
+    },
+    {
       field: "phone",
       headerName: "Phone Number",
       flex: 1,
     },
     {
-      field: "email",
-      headerName: "Email",
+      field: "address",
+      headerName: "Address",
       flex: 1,
     },
     {
-      field: "cost",
-      headerName: "Cost",
+      field: "ranking_point",
+      headerName: "Point",
       flex: 1,
       renderCell: (params) => (
         <Typography color={colors.greenAccent[500]}>
-          ${params.row.cost}
+          {params.row.ranking_point}
         </Typography>
       ),
     },
-    {
-      field: "date",
-      headerName: "Date",
-      flex: 1,
-    },
   ];
 
-  const handleDoubleClickCell = (params, ev) => {
-    const { row } = params;
-    console.log(row);
-    
+  const handleDoubleClickCell = (params) => {
+    const { row } = params;    
     // Chuyển hướng đến trang hóa đơn
-    navigate("/admin/bill", { state: row });
+    navigate("/employee/bill", { state: row });
   };
 
   //fetch api
   useEffect(() => {
     const fetchData = () =>{
-      http.get('/admin/list-customer')
+      http.get('/employee/list-customer')
       .then((resolve) => {
-        console.log(resolve);
         setListCustomers(resolve.data.list_customers);
       })
       .catch((reject) => {
@@ -114,7 +112,7 @@ const Customer = () => {
       >
         <DataGrid
           checkboxSelection
-          rows={listCustomers}
+          rows={listCustomers ? listCustomers : mockDataCustomer}
           columns={columns}
           className={cx("table")}
           onCellDoubleClick={handleDoubleClickCell}

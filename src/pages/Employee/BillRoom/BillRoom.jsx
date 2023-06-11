@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { mockDataService } from "../../../data/mockData";
 import { Button } from "@mui/material";
 import { tokens } from "../../../utils/theme";
 import Header from "../../../components/Header/Header";
@@ -15,14 +14,15 @@ import {
   AiOutlineCheck,
   AiOutlineClose,
 } from "react-icons/ai";
-import styles from "./Service.module.scss";
+import styles from "./BillRoom.module.scss";
 import classNames from "classnames/bind";
 import AuthUser from "../../../utils/AuthUser";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+
 const cx = classNames.bind(styles);
 
-const Service = () => {
+const BillRoom = () => {
   const Layout = {
     labelCol: {
       span: 6,
@@ -32,7 +32,6 @@ const Service = () => {
     },
   };
   const navigate = useNavigate();
-
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [current, setCurrent] = useState(0);
@@ -42,7 +41,6 @@ const Service = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalChecking, setOpenModalChecking] = useState(false);
   const [id, setID] = useState();
-
   const [form] = Form.useForm();
   const [values, setValues] = useState({});
   const { http } = AuthUser();
@@ -58,13 +56,19 @@ const Service = () => {
     setOpenModalChecking(true);
   };
 
-  const handlAccept = (params) => {
+  const handlGetCheckOut = (params) => {
+    setdisabledCreate(false);
     const { row } = params;
+    setID(row.id);
 
     http
-      .delete(`/employee/delete-bill-service/${row.id}`)
+      .patch(`/employee/get-checkout-room/${id}`)
       .then(() => {
-        Swal.fire("Update!", "success").then(() => {
+        Swal.fire(
+          "Update!",
+          "You have successfully checkout your profile",
+          "success"
+        ).then(() => {
           navigate(0);
         });
       })
@@ -72,10 +76,26 @@ const Service = () => {
         console.log(reject);
       });
   };
-  const handlReject = (params) => {
-    setdisabledCreate(false);
 
-    setOpenModalChecking(true);
+  const handlAccept = (params) => {
+    const { row } = params;
+   
+    http
+      .delete(`/employee/delete-bill-room/${row.id}`)
+      .then(() => {
+        Swal.fire(
+          "Update!",
+          "success"
+        ).then(() => {
+          navigate(0);
+        });
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+  };
+
+  const handlReject = (params) => {
   };
 
   const handleDoubleClickCell = (params) => {
@@ -86,15 +106,18 @@ const Service = () => {
     form.setFieldValue("full_name", row.full_name);
     form.setFieldValue("birthday", row.birthday);
     form.setFieldValue("phone", row.phone);
-    form.setFieldValue("quantity", row.quantity);
+    form.setFieldValue("total_people", row.total_people);
     form.setFieldValue("total_amount", row.total_amount);
     form.setFieldValue("book_time", row.book_time);
     form.setFieldValue("payment_method", row.payment_method);
     form.setFieldValue("pay_time", row.pay_time);
     form.setFieldValue("tax", row.tax);
-    form.setFieldValue("discount", row.discount);
-    form.setFieldValue("service", row.service);
-    form.setFieldValue("service_type", row.service_type);
+    form.setFieldValue("checkin_time", row.checkin_time);
+    form.setFieldValue("checkout_time", row.checkout_time);
+    form.setFieldValue("cancel_time", row.cancel_time);
+    form.setFieldValue("time_start", row.time_start);
+    form.setFieldValue("time_end", row.time_end);
+
     setOpenModal(true);
   };
 
@@ -143,29 +166,38 @@ const Service = () => {
       cellClassName: "name-column--cell",
     },
     {
-      field: "book_time",
-      headerName: "Book Time",
+      field: "time_start",
+      headerName: "Time Start",
       flex: 1,
       cellClassName: "name-column--cell",
     },
     {
-      field: "quantity",
-      headerName: "Quantity",
+      field: "time_end",
+      headerName: "time_end",
       flex: 1,
       cellClassName: "name-column--cell",
     },
     {
       field: "accessLevel",
       headerName: "Access Level",
-      width: 150,
+      width: 170,
       renderCell: (params) => {
         const handleCodeClick = () => {
           handlGetCode(params);
+        };
+        const handleCheckOutClick = () => {
+          handlGetCheckOut(params);
         };
 
         return (
           <Box display="flex" borderRadius="4px">
             <Button startIcon={<AiFillEdit />} onClick={handleCodeClick}>
+              {" "}
+            </Button>
+            <Button
+              startIcon={<AiOutlineCheck />}
+              onClick={handleCheckOutClick}
+            >
               {" "}
             </Button>
           </Box>
@@ -206,14 +238,14 @@ const Service = () => {
       cellClassName: "name-column--cell",
     },
     {
-      field: "book_time",
-      headerName: "Book Time",
+      field: "time_start",
+      headerName: "Time Start",
       flex: 1,
       cellClassName: "name-column--cell",
     },
     {
-      field: "quantity",
-      headerName: "Quantity",
+      field: "time_end",
+      headerName: "time_end",
       flex: 1,
       cellClassName: "name-column--cell",
     },
@@ -251,14 +283,14 @@ const Service = () => {
       cellClassName: "name-column--cell",
     },
     {
-      field: "book_time",
-      headerName: "Book Time",
+      field: "time_start",
+      headerName: "Time Start",
       flex: 1,
       cellClassName: "name-column--cell",
     },
     {
-      field: "quantity",
-      headerName: "Quantity",
+      field: "time_end",
+      headerName: "time_end",
       flex: 1,
       cellClassName: "name-column--cell",
     },
@@ -292,7 +324,7 @@ const Service = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataService}
+          rows={bill}
           columns={columnsBill}
           className={cx("table")}
         />
@@ -304,7 +336,7 @@ const Service = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataService}
+          rows={history}
           columns={columnsHistory}
           className={cx("table")}
         />
@@ -316,7 +348,7 @@ const Service = () => {
       content: (
         <DataGrid
           onCellDoubleClick={handleDoubleClickCell}
-          rows={mockDataService}
+          rows={cancel}
           columns={columnsCancel}
           className={cx("table")}
         />
@@ -332,10 +364,10 @@ const Service = () => {
     const formData = new FormData();
     formData.append("bill_code", code);
     http
-      .patch(`/employee/get-checkin-service/${id}`, formData)
+      .patch(`/employee/get-checkin-room/${id}`, formData)
       .then((resolve) => {
         console.log(resolve.data.message);
-        if (resolve.data.message === "bill checkin Successfully") {
+        if (resolve.data.message == "bill checkin Successfully") {
           Swal.fire(
             "Update!",
             "You have successfully update your profile",
@@ -385,7 +417,7 @@ const Service = () => {
   useEffect(() => {
     const fetchData = async () => {
       await http
-        .get(`/employee/list-bill-service`)
+        .get(`/employee/list-bill-room`)
         .then((resolve) => {
           setBill(resolve.data.bill_room);
           if (resolve.data.status === 404) {
@@ -396,7 +428,7 @@ const Service = () => {
           console.log(reject);
         });
       await http
-        .get(`/employee/list-history-service`)
+        .get(`/employee/list-history-room`)
         .then((resolve) => {
           setHistory(resolve.data.bill_room);
           if (resolve.data.status === 404) {
@@ -408,7 +440,7 @@ const Service = () => {
           setHistory([]);
         });
       await http
-        .get(`/employee/list-cancel-service`)
+        .get(`/employee/list-cancel-room`)
         .then((resolve) => {
           setCancel(resolve.data.bill_room);
           if (resolve.data.status === 404) {
@@ -422,13 +454,10 @@ const Service = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log("service 1", bill);
-  console.log("2", history);
-  console.log("3", cancel);
 
   return (
     <div className={cx("contact-wrapper")}>
-      <Header title="SERVICE" subtitle="List of Service" />
+      <Header title="BILL" subtitle="List of Bill" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -485,7 +514,7 @@ const Service = () => {
               setDisabled(true);
             }}
           >
-            Service Info
+            Room Info
           </div>
         }
         open={openModal}
@@ -553,30 +582,8 @@ const Service = () => {
           </div>
           <div className={cx("form-attributes")}>
             <Form.Item
-              name="service"
-              label="Service"
-              hasFeedback
-              valuePropName="children"
-              className={cx("form-attributes__item")}
-            >
-              <div disabled={true} className={cx("input")} />
-            </Form.Item>
-          </div>
-          <div className={cx("form-attributes")}>
-            <Form.Item
-              name="service_type"
-              label="Service Type"
-              hasFeedback
-              valuePropName="children"
-              className={cx("form-attributes__item")}
-            >
-              <div disabled={true} className={cx("input")} />
-            </Form.Item>
-          </div>
-          <div className={cx("form-attributes")}>
-            <Form.Item
-              name="quantity"
-              label="Quantity"
+              name="total_people"
+              label="Total People"
               hasFeedback
               valuePropName="children"
               className={cx("form-attributes__item")}
@@ -594,11 +601,56 @@ const Service = () => {
             >
               <div disabled={true} className={cx("input")} />
             </Form.Item>
+
+            <div className={cx("form-attributes")}>
+              <Form.Item
+                name="payment_method"
+                label="Payment"
+                hasFeedback
+                valuePropName="children"
+                className={cx("form-attributes__item")}
+              >
+                <div disabled={true} className={cx("input")} />
+              </Form.Item>
+            </div>
+            <div className={cx("form-attributes")}>
+              <Form.Item
+                name="pay_time"
+                label="Pay Time"
+                hasFeedback
+                valuePropName="children"
+                className={cx("form-attributes__item")}
+              >
+                <div disabled={true} className={cx("input")} />
+              </Form.Item>
+            </div>
+            <div className={cx("form-attributes")}>
+              <Form.Item
+                name="tax"
+                label="Tax"
+                hasFeedback
+                valuePropName="children"
+                className={cx("form-attributes__item")}
+              >
+                <div disabled={true} className={cx("input")} />
+              </Form.Item>
+            </div>
+            <div className={cx("form-attributes")}>
+              <Form.Item
+                name="discount"
+                label="Discount"
+                hasFeedback
+                valuePropName="children"
+                className={cx("form-attributes__item")}
+              >
+                <div disabled={true} className={cx("input")} />
+              </Form.Item>
+            </div>
           </div>
           <div className={cx("form-attributes")}>
             <Form.Item
-              name="book_time"
-              label="Book Time"
+              name="checkin_time"
+              label="Checkin Time"
               hasFeedback
               valuePropName="children"
               className={cx("form-attributes__item")}
@@ -608,8 +660,8 @@ const Service = () => {
           </div>
           <div className={cx("form-attributes")}>
             <Form.Item
-              name="payment_method"
-              label="Payment"
+              name="checkout_time"
+              label="Checkout Time"
               hasFeedback
               valuePropName="children"
               className={cx("form-attributes__item")}
@@ -619,8 +671,8 @@ const Service = () => {
           </div>
           <div className={cx("form-attributes")}>
             <Form.Item
-              name="pay_time"
-              label="Pay Time"
+              name="cancel_time"
+              label="Cancel Time"
               hasFeedback
               valuePropName="children"
               className={cx("form-attributes__item")}
@@ -630,8 +682,8 @@ const Service = () => {
           </div>
           <div className={cx("form-attributes")}>
             <Form.Item
-              name="tax"
-              label="Tax"
+              name="time_start"
+              label="Time Start"
               hasFeedback
               valuePropName="children"
               className={cx("form-attributes__item")}
@@ -641,8 +693,8 @@ const Service = () => {
           </div>
           <div className={cx("form-attributes")}>
             <Form.Item
-              name="discount"
-              label="Discount"
+              name="time_end"
+              label="Time End"
               hasFeedback
               valuePropName="children"
               className={cx("form-attributes__item")}
@@ -738,4 +790,4 @@ const Service = () => {
   );
 };
 
-export default Service;
+export default BillRoom;

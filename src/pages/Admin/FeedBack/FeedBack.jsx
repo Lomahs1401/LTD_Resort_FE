@@ -40,6 +40,7 @@ const FeedBack = () => {
   };
   const navigate = useNavigate();
   const [openModalDetail, setOpenModalDetail] = useState(false);
+;
   const [base, setBase] = useState();
   const [listFeedBackOnRoom, setListFeedBackOnRoom] = useState([]);
   const [ListFeedBackOnService, setListFeedBackOnService] = useState([]);
@@ -82,6 +83,7 @@ const FeedBack = () => {
     await http
       .get(`/auth/feedback/${id}`)
       .then((response) => {
+        console.log(response);
         setDetails(response.data.feedback);
       })
       .catch((error) => {
@@ -100,30 +102,10 @@ const FeedBack = () => {
     form.setFieldValue("position_name", details?.position);
     form.setFieldValue("comment", details?.comment);
   }, [details]);
-
-  const handleEdit = (params) => {
+  const handleDelete = (params) => {
     console.log(params);
     const { row } = params;
 
-    http
-      .patch(`/employee/feedbacks-employee/${row.id}`)
-      .then(() => {
-        Swal.fire(
-          "Update!",
-          "You have successfully Delete your profile",
-          "success"
-        ).then(() => {
-          navigate(0);
-        });
-      })
-      .catch((reject) => {
-        console.log(reject);
-      });
-  };
-
-
-  const handleDelete = (params) => {
-    const { row } = params;
     http
       .delete(`/auth/detele-feedback/${row.id}`)
       .then(() => {
@@ -156,7 +138,74 @@ const FeedBack = () => {
   };
 
   const onFinish = (values) => {
-    console.log("Success:", values);
+    const {
+      fullName,
+      gender,
+      birthDate,
+      ID_Card,
+      address,
+      phone,
+      accountbank,
+      namebank,
+      department,
+      position,
+    } = values;
+    const formData = new FormData();
+    if (base) {
+      console.log("Success: edit", values);
+
+      formData.append("full_name", fullName);
+      formData.append("gender", gender);
+      formData.append("birthday", FormattedDate(birthDate));
+      formData.append("CMND", ID_Card);
+      formData.append("position_name", position);
+
+      http
+        .patch(`/admin/update-employee/${id}`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully update your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    } else {
+      console.log("Success: add", values);
+
+      formData.append("full_name", fullName);
+      formData.append("gender", gender);
+      formData.append("birthday", FormattedDate(birthDate));
+      formData.append("CMND", ID_Card);
+      formData.append("address", address);
+      formData.append("phone", phone);
+      formData.append("account_bank", accountbank);
+      formData.append("name_bank", namebank);
+      formData.append("department_name", department);
+      formData.append("position_name", position);
+
+      http
+        .post(`/admin/store-employee`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully add your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log("Error response:", reject.response);
+          console.log("Error status code:", reject.response.status);
+          console.log("Error message:", reject.message);
+          console.log(reject);
+        });
+    }
   };
 
   // Failed case
@@ -252,6 +301,7 @@ const FeedBack = () => {
       flex: 1.7,
       cellClassName: "name-column--cell",
     },
+
     {
       field: "rating",
       headerName: "Rating",
@@ -270,23 +320,18 @@ const FeedBack = () => {
       flex: 0.8,
       cellClassName: "name-column--cell",
     },
+
     {
       field: "Access",
       headerName: "Access Level",
-      width: 170,
+      width: 120,
       renderCell: (params) => {
-        const handleEditClick = () => {
-          handleEdit(params);
-        };
         const handleDeleteClick = () => {
           handleDelete(params);
         };
         return (
           <Box display="flex" borderRadius="4px">
             <Button startIcon={<AiFillDelete />} onClick={handleDeleteClick}>
-              {" "}
-            </Button>
-            <Button startIcon={<AiFillEdit />} onClick={handleEditClick}>
               {" "}
             </Button>
           </Box>
@@ -372,6 +417,7 @@ const FeedBack = () => {
       flex: 1.7,
       cellClassName: "name-column--cell",
     },
+
     {
       field: "rating",
       headerName: "Rating",
@@ -390,23 +436,18 @@ const FeedBack = () => {
       flex: 0.8,
       cellClassName: "name-column--cell",
     },
+
     {
       field: "Access",
       headerName: "Access Level",
-      width: 170,
+      width: 120,
       renderCell: (params) => {
-        const handleEditClick = () => {
-          handleEdit(params);
-        };
         const handleDeleteClick = () => {
           handleDelete(params);
         };
         return (
           <Box display="flex" borderRadius="4px">
             <Button startIcon={<AiFillDelete />} onClick={handleDeleteClick}>
-              {" "}
-            </Button>
-            <Button startIcon={<AiFillEdit />} onClick={handleEditClick}>
               {" "}
             </Button>
           </Box>
@@ -442,8 +483,9 @@ const FeedBack = () => {
   useEffect(() => {
     const fetchData = () => {
       http
-        .get(`/employee/list-feedbacks-employee`)
+        .get(`/admin/list-feedbacks-admin`)
         .then((resolve) => {
+          console.log(resolve);
           setListFeedBackOnRoom(resolve.data.list_feedback_room);
           setListFeedBackOnService(resolve.data.list_feedback_service);
           setListFeedBackRoom(resolve.data.list_feedback_room);
@@ -455,6 +497,7 @@ const FeedBack = () => {
       http
         .get(`/auth/list-not-feedbacks`)
         .then((resolve) => {
+          console.log(resolve);
           setListFeedBackOffRoom(resolve.data.list_feedback_room);
           setListFeedBackOffService(resolve.data.list_feedback_service);
         })
@@ -743,6 +786,8 @@ const FeedBack = () => {
               <div disabled={true} className={cx("input")} />
             </Form.Item>
           </div>
+
+          
         </Form>
       </Modal>
     </div>

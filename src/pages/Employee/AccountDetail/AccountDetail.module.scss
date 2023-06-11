@@ -68,7 +68,7 @@
     }
     &__admin{
         display: flex;
-        width: 50%;
+        width: 100%;
     }
 }
 .info-container {
@@ -106,6 +106,9 @@
 .title-text {
     font-size: 24px;
     color: #9b9e9c;
+}
+.modal-form{
+    width: 50%;
 }
 
 .content-text {

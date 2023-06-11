@@ -12,14 +12,14 @@ const cx = classNames.bind(styles);
 
 const AccountDetail = () => {
   const { http } = AuthUser();
-  const [admin, setAdmin] = useState();
+  const [employee, setEmployee] = useState();
   const [edit, setEdit] = useState(true);
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const onFinish = (values) => {
     console.log("Success:", values);
-    const updatedAdmin = {
-      ...admin,
+    const updatedEmployee = {
+      ...employee,
       name: form.getFieldValue("fullName"),
       gender: form.getFieldValue("gender"),
       birthday: form.getFieldValue("birthday"),
@@ -29,21 +29,24 @@ const AccountDetail = () => {
       position_name: form.getFieldValue("position_name"),
       department_name: form.getFieldValue("department_name"),
     };
-    setAdmin(updatedAdmin);
+    setEmployee(updatedEmployee);
 
     const formData = new FormData();
 
     formData.append("avatar", "gs://ltd-resort.appspot.com/avatars/aloy.png");
-    formData.append("full_name", admin.name);
-    formData.append("gender", admin.gender);
-    formData.append("birthday", admin.birthday);
-    formData.append("CMND", admin.CMND);
-    formData.append("address", admin.address);
-    formData.append("phone", admin.phone);
-    formData.append("image", "https://via.placeholder.com/640x480.png/00cc22?text=quo");
+    formData.append("full_name", employee.name);
+    formData.append("gender", employee.gender);
+    formData.append("birthday", employee.birthday);
+    formData.append("CMND", employee.CMND);
+    formData.append("address", employee.address);
+    formData.append("phone", employee.phone);
+    formData.append(
+      "image",
+      "https://via.placeholder.com/640x480.png/00cc22?text=quo"
+    );
 
     http
-      .patch(`/admin/update-admin`, formData)
+      .patch(`/employee//update-employee`, formData)
       .then(() => {
         Swal.fire(
           "Update!",
@@ -77,14 +80,14 @@ const AccountDetail = () => {
   const handleEditSaveClick = () => {
     if (edit) {
       console.log("edit");
-      form.setFieldValue("fullName", admin?.name);
-      form.setFieldValue("gender", admin?.gender);
-      form.setFieldValue("birthday", admin?.birthday);
-      form.setFieldValue("address", admin?.address);
-      form.setFieldValue("CMND", admin?.CMND);
-      form.setFieldValue("phone", admin?.phone);
-      form.setFieldValue("position_name", admin?.position_name);
-      form.setFieldValue("department_name", admin?.department_name);
+      form.setFieldValue("fullName", employee?.name);
+      form.setFieldValue("gender", employee?.gender);
+      form.setFieldValue("birthday", employee?.birthday);
+      form.setFieldValue("address", employee?.address);
+      form.setFieldValue("CMND", employee?.CMND);
+      form.setFieldValue("phone", employee?.phone);
+      form.setFieldValue("position_name", employee?.position_name);
+      form.setFieldValue("department_name", employee?.department_name);
 
       setEdit(!edit);
     } else {
@@ -95,10 +98,10 @@ const AccountDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       await http
-        .get(`/admin/account-admin`)
+        .get(`/employee/account-employee`)
         .then((resolve) => {
           console.log(resolve);
-          setAdmin(resolve.data.customer);
+          setEmployee(resolve.data.customer);
         })
         .catch((reject) => {
           console.log(reject);
@@ -122,307 +125,252 @@ const AccountDetail = () => {
 
         <div className={cx("info")}>
           <div className={cx("info__img")}>
-            <img src={admin?.image} alt="Avatar" />
+            <img src={employee?.image} alt="Avatar" />
           </div>
-          <div className={cx("info__admin")}>
-            <div
-              style={{
-                width: "50%",
-              }}
-            >
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Name</div>
-                  <div className={cx("content-text")}>{admin?.name}</div>
-                </div>
+          <Form
+            form={form}
+            layout="horizontal"
+            name="profile_form"
+            labelAlign="right"
+            labelWrap="true"
+            size="large"
+            autoComplete="off"
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            className={cx("modal-form")}
+          >
+            <Form.Item wrapperCol={24}>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                {edit ? (
+                  <Button
+                    htmlType="submit"
+                    type="submit"
+                    onClick={handleEditSaveClick}
+                    className={cx("button")}
+                    icon={<BiSave />}
+                  >
+                    Edit
+                  </Button>
+                ) : (
+                  <Button
+                    type="primary"
+                    onClick={handleEditSaveClick}
+                    className={cx("button")}
+                    icon={<BiEdit />}
+                  >
+                    Save
+                  </Button>
+                )}
               </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Gender</div>
-                  <div className={cx("content-text")}>{admin?.gender}</div>
+            </Form.Item>
+            <div className={cx("info")}>
+        
+              <div className={cx("info__admin")}>
+                <div
+                  style={{
+                    width: "50%",
+                  }}
+                >
+                  <div className={cx("info-container__left")}>
+                    <div className={cx("title-text")}>Name</div>
+                    <Form.Item
+                      name="fullName"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
+                      className={cx("form-attributes__item")}
+                      va={employee?.name}
+                    >
+                      {edit ? (
+                        <div className={cx("content-text")}>
+                          {employee?.name}
+                        </div>
+                      ) : (
+                        <Input
+                          placeholder={"Please fill full name"}
+                          className={cx("content-text")}
+                        />
+                      )}
+                    </Form.Item>
+                  </div>
+                  <div className={cx("info-container__left")}>
+                    <div className={cx("title-text")}>Gender</div>
+                    <Form.Item
+                      name="gender"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
+                      className={cx("form-attributes__item")}
+                    >
+                      {edit ? (
+                        <div className={cx("content-text")}>
+                          {employee?.gender}
+                        </div>
+                      ) : (
+                        <Input
+                          placeholder={"Please fill full name"}
+                          className={cx("content-text")}
+                        />
+                      )}
+                    </Form.Item>
+                  </div>
+                  <div className={cx("info-container__left")}>
+                    <div className={cx("title-text")}>Birthday</div>
+                    <Form.Item
+                      name="birthday"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
+                      className={cx("form-attributes__item")}
+                    >
+                      {edit ? (
+                        <div className={cx("content-text")}>
+                          {employee?.birthday}
+                        </div>
+                      ) : (
+                        <Input
+                          placeholder={"Please fill full name"}
+                          className={cx("content-text")}
+                          value={employee?.birthday}
+                        />
+                      )}
+                    </Form.Item>
+                  </div>
+                  <div className={cx("info-container__left")}>
+                    <div className={cx("title-text")}>Address</div>
+                    <Form.Item
+                      name="address"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
+                      className={cx("form-attributes__item")}
+                    >
+                      {edit ? (
+                        <div className={cx("content-text")}>
+                          {employee?.address}
+                        </div>
+                      ) : (
+                        <Input
+                          placeholder={"Please fill full name"}
+                          className={cx("content-text")}
+                          value={employee?.address}
+                        />
+                      )}
+                    </Form.Item>
+                  </div>
                 </div>
-              </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Birthday</div>
-                  <div className={cx("content-text")}>{admin?.birthday}</div>
-                </div>
-              </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Address</div>
-                  <div className={cx("content-text")}>{admin?.address}</div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>ID Card</div>
-                  <div className={cx("content-text")}>{admin?.CMND}</div>
-                </div>
-              </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Phone</div>
-                  <div className={cx("content-text")}>{admin?.phone}</div>
-                </div>
-              </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Position</div>
-                  <div className={cx("content-text")}>
-                    {admin?.position_name}
+                <div
+                  style={{
+                    width: "50%",
+                  }}
+                >
+                  <div className={cx("info-container__left")}>
+                    <div className={cx("title-text")}>ID Card</div>
+                    <Form.Item
+                      name="CMND"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
+                      className={cx("form-attributes__item")}
+                    >
+                      {edit ? (
+                        <div className={cx("content-text")}>
+                          {employee?.CMND}
+                        </div>
+                      ) : (
+                        <Input
+                          placeholder={"Please fill full name"}
+                          className={cx("content-text")}
+                        />
+                      )}
+                    </Form.Item>
+                  </div>
+                  <div className={cx("info-container__left")}>
+                    <div className={cx("title-text")}>Phone</div>
+                    <Form.Item
+                      name="phone"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
+                      className={cx("form-attributes__item")}
+                    >
+                      {edit ? (
+                        <div className={cx("content-text")}>
+                          {employee?.phone}
+                        </div>
+                      ) : (
+                        <Input
+                          placeholder={"Please fill full name"}
+                          className={cx("content-text")}
+                        />
+                      )}
+                    </Form.Item>
+                  </div>
+                  <div className={cx("info-container__left")}>
+                    <div className={cx("title-text")}>Position</div>
+                    <Form.Item
+                      name="position_name"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
+                      className={cx("form-attributes__item")}
+                    >
+                      {edit ? (
+                        <div className={cx("content-text")}>
+                          {employee?.position_name}
+                        </div>
+                      ) : (
+                        <Input
+                          placeholder={"Please fill full name"}
+                          className={cx("content-text")}
+                          value={employee?.position_name}
+                        />
+                      )}
+                    </Form.Item>
+                  </div>
+                  <div className={cx("info-container__left")}>
+                    <div className={cx("title-text")}>Department</div>
+                    <Form.Item
+                      name="department_name"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
+                      className={cx("form-attributes__item")}
+                    >
+                      {edit ? (
+                        <div className={cx("content-text")}>
+                          {employee?.department_name}
+                        </div>
+                      ) : (
+                        <Input
+                          placeholder={"Please fill full name"}
+                          className={cx("content-text")}
+                          value={employee?.department_name}
+                        />
+                      )}
+                    </Form.Item>
                   </div>
                 </div>
               </div>
-              <div className={cx("info-container")}>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Department</div>
-                  <div className={cx("content-text")}>
-                    {admin?.department_name}
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
+          </Form>
         </div>
-
-        <Form
-          form={form}
-          layout="horizontal"
-          name="profile_form"
-          labelAlign="right"
-          labelWrap="true"
-          size="large"
-          autoComplete="off"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          className={cx("modal-form")}
-     
-        >
-          <Form.Item wrapperCol={24}>
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              {edit ? (
-                <Button
-                  htmlType="submit"
-                  type="submit"
-                  onClick={handleEditSaveClick}
-                  className={cx("button")}
-                  icon={<BiSave />}
-                >
-                  Edit
-                </Button>
-              ) : (
-                <Button
-                  type="primary"
-                  onClick={handleEditSaveClick}
-                  className={cx("button")}
-                  icon={<BiEdit />}
-                >
-                  Save
-                </Button>
-              )}
-            </div>
-          </Form.Item>
-          <div className={cx("info")}>
-            <div className={cx("info__img")}></div>
-            <div className={cx("info__admin")}>
-              <div
-                style={{
-                  width: "50%",
-                }}
-              >
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Name</div>
-                  <Form.Item
-                    name="fullName"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                    className={cx("form-attributes__item")}
-                    va={admin?.name}
-                  >
-                    {edit ? (
-                      <div className={cx("content-text")}>{admin?.name}</div>
-                    ) : (
-                      <Input
-                        placeholder={"Please fill full name"}
-                        className={cx("content-text")}
-                       
-                      />
-                    )}
-                  </Form.Item>
-                </div>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Gender</div>
-                  <Form.Item
-                    name="gender"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                    className={cx("form-attributes__item")}
-                  >
-                    {edit ? (
-                      <div className={cx("content-text")}>{admin?.gender}</div>
-                    ) : (
-                      <Input
-                        placeholder={"Please fill full name"}
-                        className={cx("content-text")}
-                      />
-                    )}
-                  </Form.Item>
-                </div>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Birthday</div>
-                  <Form.Item
-                    name="birthday"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                    className={cx("form-attributes__item")}
-                  >
-                    {edit ? (
-                      <div className={cx("content-text")}>
-                        {admin?.birthday}
-                      </div>
-                    ) : (
-                      <Input
-                        placeholder={"Please fill full name"}
-                        className={cx("content-text")}
-                        value={admin?.birthday}
-                      />
-                    )}
-                  </Form.Item>
-                </div>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Address</div>
-                  <Form.Item
-                    name="address"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                    className={cx("form-attributes__item")}
-                  >
-                    {edit ? (
-                      <div className={cx("content-text")}>{admin?.address}</div>
-                    ) : (
-                      <Input
-                        placeholder={"Please fill full name"}
-                        className={cx("content-text")}
-                        value={admin?.address}
-                      />
-                    )}
-                  </Form.Item>
-                </div>
-              </div>
-              <div
-                style={{
-                  width: "50%",
-                }}
-              >
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>ID Card</div>
-                  <Form.Item
-                    name="CMND"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                    className={cx("form-attributes__item")}
-                  >
-                    {edit ? (
-                      <div className={cx("content-text")}>{admin?.CMND}</div>
-                    ) : (
-                      <Input
-                        placeholder={"Please fill full name"}
-                        className={cx("content-text")}
-                      />
-                    )}
-                  </Form.Item>
-                </div>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Phone</div>
-                  <Form.Item
-                    name="phone"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                    className={cx("form-attributes__item")}
-                  >
-                    {edit ? (
-                      <div className={cx("content-text")}>{admin?.phone}</div>
-                    ) : (
-                      <Input
-                        placeholder={"Please fill full name"}
-                        className={cx("content-text")}
-                      />
-                    )}
-                  </Form.Item>
-                </div>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Position</div>
-                  <Form.Item
-                    name="position_name"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                    className={cx("form-attributes__item")}
-                  >
-                    {edit ? (
-                      <div className={cx("content-text")}>
-                        {admin?.position_name}
-                      </div>
-                    ) : (
-                      <Input
-                        placeholder={"Please fill full name"}
-                        className={cx("content-text")}
-                        value={admin?.position_name}
-                      />
-                    )}
-                  </Form.Item>
-                </div>
-                <div className={cx("info-container__left")}>
-                  <div className={cx("title-text")}>Department</div>
-                  <Form.Item
-                    name="department_name"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                    className={cx("form-attributes__item")}
-                  >
-                    {edit ? (
-                      <div className={cx("content-text")}>
-                        {admin?.department_name}
-                      </div>
-                    ) : (
-                      <Input
-                        placeholder={"Please fill full name"}
-                        className={cx("content-text")}
-                        value={admin?.department_name}
-                      />
-                    )}
-                  </Form.Item>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Form>
       </div>
     </div>
   );
