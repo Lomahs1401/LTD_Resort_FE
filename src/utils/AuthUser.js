@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { removeAvatar } from "../redux/actions";
+import { removeAvatar, removeRoomType, removeTotalAmount, removeTotalPeople, removeTotalRooms } from "../redux/actions";
 import { toast } from "react-toastify";
 
 export default function AuthUser() {
@@ -45,6 +45,7 @@ export default function AuthUser() {
 
     const logout = () => {
         sessionStorage.clear();
+        localStorage.clear();
         dispatch(removeAvatar(''));
         navigate('/login')
         toast.success('Logout successful!', {

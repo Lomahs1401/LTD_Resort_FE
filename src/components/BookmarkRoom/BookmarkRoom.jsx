@@ -1,32 +1,27 @@
 import React, { useState } from 'react'
 import styles from './BookmarkRoom.module.scss'
 import classNames from "classnames/bind";
-import { useDispatch, useSelector } from 'react-redux';
-import { addRoomTypes, bookmarkRoom, removeRoomType, unmarkRoom } from '../../redux/actions';
-import { bookmarkRoomsSelector, roomTypesSelector } from '../../redux/selectors';
+import { useSelector } from 'react-redux';
+import { bookmarkRoomsSelector, checkinDateSelector, checkoutDateSelector } from '../../redux/selectors';
+import AuthUser from '../../utils/AuthUser';
+import dayjs from 'dayjs';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
 const BookmarkRoom = ({ 
   id, 
   roomName, 
-  status, 
-  areaId, 
-  floorId, 
-  roomTypeId,
-  roomTypeName,
-  roomSize,
-  totalRooms,
-  numberCustomers,
-  description,
-  image,
-  price,
-  pointRanking, 
+  status = '', 
   setReloadBookmarkRoom 
 }) => {
+  const customParseFormat = require('dayjs/plugin/customParseFormat');
+  dayjs.extend(customParseFormat);
 
   const bookmarkRooms = useSelector(bookmarkRoomsSelector);
-  const roomTypes = useSelector(roomTypesSelector);
+  const checkinDate = useSelector(checkinDateSelector);
+  const checkoutDate = useSelector(checkoutDateSelector);
+  const { http } = AuthUser();
 
   const [bookmarked, setBookmarked] = useState(() => {
     let isBookmarkedRoom = false;
@@ -41,67 +36,66 @@ const BookmarkRoom = ({
     return isBookmarkedRoom;
   });
 
-  const dispatch = useDispatch();
-
-  const checkRoomTypeExists = (roomTypes, roomTypeId) => {
-    for (let i = 0; i < roomTypes.length; i++) {
-      if (roomTypes[i].id === roomTypeId) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  const checkRoomTypeRemoveAll = (bookmarkRooms, roomTypeId) => {
-    const roomTypesById = bookmarkRooms.filter((markRoom) => {
-      return markRoom.roomTypeId === roomTypeId;
-    })
-    for (let i = 0; i < roomTypesById.length; i++) {
-      if (parseInt(roomTypesById[i].roomTypeId) === roomTypeId && roomTypesById.length === 1) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   const handleSelectRoom = (e, status) => {
     if (status === 'BOOKED') {
       e.preventDefault();
     } else {
+      const timeStart = dayjs(checkinDate, "DD/MM/YYYY").locale('vi').format('YYYY-MM-DD');
+      const timeEnd = dayjs(checkoutDate, "DD/MM/YYYY").locale('vi').format('YYYY-MM-DD');
+      
+      const formData = new FormData();
+
       if (!bookmarked) {
-        dispatch(bookmarkRoom({
-          id: id,
-          roomName: roomName,
-          status: status,
-          areaId: areaId,
-          floorId: floorId,
-          roomTypeId: roomTypeId
-        }));
-        if (!checkRoomTypeExists(roomTypes, roomTypeId)) {
-          dispatch(addRoomTypes({
-            id: roomTypeId,
-            roomTypeName: roomTypeName,
-            roomSize: roomSize,
-            totalRooms: totalRooms,
-            numberCustomers: numberCustomers,
-            description: description,
-            image: image,
-            price: price,
-            pointRanking: pointRanking, 
-          }))
-        }
+
+        formData.append('time_start', timeStart);
+        formData.append('time_end', timeEnd);
+        formData.append('room_id', id)
+
+        http.post('/customer/store-reservation_room', formData)
+          .then((resolve) => {
+            console.log(resolve);
+          })
+          .catch((reject) => {
+            console.log(reject);
+          })
+
         setBookmarked(true)
+        toast.success('We\'ll keep your room in 30 minutes', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        })
       } else {
-        dispatch(unmarkRoom(id));
-        if (!checkRoomTypeRemoveAll(bookmarkRooms, parseInt(roomTypeId))) {
-          console.log(bookmarkRooms);
-          dispatch(removeRoomType(parseInt(roomTypeId)))
-        }
+        http.delete(`/customer/delete-resevation_room/${id}/${timeStart}/${timeEnd}`, formData)
+          .then((resolve) => {
+            console.log(resolve);
+          })
+          .catch((reject) => {
+            console.log(reject);
+          })
+
+        toast.success('Successfully unmark room', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        })
+
         setBookmarked(false);
       }
       setReloadBookmarkRoom(true);
     }
   }
+  
 
   return (
     <div className={cx("bookmark-room-wrapper")}>

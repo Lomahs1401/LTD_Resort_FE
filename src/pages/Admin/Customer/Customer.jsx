@@ -1,4 +1,4 @@
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
@@ -12,7 +12,7 @@ import AuthUser from "../../../utils/AuthUser";
 const cx = classNames.bind(styles);
 
 const Customer = () => {
-  const {http} = AuthUser();
+  const { http } = AuthUser();
   const [listCustomers, setListCustomers] = useState([]);
   const navigate = useNavigate();
   const theme = useTheme();
@@ -29,29 +29,29 @@ const Customer = () => {
       cellClassName: "name-column--cell",
     },
     {
+      field: "gender",
+      headerName: "Gender",
+      flex: 1,
+    },
+    {
       field: "phone",
       headerName: "Phone Number",
       flex: 1,
     },
     {
-      field: "email",
-      headerName: "Email",
+      field: "address",
+      headerName: "Address",
       flex: 1,
     },
     {
-      field: "cost",
-      headerName: "Cost",
+      field: "ranking_point",
+      headerName: "Point",
       flex: 1,
       renderCell: (params) => (
         <Typography color={colors.greenAccent[500]}>
-          ${params.row.cost}
+          {params.row.ranking_point}
         </Typography>
       ),
-    },
-    {
-      field: "date",
-      headerName: "Date",
-      flex: 1,
     },
   ];
 
@@ -65,23 +65,20 @@ const Customer = () => {
 
   //fetch api
   useEffect(() => {
-
-    const fetchData = () =>{
-      http.get('/admin/list-customer')
-      .then((resolve) => {
-        console.log(resolve);
-        setListCustomers(resolve.data.list_customers);
-      })
-      .catch((reject) => {
-        console.log(reject);
-      })
-    }
-    fetchData()
-    // form.setFieldsValue(values);
+    const fetchData = () => {
+      http
+        .get("/admin/list-customer")
+        .then((resolve) => {
+          console.log(resolve);
+          setListCustomers(resolve.data.list_customers);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    
   }, []);
-
 
   return (
     <div className={cx("invoices-wrapper")}>

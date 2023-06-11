@@ -87,7 +87,7 @@ export const removeAvatar = (data) => {
 }
 
 export const bookmarkRoom = (data) => {
-    toast.success('Successfully bookmark room!', {
+    toast.success('We\'ll keep your room for 30 minutes!', {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -132,6 +132,62 @@ export const addRoomTypes = (data) => {
 export const removeRoomType = (data) => {
     return {
         type: 'roomType/removeRoomType',
+        payload: data,
+    }
+}
+
+export const addService = (data) => {
+    return {
+        type: 'service/addService',
+        payload: data,
+    }
+}
+
+export const removeService = (data) => {
+    return {
+        type: 'service/removeService',
+        payload: data,
+    }
+}
+
+export const addCheckinDate = (data) => {
+    return {
+        type: 'checkinDate/addCheckinDate',
+        payload: data,
+    }
+}
+
+export const addCheckoutDate = (data) => {
+    return {
+        type: 'checkoutDate/addCheckoutDate',
+        payload: data,
+    }
+}
+
+export const nextProgressStep = (data) => {
+    return {
+        type: 'progressStep/nextProgressStep',
+        payload: data,
+    }
+}
+
+export const prevProgressStep = (data) => {
+    return {
+        type: 'progressStep/prevProgressStep',
+        payload: data,
+    }
+}
+
+export const addTotalAmount = (data) => {
+    return {
+        type: 'totalAmount/addTotalAmount',
+        payload: data,
+    }
+}
+
+export const removeTotalAmount = (data) => {
+    return {
+        type: 'totalAmount/removeTotalAmount',
         payload: data,
     }
 }

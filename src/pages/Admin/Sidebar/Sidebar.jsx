@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -10,17 +10,13 @@ import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import BedIcon from "@mui/icons-material/Bed";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
-import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import testimonial from "../../../img/testimonial1.png";
+import { getDownloadURL, ref } from "firebase/storage";
+import AuthUser from "../../../utils/AuthUser";
+import { storage } from "../../../utils/firebase";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -43,8 +39,39 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [admin, setAdmin] = useState();
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const { http, user } = AuthUser();
+
+  const avatarRef = ref(storage, user.avatar);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await http
+        .get(`/admin/account-admin`)
+        .then((resolve) => {
+          console.log(resolve);
+          setAdmin(resolve.data.customer);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      getDownloadURL(avatarRef).then((url) => {
+        setAvatarUrl(url);
+      });
+    };
+
+    fetchImage();
+  }, []);
 
   return (
     <Box
@@ -102,7 +129,7 @@ const Sidebar = () => {
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={testimonial}
+                  src={avatarUrl}
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
@@ -113,10 +140,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Ed Roh
+                  {admin?.username}
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  VP Fancy Admin
+                  {admin?.name}
                 </Typography>
               </Box>
             </Box>
@@ -155,8 +182,8 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Manage Admin"
-              to="/admin/manageadmin"
+              title="Manage Department"
+              to="/admin/department"
               icon={<ReceiptOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -169,27 +196,6 @@ const Sidebar = () => {
             >
               Room
             </Typography>
-            <Item
-              title="Room"
-              to="/admin/room"
-              icon={<BedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Room Area"
-              to="/admin/roomarea"
-              icon={<LocationOnIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Room Floor"
-              to="/admin/roomfloor"
-              icon={<ArrowUpwardIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
             <Item
               title="Room Type"
               to="/admin/roomtype"
@@ -227,13 +233,27 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
 
-            {/* <Item
-              title="Create Service"
-              to="/admin/createservice"
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Info
+            </Typography>
+            <Item
+              title="FeedBack"
+              to="/admin/feedback"
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            /> */}
+            />
+            <Item
+              title="New"
+              to="/admin/news"
+              icon={<CalendarTodayOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
 
             <Typography
               variant="h6"
@@ -243,62 +263,12 @@ const Sidebar = () => {
               Pages
             </Typography>
             <Item
-              title="Profile Form"
-              to="/admin/form"
+              title="Statistical"
+              to="/admin/statistical"
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Calendar"
-              to="/admin/calendar"
-              icon={<CalendarTodayOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="FAQ Page"
-              to="/admin/faq"
-              icon={<HelpOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
-            {/* <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Charts
-            </Typography> */}
-            {/* <Item
-              title="Bar Chart"
-              to="/admin/bar"
-              icon={<BarChartOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Pie Chart"
-              to="/admin/pie"
-              icon={<PieChartOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Line Chart"
-              to="/admin/line"
-              icon={<TimelineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
-            {/* <Item
-              title="Geography Chart"
-              to="/admin/geography"
-              icon={<MapOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            /> */}
           </Box>
         </Menu>
       </ProSidebar>

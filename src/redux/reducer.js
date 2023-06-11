@@ -1,3 +1,5 @@
+import { addDays, format } from "date-fns"
+
 const initState = {
     favouritesRooms: localStorage.getItem('favourites_rooms') == null 
         ? [] 
@@ -14,6 +16,21 @@ const initState = {
     roomTypes: localStorage.getItem('room_types') == null
         ? []
         : JSON.parse(localStorage.getItem('room_types')),
+    services: localStorage.getItem('services') == null
+        ? []
+        : JSON.parse(localStorage.getItem('services')),
+    checkinDate: localStorage.getItem('checkin_date') == null
+        ? format(new Date(), "dd/MM/yyyy")
+        : JSON.parse(localStorage.getItem('checkin_date')),
+    checkoutDate: localStorage.getItem('checkout_date') == null
+        ? format(addDays(new Date(), 2), "dd/MM/yyyy")
+        : JSON.parse(localStorage.getItem('checkout_date')),
+    progressStep: localStorage.getItem('progress_step') == null
+        ? 0
+        : JSON.parse(localStorage.getItem('progress_step')),
+    totalAmount: localStorage.getItem('total_amount') == null
+        ? 0
+        : JSON.parse(localStorage.getItem('total_amount')),
 }
 
 const rootReducer = (state = initState, action) => {
@@ -128,7 +145,67 @@ const rootReducer = (state = initState, action) => {
                 ...state,
                 roomTypes: newRoomTypes,
             };
+        case 'service/addService':
+            localStorage.setItem('services', JSON.stringify([
+                ...state.services,
+                action.payload,
+            ]))
+            return {
+                ...state,
+                services: [
+                    ...state.services,
+                    action.payload,
+                ]    
+            }
+        case 'service/removeService':
+            const newServices = state.services.filter((service) => {
+                return service.id !== action.payload;
+            });
+            
+            localStorage.setItem('services', JSON.stringify(newServices));
+            
+            return {
+                ...state,
+                services: newServices,
+            };
+        case 'checkinDate/addCheckinDate':
+            localStorage.setItem('checkin_date', JSON.stringify(action.payload))
+            return {
+                ...state,
+                checkinDate: action.payload,   
+            }
+        case 'checkoutDate/addCheckoutDate':
+            localStorage.setItem('checkout_date', JSON.stringify(action.payload))
+            return {
+                ...state,
+                checkoutDate: action.payload,
+            }
+        case 'progressStep/nextProgressStep':
+            localStorage.setItem('progress_step', JSON.stringify(action.payload))
+            return {
+                ...state,
+                progressStep: action.payload,
+            }
+        case 'progressStep/prevProgressStep':
+            localStorage.setItem('progress_step', JSON.stringify(action.payload))
+            return {
+                ...state,
+                progressStep: action.payload,
+            }
+        case 'totalAmount/addTotalAmount':
+            localStorage.setItem('total_amount', JSON.stringify(action.payload));
 
+            return {
+                ...state,
+                totalAmount: action.payload,
+            }
+        case 'totalAmount/removeTotalAmount':
+            localStorage.setItem('total_amount', JSON.stringify(''));
+
+            return {
+                ...state,
+                totalAmount: action.payload,
+            }
         default:
             return state;
     }

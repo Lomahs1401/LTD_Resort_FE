@@ -124,7 +124,7 @@ const BookingCard = ({
 
   useEffect(() => {
     if (type === 'Room') {
-      http.get(`/auth/room-types/total-rooms/${id}`)
+      http.get(`/customer/room-types/total-rooms/${id}`)
       .then((resolve) => {
         setTotalRooms(resolve.data.number_of_rooms);
       })
@@ -160,10 +160,10 @@ const BookingCard = ({
               <Rate
                 disabled
                 tooltips={RATING_DESC}
-                defaultValue={ranking}
+                value={Math.round(ranking).toFixed(0)}
                 style={{ color: '#FF8682' }}
               />
-              <p className="ant-rate-text" style={{ fontSize: 16 }}>{ranking} Star {type}</p>
+              <p className="ant-rate-text" style={{ fontSize: 16 }}>{Math.round(ranking).toFixed(0)} Star {type}</p>
               {type === 'Room' && (
                 <>
                   <FaCoffee className={cx("amenities")} size={16} />
@@ -181,7 +181,7 @@ const BookingCard = ({
               <div className={cx("middle-content__top")}>
                 <span>
                   <FaUser size={20} className={cx("middle-content__top-icon")} />
-                  {capacity} persons
+                  {capacity} person
                 </span>
                 <span>
                   <FaBed size={20} className={cx("middle-content__top-icon")} />

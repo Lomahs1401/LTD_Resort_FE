@@ -1,12 +1,12 @@
 import React from 'react'
 import { Box, IconButton, useTheme } from "@mui/material";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { tokens, ColorModeContext } from '../../../utils/theme';
+import {VscSignOut} from "react-icons/vsc"
 import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import styles from "./Topbar.module.scss";
@@ -17,7 +17,15 @@ const cx = classNames.bind(styles);
 const Topbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const colorMode = useContext(ColorModeContext)
+  const colorMode = useContext(ColorModeContext);
+  const navigate = useNavigate();
+
+  const handleClickInfo = () => {
+    navigate("/admin/details");
+  }
+  const handleClickExit = () => {
+    navigate("/login");
+  }
 
   return (
     <div className={cx("topbar-wrapper")}>
@@ -42,13 +50,10 @@ const Topbar = () => {
             <LightModeOutlinedIcon />
           )}
         </IconButton>
-        <IconButton>
-          <NotificationsOutlinedIcon />
+        <IconButton onClick={handleClickExit}>
+          <VscSignOut />
         </IconButton>
-        <IconButton>
-          <SettingsOutlinedIcon />
-        </IconButton>
-        <IconButton>
+        <IconButton onClick={handleClickInfo}>
           <PersonOutlinedIcon />
         </IconButton>
       </Box>

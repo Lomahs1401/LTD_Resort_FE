@@ -67,7 +67,7 @@ const Login = () => {
         console.log(resolve);
         const user = resolve.data.user;
         setToken(user, resolve.data.access_token, user.role_name);
-        if (user.role_name === ROLE_ADMIN) {
+          if (user.role_name === ROLE_ADMIN) {
           navigate('/admin')
         } else if (user.role_name === ROLE_EMPLOYEE) {
           navigate('/employee');

@@ -5,16 +5,19 @@ import Header from "../../layouts/Header/Header";
 import Footer from "../../layouts/Footer/Footer";
 import Comment from "../../components/Comment/Comment";
 import AuthUser from "../../utils/AuthUser";
-import { Rate, Divider, Pagination } from "antd";
+import { BsCheckCircleFill } from 'react-icons/bs'
+import { Rate, Divider, Pagination, Select, Form, Button, Input } from "antd";
 import { BiArrowBack } from "react-icons/bi"
 import { BsFillHeartFill, BsFillShareFill } from "react-icons/bs";
+import { MdRoomService } from "react-icons/md";
 import { IoSparkles } from "react-icons/io5";
-import { GiAchievement } from "react-icons/gi";
+import { TbDiamondFilled } from "react-icons/tb"
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { avatarSelector, favouritesServicesSelector } from "../../redux/selectors";
 import currency from "../../utils/currency";
+import booking_logo from '../../img/booknow.png'
 import { addFavouriteService, removeFavouriteService } from "../../redux/actions";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -23,9 +26,66 @@ import { ref, listAll, getDownloadURL } from "firebase/storage"
 import { storage } from "../../utils/firebase";
 import Loading from "../../components/Loading/Loading";
 import { toast } from "react-toastify";
+import checkout from "../../img/chekout.png"
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import ReactDateRange from "../../components/ReactDateRange/ReactDateRange";
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import OverviewCard from "../../components/OverviewCard/OverviewCard";
+import { addDays, format } from "date-fns"
+import dayjs from "dayjs";
+import Swal from "sweetalert2";
 
 const cx = classNames.bind(styles);
+
+const nameMapper = {
+  ar: 'Arabic',
+  bg: 'Bulgarian',
+  ca: 'Catalan',
+  cs: 'Czech',
+  cy: 'Welsh',
+  da: 'Danish',
+  de: 'German',
+  el: 'Greek',
+  enGB: 'English (United Kingdom)',
+  enUS: 'English (United States)',
+  eo: 'Esperanto',
+  es: 'Spanish',
+  et: 'Estonian',
+  faIR: 'Persian',
+  fi: 'Finnish',
+  fil: 'Filipino',
+  fr: 'French',
+  hi: 'Hindi',
+  hr: 'Croatian',
+  hu: 'Hungarian',
+  hy: 'Armenian',
+  id: 'Indonesian',
+  is: 'Icelandic',
+  it: 'Italian',
+  ja: 'Japanese',
+  ka: 'Georgian',
+  ko: 'Korean',
+  lt: 'Lithuanian',
+  lv: 'Latvian',
+  mk: 'Macedonian',
+  nb: 'Norwegian Bokmål',
+  nl: 'Dutch',
+  pl: 'Polish',
+  pt: 'Portuguese',
+  ro: 'Romanian',
+  ru: 'Russian',
+  sk: 'Slovak',
+  sl: 'Slovenian',
+  sr: 'Serbian',
+  sv: 'Swedish',
+  th: 'Thai',
+  tr: 'Turkish',
+  uk: 'Ukrainian',
+  vi: 'Vietnamese',
+  zhCN: 'Chinese Simplified',
+  zhTW: 'Chinese Traditional'
+};
 
 function SampleNextArrow(props) {
   const { className, style, onClick } = props;
@@ -50,12 +110,22 @@ function SamplePrevArrow(props) {
 }
 
 export const ServiceDetail = () => {
+  const loginFormLayout = {
+    labelCol: {
+      span: 8
+    },
+    wrapperCol: {
+      span: 24
+    },
+  };
+
   const { serviceId } = useParams();
   const { http, user } = AuthUser();
+  const location = useLocation();
   const RATING_DESC = ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'];
-  const FIREBASE_URL = `gs://ltd-resort.appspot.com/services/${serviceId}/`;
+  const [firebaseUrl, setFirebaseUrl] = useState(`gs://ltd-resort.appspot.com/services/${serviceId}/`)
 
-  const settings = {
+  const imageSettings = {
     dots: true,
     infinite: true,
     slidesToShow: 3,
@@ -94,16 +164,42 @@ export const ServiceDetail = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  // Fetch random list room types state
+  const [listRandomServices, setListRandomServices] = useState([]);
+
   // Fetch service detail state
   const [serviceDetail, setServiceDetail] = useState({});
 
   // Fetch list image state
-  const [imageList, setImageList] = useState([]);
-  const imageRef = ref(storage, FIREBASE_URL);
+  const imageList = location.state?.imageList || [];
+  const [currentImageList, setCurrentImageList] = useState([]);
+  const [isImageListLoaded, setIsImageListLoaded] = useState(false);
+  const imageRef = ref(storage, firebaseUrl);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const avatar = useSelector(avatarSelector);
   const favouritesServices = useSelector(favouritesServicesSelector);
+
+  const [locale, setLocale] = useState('enUS');
+  const [rangeDate, setRangeDate] = useState([{
+    startDate: new Date(),
+    endDate: addDays(new Date(), 0),
+    key: "selection"
+  }]);
+
+  const options = Object.entries(nameMapper).map(([value, label]) => ({ value, label }));
+  const onChange = (value) => {
+    console.log(`selected ${value}`);
+    setLocale(value);
+  };
+
+  const onSearch = (value) => {
+    console.log('search:', value);
+  };
+
+  const customParseFormat = require('dayjs/plugin/customParseFormat');
+  dayjs.extend(customParseFormat);
 
   // Pagination state
   const pageSizeOptions = [5, 10, 20];
@@ -115,6 +211,7 @@ export const ServiceDetail = () => {
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_NUMBER);
   const [totalFeedbacks, setTotalFeedbacks] = useState(0);
   const [totalVerifiedFeedbacks, setTotalVerifiedFeedbacks] = useState(0);
+  const [form] = Form.useForm();
 
   const [toggleFavourite, setToggleFavourite] = useState(() => {
     let isToggleFavourite = false;
@@ -149,19 +246,6 @@ export const ServiceDetail = () => {
     }
   }
 
-  const giveYourReview = () => {
-    toast.success('Give your review', {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: 0,
-      theme: "colored",
-    })
-  }
-
   const handleClickPaginate = (page, pageSize) => {
     console.log(page, pageSize);
     setCurrentPage(page);
@@ -172,6 +256,51 @@ export const ServiceDetail = () => {
     setCurrentPage(currentPage);
     setPageSize(pageSize);
   }
+
+  const handleClickBookingNow = () => {
+    document.getElementById('booking-room').scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const onFinish = (values) => {
+    const formData = new FormData();
+    const bookTime = format(rangeDate[0].startDate, "dd/MM/yyyy");
+    const bookTimeFormat = dayjs(bookTime, "DD/MM/YYYY").locale('vi').format('YYYY-MM-DD')
+
+    formData.append('service_id', serviceId);
+    formData.append('quantity', values.quantity);
+    formData.append('book_time', bookTimeFormat);
+
+    console.log(bookTimeFormat);
+
+    http.post('/customer/store-bill-service', formData)
+      .then((resolve) => {
+        console.log(resolve);
+        Swal.fire(
+          'Successfully Booked!',
+          'You have successfully book service',
+          'success'
+        ).then(() => {
+          navigate(1);
+        })
+      })
+      .catch((reject) => {
+        console.log(reject);
+      })
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+    toast.error('Please input all fields', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    })
+  };
 
   useEffect(() => {
     const fetchImage = () => {
@@ -190,7 +319,8 @@ export const ServiceDetail = () => {
           });
 
           Promise.all(promises).then(() => {
-            setImageList(fetchedImages); // Cập nhật state ImageList với các ảnh đã lấy được
+            setCurrentImageList(fetchedImages); // Cập nhật state ImageList với các ảnh đã lấy được
+            setIsImageListLoaded(true); // Cập nhật giá trị của isImageListLoaded
           });
         })
         .catch((error) => {
@@ -206,12 +336,20 @@ export const ServiceDetail = () => {
     setIsLoading(true);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [serviceId])
 
   useEffect(() => {
     const fetchData = () => {
-      http.get(`/auth/services/${serviceId}`)
+      http.get(`/customer/services/random/${serviceId}`)
         .then((resolve) => {
+          setListRandomServices(resolve.data.list_random_services);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
+      http.get(`/customer/services/${serviceId}`)
+        .then((resolve) => {
+          console.log(resolve);
           setServiceDetail(resolve.data.service);
         })
         .catch((reject) => {
@@ -248,7 +386,7 @@ export const ServiceDetail = () => {
 
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [serviceId])
 
   useEffect(() => {
     const fetchFeedbacks = () => {
@@ -265,7 +403,7 @@ export const ServiceDetail = () => {
 
     fetchFeedbacks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, pageSize])
+  }, [currentPage, pageSize, serviceId])
 
   if (!isLoading) {
     return (
@@ -291,15 +429,15 @@ export const ServiceDetail = () => {
                 <div className={cx("achievement__left")}>
                   <Rate
                     disabled
-                    defaultValue={5}
+                    value={Math.round(averageRating).toFixed(0)}
                     tooltips={RATING_DESC}
                     style={{ color: "#FF8682" }}
                   />
-                  <p className={cx("achievement-desc")}>5 Star Service</p>
+                  <p className={cx("achievement-desc")}>{Math.round(averageRating).toFixed(0)} Star Service</p>
                 </div>
                 <div className={cx("achievement__right")}>
-                  <GiAchievement size={25} style={{ color: "#FFD700	" }} />
-                  <p className={cx("achievement-desc")}>Star</p>
+                  <TbDiamondFilled size={25} style={{ color: "#FFD700	" }} />
+                  <p className={cx("achievement-desc")}>{serviceDetail.point_ranking} Points</p>
                 </div>
               </div>
             </div>
@@ -320,7 +458,10 @@ export const ServiceDetail = () => {
                     <BsFillShareFill />
                   </button>
                 </div>
-                <div className={cx("button__right")}>
+                <div
+                  className={cx("button__right")}
+                  onClick={handleClickBookingNow}
+                >
                   <button>Book now</button>
                 </div>
               </div>
@@ -328,21 +469,23 @@ export const ServiceDetail = () => {
           </div>
 
           <div className={cx("image-carousel")}>
-            <Slider {...settings}>
-              {imageList.map((image, index) => {
-                return (
-                  <div className={cx("image-container")} key={image}>
-                    <LazyLoadImage
-                      key={index}
-                      src={image}
-                      alt={`Image ${index}`}
-                      effect="blur"
-                      placeholderSrc={image}
-                    />
-                  </div>
-                )
-              })}
-            </Slider>
+            {isImageListLoaded && (
+              <Slider {...imageSettings}>
+                {currentImageList.map((image, index) => {
+                  return (
+                    <div className={cx("image-container")} key={index}>
+                      <LazyLoadImage
+                        key={index}
+                        src={image}
+                        alt={`Pic ${index}`}
+                        effect="blur"
+                        placeholderSrc={image}
+                      />
+                    </div>
+                  )
+                })}
+              </Slider>
+            )}
           </div>
 
           <Divider className={cx("seperate-line")} />
@@ -407,6 +550,83 @@ export const ServiceDetail = () => {
 
           <Divider className={cx("seperate-line")} />
 
+          <div id="booking-room" className={cx("booking-room-container")}>
+            <h1>Booking Section</h1>
+            <div className={cx("find-room")}>
+              <div className={cx("booking-title")}>
+                <img src={booking_logo} alt='Booking icon' />
+                <h1>Choose booking time</h1>
+              </div>
+              <div className={cx("locale-date-range")}>
+                <Select
+                  showSearch
+                  placeholder="Select Language"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  style={{ width: 200 }}
+                  options={options}
+                  onChange={onChange}
+                  onSearch={onSearch}
+                />
+              </div>
+              <div className={cx("date-range-wrapper")}>
+                <div className={cx("date-range-wrapper__left")}>
+                  <ReactDateRange locale={locale} rangeDate={rangeDate} setRangeDate={setRangeDate} />
+                </div>
+                <div className={cx("date-range-wrapper__right")}>
+                  <div className={cx("date-range-checkin-time")}>
+                    <div className={cx("date-range-checkin-time__title")}>
+                      <img src={checkout} alt="checkin" />
+                      <h1>Book Date</h1>
+                    </div>
+                    <div className={cx("date-range-checkin-time__data")}>
+                      <h3>Book Date: <span>{format(rangeDate[0].startDate, "dd/MM/yyyy")}</span></h3>
+                    </div>
+                  </div>
+
+                  <Divider className="seperate-inline" />
+
+                  <div className={cx("find-room-wrapper")}>
+                    <Form
+                      {...loginFormLayout}
+                      form={form}
+                      layout='vertical'
+                      name='login_form'
+                      labelAlign='left'
+                      labelWrap='true'
+                      size='large'
+                      autoComplete="off"
+                      onFinish={onFinish}
+                      onFinishFailed={onFinishFailed}
+                    >
+                      <Form.Item
+                        label="Quantity"
+                        name="quantity"
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Quantity is required!',
+                          },
+                        ]}
+                        hasFeedback
+                      >
+                        <Input />
+                      </Form.Item>
+                      <Button className={cx("btn-find-room")} htmlType="submit">
+                        <BsCheckCircleFill size={20} />
+                        <p>Book Service</p>
+                      </Button>
+                    </Form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Divider className={cx("seperate-line")} />
+
           <div className={cx("review-wrapper")}>
             <div className={cx("review-wrapper__left")}>
               <h2>Reviews</h2>
@@ -459,9 +679,6 @@ export const ServiceDetail = () => {
                   })()}
                 </div>
               </div>
-            </div>
-            <div className={cx("review-wrapper__right")}>
-              <button onClick={giveYourReview}>Give your review</button>
             </div>
           </div>
 
@@ -524,6 +741,32 @@ export const ServiceDetail = () => {
                 onChange={handleClickPaginate}
                 onShowSizeChange={handleShowSizeChange}
               />
+            </div>
+          </div>
+
+          <Divider className={cx("seperate-line")} />
+
+          <div className={cx("section-random")}>
+            <div className={cx("section-random__title")}>
+              <MdRoomService size={30} />
+              <h1>Some other services you may be interested in</h1>
+            </div>
+            <div className={cx("section-random__list-rooms")}>
+              {listRandomServices.map((randomService) => {
+                return (
+                  <OverviewCard
+                    key={randomService.id}
+                    id={randomService.id}
+                    image={randomService.image}
+                    title={randomService.service_name}
+                    price={randomService.price}
+                    ranking={randomService.average_rating}
+                    type={'Service'}
+                    currentImageList={currentImageList}
+                    setFirebaseUrl={setFirebaseUrl}
+                  />
+                )
+              })}
             </div>
           </div>
         </div>

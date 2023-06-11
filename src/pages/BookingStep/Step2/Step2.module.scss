@@ -1,0 +1,69 @@
+.booking-step-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 3%;
+}
+
+.payment-title {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+
+    > img {
+        width: 70px;
+    }
+}
+
+.payment-wrapper {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.seperate-line {
+    border: 1px solid #BFC4C1;
+}
+
+.booking-step-navigate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-back {
+    background-color: #ccc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    transition: 0.3s;
+
+    &:hover {
+        opacity: 0.8;
+        cursor: pointer;
+    }
+
+    > span {
+        font-size: 18px;
+        font-weight: 600;
+    }
+}
+
+.btn-confirm {
+    background-color: #f35221;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    transition: 0.3s;
+
+    &:hover {
+        opacity: 0.8;
+        cursor: pointer;
+    }
+    
+    > span {
+        font-size: 18px;
+        font-weight: 600;
+    }
+}

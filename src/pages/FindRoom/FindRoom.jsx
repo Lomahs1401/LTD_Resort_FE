@@ -221,7 +221,7 @@ const FindRoom = () => {
 
   useEffect(() => {
     const fetchData = () => {
-      http.get('/auth/room-types/total')
+      http.get('/customer/room-types/total')
         .then((resolve) => {
           console.log('Total Room Types: ', resolve);
           setTotalRoomTypes(resolve.data.total_room_types);
@@ -230,7 +230,7 @@ const FindRoom = () => {
           console.log(reject);
         })
 
-      http.get('/auth/room-types/list-lowest-price')
+      http.get('/customer/room-types/list-lowest-price')
         .then((resolve) => {
           console.log('List Lowest Price: ', resolve);
           setListOverviewRoomTypes(resolve.data.list_lowest_price);
@@ -239,7 +239,7 @@ const FindRoom = () => {
           console.log(reject);
         })
 
-      http.get('/auth/room-types/lowest-price')
+      http.get('/customer/room-types/lowest-price')
         .then((resolve) => {
           console.log('Lowest Price: ', resolve)
           setLowestPrice(resolve.data.lowest_price);
@@ -249,7 +249,7 @@ const FindRoom = () => {
           console.log(reject);
         })
 
-      http.get('/auth/room-types/highest-price')
+      http.get('/customer/room-types/highest-price')
         .then((resolve) => {
           console.log('Highest Price: ', resolve)
           setHighestPrice(resolve.data.highest_price);
@@ -258,7 +258,7 @@ const FindRoom = () => {
           console.log(reject);
         })
 
-      http.get('/auth/room-types/smallest-size')
+      http.get('/customer/room-types/smallest-size')
         .then((resolve) => {
           console.log('Smallest Room Size: ', resolve)
           setSmallestRoomSize(resolve.data.smallest_room_size);
@@ -268,7 +268,7 @@ const FindRoom = () => {
           console.log(reject);
         })
 
-      http.get('/auth/room-types/biggest-size')
+      http.get('/customer/room-types/biggest-size')
         .then((resolve) => {
           console.log('Biggest Room Size: ', resolve)
           setBiggestRoomSize(resolve.data.biggest_room_size);
@@ -277,7 +277,7 @@ const FindRoom = () => {
           console.log(reject);
         })
 
-      http.get('/auth/room-types/bedroom-names')
+      http.get('/customer/room-types/bedroom-names')
         .then((resolve) => {
           console.log('Bedroom Type Names: ', resolve)
           setBedRoomTypes(resolve.data.bedroom_type_names);
@@ -286,7 +286,7 @@ const FindRoom = () => {
           console.log(reject);
         })
 
-      http.get('/auth/room-types/room-names')
+      http.get('/customer/room-types/room-names')
         .then((resolve) => {
           console.log('Room Type Names: ', resolve)
           setRoomTypes(resolve.data.room_type_names);
@@ -313,7 +313,7 @@ const FindRoom = () => {
           setListRoomTypes([]);
           setTotalRoomTypes(0);
         } else {
-          http.post(`/auth/room-types/paginate/${currentPage}/${pageSize}`, {
+          http.post(`/customer/room-types/paginate/${currentPage}/${pageSize}`, {
             list_filter_room_types: listFilterRoomTypes
           })
             .then((resolve) => {
@@ -324,7 +324,7 @@ const FindRoom = () => {
             })
         }
       } else {
-        http.post(`/auth/room-types/paginate/${currentPage}/${pageSize}`, {
+        http.post(`/customer/room-types/paginate/${currentPage}/${pageSize}`, {
           list_filter_room_types: listFilterRoomTypes
         })
           .then((resolve) => {
@@ -386,7 +386,7 @@ const FindRoom = () => {
                   image={overviewRoomType.image}
                   title={overviewRoomType.room_type_name}
                   price={overviewRoomType.price}
-                  ranking={5}
+                  ranking={overviewRoomType.average_rating}
                   type={'Room'}
                 />
               )
@@ -524,7 +524,7 @@ const FindRoom = () => {
                   image={roomType.image}
                   title={roomType.room_type_name}
                   price={roomType.price}
-                  ranking={5}
+                  ranking={roomType.rating}
                   type={'Room'}
                   capacity={roomType.number_customers}
                   area={roomType.room_size}

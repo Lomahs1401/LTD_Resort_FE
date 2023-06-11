@@ -23,6 +23,7 @@ import Draggable from "react-draggable";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import styles from "./Room.module.scss";
 import classNames from "classnames/bind";
+import ImageGallery from "../ImageGallery/ImageGallery";
 
 const cx = classNames.bind(styles);
 
@@ -35,6 +36,7 @@ const Room = () => {
       span: 18,
     },
   };
+  const [images, setImages] = useState([]);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [openModalRoom, setOpenModalRoom] = useState(false);
@@ -84,7 +86,6 @@ const Room = () => {
         <Button startIcon={<GrAdd />} onClick={handleCreate}>
           Create
         </Button>
-        
       </GridToolbarContainer>
     );
   }
@@ -182,7 +183,10 @@ const Room = () => {
     form.setFieldValue("roomType", row.id_type);
     setOpenModalRoom(true);
     setdisabledCreate(true);
-
+  };
+  const handleUpdateImage = (updatedImages) => {
+    console.log(updatedImages); // Log mảng images đã được truyền lại từ ImageGallery
+    setImages(updatedImages); // Cập nhật mảng images trong component cha
   };
 
   const handleOk = () => {
@@ -278,7 +282,6 @@ const Room = () => {
           columns={columns}
           components={{ Toolbar: CustomToolbar }}
           className={cx("table")}
-
         />
       </Box>
       <Modal
@@ -337,24 +340,25 @@ const Room = () => {
             <Form.Item
               name="roomName"
               label="Room Name"
-         
               rules={[
                 {
                   required: true,
                   message: "Room name is required!",
                 },
               ]}
-              
               hasFeedback
             >
-              <Input placeholder={"Please fill room name"} disabled={disabledCreate} className={cx("input")}/>
+              <Input
+                placeholder={"Please fill room name"}
+                disabled={disabledCreate}
+                className={cx("input")}
+              />
             </Form.Item>
           </div>
           <div className={cx("room-attributes")}>
             <Form.Item
               name="floor"
               label="Floor"
-         
               hasFeedback
               rules={[
                 {
@@ -362,7 +366,6 @@ const Room = () => {
                   message: "Floor is required!",
                 },
               ]}
-              
             >
               <Select
                 placeholder="Please select floor"
@@ -378,7 +381,6 @@ const Room = () => {
             <Form.Item
               name="area"
               label="Area"
-         
               hasFeedback
               rules={[
                 {
@@ -386,7 +388,6 @@ const Room = () => {
                   message: "Area is required!",
                 },
               ]}
-              
             >
               <Select
                 placeholder="Please select area"
@@ -402,7 +403,6 @@ const Room = () => {
             <Form.Item
               name="roomType"
               label="Room Type"
-         
               hasFeedback
               rules={[
                 {
@@ -410,7 +410,6 @@ const Room = () => {
                   message: "Room Type is required!",
                 },
               ]}
-              
             >
               <Select
                 placeholder="Please select Type room"
@@ -420,6 +419,21 @@ const Room = () => {
                 }))}
                 disabled={disabledCreate}
               ></Select>
+            </Form.Item>
+          </div>
+          <div className={cx("room-attributes")}>
+            <Form.Item
+              name="picture"
+              label="picture"
+
+            
+            >
+              
+                <ImageGallery
+                  images={images}
+                  onChangeImages={handleUpdateImage}
+                />
+              
             </Form.Item>
           </div>
           <Form.Item
@@ -433,7 +447,7 @@ const Room = () => {
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("name") == "" ? (
+              ) : form.getFieldValue("name") === "" ? (
                 <Button type="primary" onClick={handleAdd}>
                   Add
                 </Button>

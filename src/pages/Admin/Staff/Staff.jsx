@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, useTheme, Button } from "@mui/material";
 import {
   DataGrid,
@@ -13,17 +13,22 @@ import dayjs from "dayjs";
 import { tokens } from "../../../utils/theme";
 import { mockDataTeam } from "../../../data/mockData";
 import Header from "../../../components/Header/Header";
+import Swal from "sweetalert2";
 import { AiFillEdit, AiFillDelete, AiOutlineUserAdd } from "react-icons/ai";
 import styles from "./Staff.module.scss";
 import classNames from "classnames/bind";
 import { FaUser } from "react-icons/fa";
 import Draggable from "react-draggable";
 import AuthUser from "../../../utils/AuthUser";
+import { toast } from "react-toastify";
+import FormattedDate from "../../../utils/FormattedDate";
+import { useNavigate } from "react-router-dom";
+
 
 const cx = classNames.bind(styles);
 
 const Staff = () => {
-  const {http} = AuthUser();
+  const { http } = AuthUser();
   const staffInfoLayout = {
     labelCol: {
       span: 6,
@@ -32,15 +37,45 @@ const Staff = () => {
       span: 18,
     },
   };
-
+  const initialFormValues = {
+    fullName: "",
+    gender: "",
+    birthDate: "",
+    ID_Card: "",
+    address: "",
+    phone: "",
+    accountbank: "",
+    namebank: "",
+    department: "",
+    position: "",
+    username: "",
+    password: "",
+    email: "",
+  };
+  const navigate = useNavigate();
   const [openModalStaff, setOpenModalStaff] = useState(false);
+  const [openModalAccount, setOpenModalAccount] = useState(false);
   const [values, setValues] = useState({});
-  const [listStaff, setListStaff] = useState([]);
-
+  const [account, setAccount] = useState({});
+  const [base, setBase] = useState();
+  const [formValues, setFormValues] = useState(initialFormValues);
+  const [formAccount, setFormAccount] = useState(initialFormValues);
+  const [staffAccount, setStaffAccount] = useState([]);
+  const [listStaffWork, setListStaffWork] = useState([]);
+  const [listStaffQuit, setListStaffQuit] = useState([]);
+  const [listStaff, setListStaff] = useState();
+  const [listDepartment, setListDepartment] = useState([]);
+  const [listPosition, setListPosition] = useState([]);
+  const [Staff, setStaff] = useState();
+  const [status, setStatus] = useState(true);
+  const [accept, setAccept] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [id, setID] = useState();
   const dateFormat = "YYYY-MM-DD";
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [form] = Form.useForm();
+  const [form1] = Form.useForm();
 
   function CustomToolbar() {
     return (
@@ -52,24 +87,55 @@ const Staff = () => {
         <Button startIcon={<AiOutlineUserAdd />} onClick={handleCreate}>
           Create
         </Button>
+        <Button onClick={handleWork}>Work</Button>
+        <Button onClick={handleQuit}>Quit</Button>
       </GridToolbarContainer>
     );
   }
+  const getDepartmentName = (Departmentid) => {
+    // Gọi hàm hoặc thực hiện các xử lý tìm tên area từ id area
+    // Ví dụ:
+    const DepartmentName = listDepartment.find(
+      (department) => department.id === Departmentid
+    )?.department_name;
+    return DepartmentName || "";
+  };
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+
+    // Kiểm tra điều kiện hợp lệ cho email
+    if (!email.includes("@")) {
+      setEmailError("Email is invalid!");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const handleWork = () => {
+    setListStaff(listStaffWork);
+    setStatus(true);
+  };
+  const handleQuit = () => {
+    setListStaff(listStaffQuit);
+    setStatus(false);
+  };
+
+  const handleSelect = (value) => {
+    http
+      .get(`admin/list-position/${value}/${1}`)
+      .then((resolve) => {
+        setListPosition(resolve.data.list_position);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+  };
 
   const handleSelectBirthDate = (date, dateString) => {
     form.setFieldValue("birthday", date);
   };
 
-  const handleSelectdayStart = (date, dateString) => {
-    form.setFieldValue("dayStart", date);
-  };
-
-  const handleSelectdayQuit = (date, dateString) => {
-    form.setFieldValue("dayQuit", date);
-  };
-
   const handleCreate = () => {
-    console.log("create");
     setdisabledCreate(false);
     setOpenModalStaff(true);
     form.setFieldValue("fullName", "");
@@ -80,81 +146,295 @@ const Staff = () => {
     form.setFieldValue("address", "");
     form.setFieldValue("accountbank", "");
     form.setFieldValue("namebank", "");
-    form.setFieldValue("dayStart", null);
-    form.setFieldValue("dayQuit", null);
     form.setFieldValue("position", null);
+    form.setFieldValue("department", null);
     setValues();
+    setBase(false);
   };
 
-  const handleEdit = (params) => {
-    console.log(params);
+  const fetchStaff = (id) => {
+    http
+      .get(`/admin/find-employee/${id}`)
+      .then((resolve) => {
+        setStaff(resolve.data.data);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+  };
+
+  const handleEdit =  async (params) => {
     setdisabledCreate(false);
     const { row } = params;
-    form.setFieldValue("fullName", row.full_name);
-    form.setFieldValue("gender", row.gender);
 
-    form.setFieldValue("birthDate", null);
-    form.setFieldValue("phone", row.phone);
-    form.setFieldValue("ID_Card", row.CMND);
-    form.setFieldValue("address", row.address);
-    form.setFieldValue("accountbank", row.account_bank);
-    form.setFieldValue("namebank", row.name_bank);
-    form.setFieldValue("dayStart", null);
-    form.setFieldValue("dayQuit", null);
-    form.setFieldValue("position", row.position);
+    setID(row.id);
+
+    await http
+      .get(`/admin/find-employee/${row.id}`)
+      .then((resolve) => {
+        setStaff(resolve.data.data);
+        form.setFieldValue("fullName", resolve.data.data?.name);
+        form.setFieldValue("gender", resolve.data.data?.gender);
+        form.setFieldValue("birthDate", null);
+        form.setFieldValue("phone", resolve.data.data?.phone);
+        form.setFieldValue("ID_Card", resolve.data.data?.CMND);
+        form.setFieldValue("address", resolve.data.data?.address);
+        form.setFieldValue("accountbank", resolve.data.data?.account_bank);
+        form.setFieldValue("namebank", resolve.data.data?.name_bank);
+        form.setFieldValue("position", resolve.data.data?.position_name);
+        form.setFieldValue("department", resolve.data.data?.department_name);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
     setOpenModalStaff(true);
+    setBase(true);
   };
 
   const handleDelete = (params) => {
-    console.log(params);
-    console.log("aaa");
-    setOpenModalStaff(true);
+    const { row } = params;
+
+    http
+      .patch(`/admin/quit-employee/${row.id}`)
+      .then(() => {
+        Swal.fire(
+          "Update!",
+          "You have successfully Delete your profile",
+          "success"
+        ).then(() => {
+          navigate(0);
+        });
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
   };
 
-  const handleDoubleClickCell = (params) => {
+  const handleDoubleClickCell = async (params) => {
     setdisabledCreate(true);
     const { row } = params;
-    form.setFieldValue("fullName", row.full_name);
-    form.setFieldValue("gender", row.gender);
-    form.setFieldValue("birthDate", row.birthday);
-    form.setFieldValue("phone", row.phone);
-    form.setFieldValue("ID_Card", row.CMND);
-    form.setFieldValue("address", row.address);
-    form.setFieldValue("accountbank", row.account_bank);
-    form.setFieldValue("namebank", row.name_bank);
-    form.setFieldValue("dayStart", row.dayStart);
-    form.setFieldValue("dayQuit", row.dayQuit);
-    form.setFieldValue("position", row.position);
+    await http
+      .get(`/admin/find-employee/${row.id}`)
+      .then((resolve) => {
+        setStaff(resolve.data.data);
+        form.setFieldValue("fullName", resolve.data.data?.name);
+        form.setFieldValue("gender", resolve.data.data?.gender);
+        form.setFieldValue("birthDate", null);
+        form.setFieldValue("phone", resolve.data.data?.phone);
+        form.setFieldValue("ID_Card", resolve.data.data?.CMND);
+        form.setFieldValue("address", resolve.data.data?.address);
+        form.setFieldValue("accountbank", resolve.data.data?.account_bank);
+        form.setFieldValue("namebank", resolve.data.data?.name_bank);
+        form.setFieldValue("position", resolve.data.data?.position_name);
+        form.setFieldValue("department", resolve.data.data?.department_name);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      });
+
     setOpenModalStaff(true);
-    console.log(row);
   };
 
   const handleOk = () => {
     setOpenModalStaff(false);
-    console.log("aa");
+    setOpenModalAccount(false);
   };
 
   // Handle click button "X" of modal
   const handleCancel = () => {
     setOpenModalStaff(false);
+    setOpenModalAccount(false);
+  };
+  useEffect(() => {}, [Staff]);
+
+  useEffect(() => {}, [accept]);
+
+  const onFinish = async (values) => {
+    const {
+      fullName,
+      gender,
+      birthDate,
+      ID_Card,
+      address,
+      phone,
+      accountbank,
+      namebank,
+      department,
+      position,
+    } = values;
+
+    const formData = new FormData();
+
+    if (base) {
+      console.log("Success: edit", values);
+      formData.append("full_name", fullName);
+      formData.append("gender", gender);
+      formData.append("birthday", FormattedDate(birthDate));
+      formData.append("CMND", ID_Card);
+      formData.append("position_name", position);
+
+      await http
+        .get(`/admin/store-account-employee/${position}`)
+        .then((resolve) => {
+          setAccept(resolve.data.message);
+          if (resolve.data.message) {
+            setOpenModalAccount(true);
+          } else {
+            http
+              .patch(`/admin/update-employee/${id}`, formData)
+              .then(() => {
+                Swal.fire(
+                  "Update!",
+                  "You have successfully update your profile",
+                  "success"
+                ).then(() => {
+                  navigate(0);
+                });
+              })
+              .catch((reject) => {
+                console.log(reject);
+              });
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    } else {
+      await http
+        .get(`/admin/store-account-employee/${position}`)
+        .then((resolve) => {
+          console.log(resolve);
+          if (resolve.data.message) {
+            setOpenModalAccount(true);
+          } else {
+            formData.append("full_name", fullName);
+            formData.append("gender", gender);
+            formData.append("birthday", FormattedDate(birthDate));
+            formData.append("CMND", ID_Card);
+            formData.append("address", address);
+            formData.append("phone", phone);
+            formData.append("account_bank", accountbank);
+            formData.append("name_bank", namebank);
+            formData.append("department_name", getDepartmentName(department));
+            formData.append("position_name", position);
+
+            http
+              .post(`/admin/store-employee`, formData)
+              .then(() => {
+                Swal.fire(
+                  "Update!",
+                  "You have successfully add your profile",
+                  "success"
+                ).then(() => {
+                  navigate(0);
+                });
+              })
+              .catch((reject) => {
+                console.log("Error response:", reject.response);
+                console.log("Error status code:", reject.response.status);
+                console.log("Error message:", reject.message);
+                console.log(reject);
+              });
+          }
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    }
   };
 
-  const handleAdd = () => {
-    console.log("Add");
-  };
+  const onFinishAccount = (values) => {
+    const {
+      fullName,
+      gender,
+      birthDate,
+      ID_Card,
+      address,
+      phone,
+      accountbank,
+      namebank,
+      department,
+      position,
+      username,
+      password,
+      email,
+    } = values;
+    const formData = new FormData();
+    console.log(id);
+    if (base) {
+      formData.append("full_name", fullName);
+      formData.append("gender", gender);
+      formData.append("birthday", FormattedDate(birthDate));
+      formData.append("CMND", ID_Card);
+      formData.append("position_name", position);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("email", email);
 
-  const handleSumbit = () => {
-    console.log("Sumbit");
-  };
+      http
+        .patch(`/admin/update-employee/${id}`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully update your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    } else {
+      formData.append("full_name", fullName);
+      formData.append("gender", gender);
+      formData.append("birthday", FormattedDate(birthDate));
+      formData.append("CMND", ID_Card);
+      formData.append("address", address);
+      formData.append("phone", phone);
+      formData.append("account_bank", accountbank);
+      formData.append("name_bank", namebank);
+      formData.append("department_name", getDepartmentName(department));
+      formData.append("position_name", position);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("email", email);
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
+      http
+        .post(`/admin/store-employee`, formData)
+        .then(() => {
+          Swal.fire(
+            "Update!",
+            "You have successfully add your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        })
+        .catch((reject) => {
+          console.log("Error response:", reject.response);
+          console.log("Error status code:", reject.response.status);
+          console.log("Error message:", reject.message);
+          console.log(reject);
+        });
+    }
   };
-
   // Failed case
   const onFinishFailed = (error) => {
     console.log("Failed:", error);
+    toast.error("Update failed!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
   };
+
+  const onFinishFaileAccount = (values) => {};
 
   const columns = [
     {
@@ -168,9 +448,16 @@ const Staff = () => {
       cellClassName: "name-column--cell",
     },
     {
-      field: "age",
-      headerName: "Age",
+      field: "gender",
+      headerName: "Gender",
+
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "address",
+      headerName: "Address",
       type: "number",
+      flex: 1,
       headerAlign: "left",
       align: "left",
     },
@@ -180,8 +467,8 @@ const Staff = () => {
       flex: 1,
     },
     {
-      field: "email",
-      headerName: "Email",
+      field: "birthday",
+      headerName: "Birthday",
       flex: 1,
     },
     {
@@ -197,7 +484,7 @@ const Staff = () => {
           handleDelete(params);
         };
 
-        return (
+        return status ? (
           <Box display="flex" borderRadius="4px">
             <Button startIcon={<AiFillEdit />} onClick={handleEditClick}>
               {" "}
@@ -206,6 +493,8 @@ const Staff = () => {
               {" "}
             </Button>
           </Box>
+        ) : (
+          <div />
         );
       },
     },
@@ -235,24 +524,42 @@ const Staff = () => {
       bottom: clientHeight - (targetRect.bottom - uiData.y),
     });
   };
-  // api
+  //fetch api
+  useEffect(() => {
+    const fetchData = () => {
+      http
+        .get(`/admin/list-employee/${0}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListStaffWork(resolve.data.list_employee);
+          setListStaff(resolve.data.list_employee);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      http
+        .get(`/admin/list-employee/${1}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListStaffQuit(resolve.data.list_employee);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+      http
+        .get(`/admin/list-department`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListDepartment(resolve.data.list_department);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        });
+    };
 
-  // useEffect(() => {
-
-  //   const fetchData = () =>{
-  //     http.get('/admin/list-customer')
-  //     .then((resolve) => {
-  //       console.log(resolve);
-  //       setListStaff(resolve.data.list_customers);
-  //     })
-  //     .catch((reject) => {
-  //       console.log(reject);
-  //     })
-  //   }
-  //   // form.setFieldsValue(values);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-    
-  // }, []);
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className={cx("team-wrapper")}>
@@ -289,7 +596,7 @@ const Staff = () => {
           <DataGrid
             onCellDoubleClick={handleDoubleClickCell}
             checkboxSelection
-            rows={mockDataTeam}
+            rows={listStaff ? listStaff : mockDataTeam}
             columns={columns}
             components={{ Toolbar: CustomToolbar }}
             className={cx("table")}
@@ -351,13 +658,9 @@ const Staff = () => {
             phone: values?.phone,
             accountbank: values?.account_bank,
             namebank: values?.name_bank,
-            dayStart: values?.dayStart ? dayjs(values?.dayStart) : dayjs(),
-            dayQuit: values?.dayQuit ? dayjs(values?.dayQuit) : dayjs(),
             position: values?.position,
           }}
         >
-          {console.log(values)}
-
           <Form.Item
             name="fullName"
             label="Full Name"
@@ -397,9 +700,9 @@ const Staff = () => {
               <div>{form.getFieldValue("gender")}</div>
             ) : (
               <Select placeholder="Please select gender">
-                <Select.Option value="Male">Male</Select.Option>
-                <Select.Option value="Female">Female</Select.Option>
-                <Select.Option value="Other">Other</Select.Option>
+                <Select.Option value="Nam">Nam</Select.Option>
+                <Select.Option value="Nữ">Nữ</Select.Option>
+                <Select.Option value="Khác">Khác</Select.Option>
               </Select>
             )}
           </Form.Item>
@@ -516,48 +819,29 @@ const Staff = () => {
             )}
           </Form.Item>
           <Form.Item
-            label="Day Start"
-            name="dayStart"
+            name="department"
+            label="Department"
+            hasFeedback
+            className={cx("form-attributes__item")}
             rules={[
               {
                 required: true,
-                message: "Day Start is required!",
+                message: "Position is required!",
               },
             ]}
-            hasFeedback
-            className={cx("form-attributes__item")}
           >
             {disabledCreate ? (
-              <div>{form.getFieldValue("dayStart")}</div>
+              <div>{form.getFieldValue("department")}</div>
             ) : (
-              <DatePicker
-                placeholder="Select date"
-                format={dateFormat}
-                onChange={handleSelectdayStart}
-              />
-            )}
-          </Form.Item>
-          <Form.Item
-            label="Day Quit"
-            name="dayQuit"
-            rules={[
-              {
-                required: true,
-                message: "Day quit is required!",
-              },
-            ]}
-            hasFeedback
-            className={cx("form-attributes__item")}
-          >
-            {disabledCreate ? (
-              <div>{form.getFieldValue("dayQuit")}</div>
-            ) : (
-              <DatePicker
-                placeholder="Select date"
-                format={dateFormat}
-                onChange={handleSelectdayQuit}
+              <Select
+                placeholder="Please select Type room"
+                options={listDepartment.map((ele) => ({
+                  label: ele.department_name,
+                  value: ele.id,
+                }))}
                 disabled={disabledCreate}
-              />
+                onChange={handleSelect}
+              ></Select>
             )}
           </Form.Item>
           <Form.Item
@@ -576,29 +860,141 @@ const Staff = () => {
               <div>{form.getFieldValue("position")}</div>
             ) : (
               <Select
-                placeholder="Please select Position"
+                placeholder="Please select Position room"
+                options={listPosition.map((ele) => ({
+                  label: ele.position_name,
+                  value: ele.position_name,
+                }))}
                 disabled={disabledCreate}
-              >
-                <Select.Option value="Boss">Boss</Select.Option>
-                <Select.Option value="Freshman">Freshman</Select.Option>
-                <Select.Option value="Staff">Staff</Select.Option>
-              </Select>
+              ></Select>
             )}
           </Form.Item>
-
           <Form.Item wrapperCol={24}>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {disabledCreate ? (
                 <Button type="primary" disabled></Button>
-              ) : form.getFieldValue("gender") == "" ? (
-                <Button type="primary" onClick={handleAdd}>
-                  Add
-                </Button>
               ) : (
-                <Button type="primary" onClick={handleSumbit}>
-                  Edit
+                <Button type="primary" htmlType="submit">
+                  {base ? <>Edit</> : <>Add</>}
                 </Button>
               )}
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title={
+          <div
+            style={{
+              width: "100%",
+              cursor: "move",
+              textAlign: "center",
+              marginBottom: 24,
+            }}
+            onMouseOver={() => {
+              setDisabled(false);
+            }}
+            onMouseOut={() => {
+              setDisabled(true);
+            }}
+          >
+            Account Info
+            <FaUser style={{ marginLeft: 16 }} />
+          </div>
+        }
+        open={openModalAccount}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+        modalRender={(modal) => (
+          <Draggable
+            disabled={disabled}
+            bounds={bounds}
+            onStart={(event, uiData) => onStart(event, uiData)}
+          >
+            <div ref={draggleRef}>{modal}</div>
+          </Draggable>
+        )}
+      >
+        <Form
+          {...staffInfoLayout}
+          form={form}
+          layout="horizontal"
+          name="staff_form"
+          labelAlign="right"
+          labelWrap="true"
+          size="middle"
+          autoComplete="off"
+          onFinish={onFinishAccount}
+          onFinishFailed={onFinishFaileAccount}
+          className={cx("modal-form")}
+          initialValues={{
+            username: account.username,
+            email: account.email,
+            password: account.password,
+          }}
+        >
+          <Form.Item
+            name="username"
+            label="User name"
+            rules={[
+              {
+                required: true,
+                message: "User name is required!",
+              },
+            ]}
+            hasFeedback
+            className={cx("form-attributes__item")}
+          >
+            <Input
+              placeholder={"Please fill user name"}
+              className={cx("form__content")}
+            />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            hasFeedback
+            className={cx("form-attributes__item")}
+            rules={[
+              {
+                required: true,
+                message: "Email is required!",
+              },
+            ]}
+            validateStatus={emailError ? "error" : ""}
+            help={emailError}
+          >
+            <Input
+              placeholder={"Please fill email"}
+              className={cx("form__content")}
+              onChange={handleEmailChange}
+            />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            label="Password"
+            hasFeedback
+            className={cx("form-attributes__item")}
+            rules={[
+              {
+                required: true,
+                message: "Password is required!",
+              },
+            ]}
+          >
+            <Input
+              placeholder={"Please fill password"}
+              className={cx("form__content")}
+            />
+          </Form.Item>
+
+          <Form.Item wrapperCol={24}>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button type="primary" htmlType="submit">
+                Add
+              </Button>
             </div>
           </Form.Item>
         </Form>

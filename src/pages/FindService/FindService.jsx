@@ -168,7 +168,7 @@ const FindService = () => {
 
   useEffect(() => {
     const fetchData = () => {
-      http.get('/auth/services/total')
+      http.get('/customer/services/total')
         .then((resolve) => {
           console.log('Total Services: ', resolve);
           setTotalServices(resolve.data.total_services);
@@ -177,7 +177,7 @@ const FindService = () => {
           console.log(reject);
         })
 
-      http.get('/auth/services/list-lowest-price')
+      http.get('/customer/services/list-lowest-price')
         .then((resolve) => {
           console.log('List Lowest Price: ', resolve);
           setListOverviewRoomServices(resolve.data.list_lowest_price);
@@ -186,7 +186,7 @@ const FindService = () => {
           console.log(reject);
         })
 
-      http.get('/auth/services/lowest-price')
+      http.get('/customer/services/lowest-price')
         .then((resolve) => {
           console.log('Lowest Price: ', resolve);
           setLowestPrice(resolve.data.lowest_price);
@@ -196,7 +196,7 @@ const FindService = () => {
           console.log(reject);
         })
 
-      http.get('/auth/services/highest-price')
+      http.get('/customer/services/highest-price')
         .then((resolve) => {
           console.log('Highest Price: ', resolve);
           setHighestPrice(resolve.data.highest_price);
@@ -205,7 +205,7 @@ const FindService = () => {
           console.log(reject);
         })
 
-      http.get('/auth/services/names')
+      http.get('/customer/services/names')
         .then((resolve) => {
           console.log('List Service Name: ', resolve);
           setServiceTypes(resolve.data.list_service_names);
@@ -227,7 +227,7 @@ const FindService = () => {
           setListServices([]);
           setTotalServices(0);
         } else {
-          http.post(`/auth/services/paginate/${currentPage}/${pageSize}`, {
+          http.post(`/customer/services/paginate/${currentPage}/${pageSize}`, {
             list_filter_services: listFilterServices
           })
             .then((resolve) => {
@@ -238,7 +238,7 @@ const FindService = () => {
             })
         }
       } else {
-        http.post(`/auth/services/paginate/${currentPage}/${pageSize}`, {
+        http.post(`/customer/services/paginate/${currentPage}/${pageSize}`, {
           list_filter_services: listFilterServices
         })
           .then((resolve) => {
@@ -295,11 +295,12 @@ const FindService = () => {
             {listOverviewRoomServices.map((overviewRoomService) => {
               return (
                 <OverviewCard
+                  id={overviewRoomService.id}
                   key={overviewRoomService.id}
                   image={overviewRoomService.image}
                   title={overviewRoomService.service_name}
                   price={overviewRoomService.price}
-                  ranking={5}
+                  ranking={overviewRoomService.average_rating}
                   type={'Service'}
                 />
               )
@@ -389,7 +390,7 @@ const FindService = () => {
                   image={service.image}
                   title={service.service_name}
                   price={service.price}
-                  ranking={5}
+                  ranking={service.rating}
                   type={'Service'}
                   setReloadHeader={setReloadHeader}
                 />
