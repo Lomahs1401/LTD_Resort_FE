@@ -84,6 +84,35 @@
     }
 }
 
+.room-info__detail {
+    position: relative;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid #8DD3BB;
+    padding: 4px;
+    width: 50px;
+    transition: 0.3s;
+
+    > p {
+        color: #14274A;
+        font-weight: 600;
+    }
+
+    &-delete {
+        background-color: red;
+        position: absolute;
+        border-radius: 50%;
+        top: -10px;
+        right: 0;
+        transition: 0.3s;
+
+        &:hover {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+    }
+}
+
 .btn-info {
     background-color: #ccc;
     border-radius: 5px;
