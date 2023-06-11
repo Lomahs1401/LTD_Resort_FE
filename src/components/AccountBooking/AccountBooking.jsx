@@ -50,7 +50,6 @@ const AccountBooking = () => {
   const [listBillRooms, setListBillRooms] = useState([]);
   const [listBillRoomDetails, setListBillRoomDetails] = useState([]);
   const [listBillServices, setListBillServices] = useState([]);
-  const [listBillExtraServices, setListBillExtraServices] = useState([]);
 
   function CustomToolbar() {
     return (
@@ -465,63 +464,6 @@ const AccountBooking = () => {
     },
   ];
 
-  const columnBillExtraServices = [
-    {
-      field: "id",
-      headerName: "Bill ID",
-      flex: 0.5,
-      renderCell: (params) => (
-        <Typography color={colors.greenAccent[500]}>
-          {params.row.id}
-        </Typography>
-      ),
-    },
-    {
-      field: "total_amount",
-      headerName: "Total Amount",
-      flex: 1,
-      cellClassName: "name-column--cell",
-      renderCell: (params) => (
-        <Typography color={colors.greenAccent[500]}>
-          {currency(params.row.total_amount)}
-        </Typography>
-      ),
-    },
-    {
-      field: "payment_method",
-      headerName: "Payment Method",
-      flex: 1,
-      cellClassName: "name-column--cell",
-      renderCell: (params) => (
-        <Typography color={colors.greenAccent[500]}>
-          {params.row.payment_method}
-        </Typography>
-      ),
-    },
-    {
-      field: "tax",
-      headerName: "Tax",
-      flex: 1,
-      cellClassName: "name-column--cell",
-      renderCell: (params) => (
-        <Typography color={colors.greenAccent[500]}>
-          {params.row.tax}
-        </Typography>
-      ),
-    },
-    {
-      field: "discount",
-      headerName: "Discount",
-      flex: 1,
-      cellClassName: "name-column--cell",
-      renderCell: (params) => (
-        <Typography color={colors.greenAccent[500]}>
-          {params.row.discount}
-        </Typography>
-      ),
-    },
-  ];
-
   const items = [
     {
       title: "Room",
@@ -565,28 +507,6 @@ const AccountBooking = () => {
       ),
       icon: <MdRoomService />,
     },
-    {
-      title: "Extra Service",
-      content: (
-        <DataGrid
-          checkboxSelection
-          onCellDoubleClick={handleDoubleClickCellExtraService}
-          rows={listBillExtraServices}
-          columns={columnBillExtraServices}
-          components={{ Toolbar: CustomToolbar }}
-          className={cx("table")}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-          }}
-          pageSizeOptions={[5]}
-        />
-      ),
-      icon: <MdRoomService />,
-    },
   ];
 
   // ---------------------------      Modal Draggable      ---------------------------
@@ -615,17 +535,15 @@ const AccountBooking = () => {
 
   useEffect(() => {
     const fetchData = () => {
-      http.get('/customer/history-bill-customer')
+      http.get('/customer/book-bill-customer')
         .then((resolve) => {
           console.log(resolve);
           if (resolve.data.status === 404) {
             setListBillRooms([]);
             setListBillServices([]);
-            setListBillExtraServices([]);
           } else if (resolve.data.status === 200) {
             setListBillRooms(resolve.data.bill_room);
             setListBillServices(resolve.data.bill_service);
-            setListBillExtraServices(resolve.data.bill_extra_service);
           }
         })
         .catch((reject) => {
