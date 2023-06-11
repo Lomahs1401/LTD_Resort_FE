@@ -60,17 +60,20 @@ const BillRoom = () => {
     setdisabledCreate(false);
     const { row } = params;
     setID(row.id);
-
     http
-      .patch(`/employee/get-checkout-room/${id}`)
-      .then(() => {
-        Swal.fire(
-          "Update!",
-          "You have successfully checkout your profile",
-          "success"
-        ).then(() => {
-          navigate(0);
-        });
+      .patch(`/employee/get-checkout-room/${row.id}`)
+      .then((resolve) => {
+        if (resolve.data.message === "bill checkout Successfully") {
+          Swal.fire(
+            "Update!",
+            "You have successfully checkout your profile",
+            "success"
+          ).then(() => {
+            navigate(0);
+          });
+        } else {
+          Swal.fire("Fail");
+        }
       })
       .catch((reject) => {
         console.log(reject);
