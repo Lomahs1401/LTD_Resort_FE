@@ -184,6 +184,234 @@
     }
 }
 
+.find-room {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  > h1 {
+      margin-top: 0;
+  }
+}
+
+.booking-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+
+  > img {
+      width: 60px;
+  }
+}
+
+.locale-date-range {
+  display: flex;
+}
+
+.date-range-wrapper {
+  display: flex;
+  margin-top: 20px;
+  padding: 16px 24px;
+  background-color: beige;
+  border-radius: 10px;
+  box-shadow: rgba(149, 157, 165, 0.7) 0px 8px 24px;
+  gap: 60px;
+
+  &__left {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+  }
+  
+  &__right {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+  }
+}
+
+.date-range-checkin-time, .date-range-checkout-time {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  &__title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+
+      > img {
+          width: 40px;
+      }
+  }
+
+  &__data {
+      span {
+          color: #8DD3BB;
+      }
+  }
+}
+
+.find-room-wrapper {
+  margin: 0 auto;
+  margin-top: 16px;
+}
+
+.btn-find-room {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: rgba(149, 157, 165, 0.7) 4px 4px 16px;
+  gap: 8px;
+
+  > p {
+      margin-block: 4px;
+      font-size: 16px;
+      font-weight: 600;
+  }
+  padding: 10px 14px;
+  background-color: #8DD3BB;
+  border-radius: 10px;
+  border: none;
+  transition: 0.3s;
+
+  &:hover {
+      opacity: 0.8;
+      cursor: pointer;
+  }
+}
+
+.booking-room-container {
+    width: 100%;
+  
+    > h1 {
+      margin-block: 0px 32px;
+    }
+  }
+  
+  .booking-container {
+    float: left;
+    width: 100%;
+    position: relative;
+    margin-inline: 2%;
+  
+    &__left {
+      float: left;
+      width: 60%;
+      padding: 2% 5%;
+      border-radius: 10px;
+      border: 1px solid #8DD3BB;
+    }
+  
+    &__right {
+      position: absolute;
+      top: 50%;
+      right: 4%;
+      transform: translateY(-50%);
+      float: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+  
+      .cart-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border: 1px solid #8DD3BB;
+        box-shadow: rgba(149, 157, 165, 0.7) 4px 8px 16px;
+  
+        > h1 {
+          width: 100%;
+          text-align: center;
+          vertical-align: middle;
+          padding-block: 8px;
+          margin-block: 0;
+          border-bottom: 1px solid #8DD3BB;
+          background-color: #8DD3BB;
+        }
+      }
+  
+      .cart-detail {
+  
+        &__top {
+          width: 90%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: 0 auto;
+  
+          &-left {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 16px;
+  
+            > h3 {
+              max-width: 80%;
+              font-size: 20px;
+              margin: 12px;
+            }
+          }
+  
+          &-right {
+            display: flex;
+            margin: 0 auto;
+  
+            > h3 {
+              font-size: 20px;
+              background-color: #FF8682;
+              border-radius: 50%;
+              margin: 0;
+              padding: 20px;
+              width: 100%;
+              line-height: 12px;
+            }
+          }
+        }
+  
+        &__bottom {
+          display: flex;
+          justify-content: center;
+          margin: 12px auto;
+  
+          .cart-btn {
+            width: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #8DD3BB;
+            transition: 0.3s;
+  
+            > p {
+              font-size: 24px;
+              font-weight: 600;
+              margin-block: 10px;
+            }
+  
+            &:hover {
+              cursor: pointer;
+              opacity: 0.8;  
+            }
+          }
+        }
+      }
+    }
+  }
+
 .holder {
     display: flex;
     gap: 15px;

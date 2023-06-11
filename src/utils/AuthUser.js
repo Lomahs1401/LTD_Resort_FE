@@ -46,6 +46,7 @@ export default function AuthUser() {
     const logout = () => {
         sessionStorage.clear();
         localStorage.clear();
+        dispatch(removeAvatar(''));
         navigate('/login')
         toast.success('Logout successful!', {
             position: "top-right",

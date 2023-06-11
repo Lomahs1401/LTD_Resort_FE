@@ -87,7 +87,7 @@ const BookingReview = ({
             <div className={cx("middle-content__top")}>
               <span>
                 <FaUser size={20} className={cx("middle-content__top-icon")} />
-                {numberCustomers === 1 ? `${numberCustomers} person` : `${numberCustomers} persons`}
+                {`${numberCustomers} person`}
               </span>
               <span>
                 <BsHouseCheckFill size={20} className={cx("middle-content__top-icon")} />

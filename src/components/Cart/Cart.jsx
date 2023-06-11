@@ -1,39 +1,46 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./Cart.module.scss";
 import classNames from "classnames/bind";
 import AuthUser from "../../utils/AuthUser";
-import BookingCard from "../../components/BookingCard/BookingCard";
 import { useState } from "react";
 import { Divider, Pagination } from "antd";
 import { useSelector } from "react-redux";
 import { BsFillCartCheckFill } from "react-icons/bs"
-import { roomTypesSelector, servicesSelector } from "../../redux/selectors";
+import { checkinDateSelector, checkoutDateSelector } from "../../redux/selectors";
 import BookingReview from "../BookingReview/BookingReview";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 const cx = classNames.bind(styles);
 
 function Cart() {
+  const customParseFormat = require('dayjs/plugin/customParseFormat');
+  dayjs.extend(customParseFormat);
+  
   const { http } = AuthUser();
   const navigate = useNavigate();
 
   const [toggleState, setToggleState] = useState(1);
   const [postPerPage, ] = useState(4);
 
-  const roomTypes = useSelector(roomTypesSelector);
-  const services = useSelector(servicesSelector);
-
   // Pagination state
   const pageSizeOptions = [3, 4, 5];
   const DEFAULT_CURRENT_PAGE_NUMBER = 1;
   const DEFAULT_PAGE_SIZE_NUMBER = 4;
   const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE_NUMBER);
-  const totalRoomTypes = roomTypes.length;
-  const totalServices = services.length;
+  const [listReservationRooms, setListReservationRooms] = useState([]);
+  const [listReservationServices, setListReservationServices] = useState([]);
+  const totalRoomTypes = listReservationRooms.length;
+  const totalServices = listReservationServices.length;
   const lastPostIndex = currentPage * postPerPage;
   const firstPostIndex = lastPostIndex - postPerPage;
-  const currentPostRoomTypes = roomTypes.slice(firstPostIndex, lastPostIndex);
-  const currentPostServices = services.slice(firstPostIndex, lastPostIndex);
+  const currentPostRoomTypes = listReservationRooms.slice(firstPostIndex, lastPostIndex);
+  const currentPostServices = listReservationServices.slice(firstPostIndex, lastPostIndex);
+
+  const checkinDate = useSelector(checkinDateSelector);
+  const checkoutDate = useSelector(checkoutDateSelector);
+  const timeStart = dayjs(checkinDate, "DD/MM/YYYY").locale('vi').format('YYYY-MM-DD');
+  const timeEnd = dayjs(checkoutDate, "DD/MM/YYYY").locale('vi').format('YYYY-MM-DD');
 
   const toggleTab = (index) => {
     setToggleState(index);
@@ -45,7 +52,7 @@ function Cart() {
   }
   
   const handleBooking = () => {
-    if (roomTypes.length === 0) {
+    if (listReservationRooms.length === 0) {
       Swal.fire({
         icon: 'error',
         title: 'No room chosen',
@@ -80,6 +87,23 @@ function Cart() {
         })
     }
   }
+
+  useEffect(() => {
+    const fetchData = () => {
+      http.get(`/customer/show-bill-not-pay-by-customer/${timeStart}/${timeEnd}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListReservationRooms(resolve.data.reservation_rooms);
+          setListReservationServices(resolve.data.service_bill_pay);
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
+    }
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className={cx("cart-wrapper")}>
@@ -140,21 +164,21 @@ function Cart() {
                 }
               >
                 {
-                  roomTypes.length > 0 ?
+                  listReservationRooms.length > 0 ?
                     currentPostRoomTypes.map((roomType) => {
                       return (
                         <div key={roomType.id} className={cx("booking-review-wrapper")}>
                           <BookingReview
                             image={roomType.image}
-                            title={roomType.roomTypeName}
+                            title={roomType.room_type_name}
                             price={roomType.price}
-                            ranking={roomType.totalAverage}
-                            pointRanking={roomType.pointRanking}
+                            ranking={roomType.average_rating_room_type}
+                            pointRanking={roomType.point_ranking}
                             type='Room'
-                            numberCustomers={roomType.numberCustomers}
-                            roomSize={roomType.roomSize}
-                            totalAverage={roomType.totalAverage}
-                            totalReviews={roomType.totalFeedbacks}
+                            numberCustomers={roomType.number_customers}
+                            roomSize={roomType.room_size}
+                            totalAverage={roomType.average_rating_room_type}
+                            totalReviews={roomType.total_feedback}
                           />
                         </div>
                       )
@@ -175,20 +199,20 @@ function Cart() {
                 }
               >
                 {
-                  services.length > 0 ?
+                  listReservationServices.length > 0 ?
                     currentPostServices.map((service, index) => {
                       return (
                         <BookingReview
                           key={index}
                           id={service.id}
                           image={service.image}
-                          title={service.serviceName}
+                          title={service.service_name}
                           price={service.price}
-                          ranking={service.totalAverage}
-                          pointRanking={service.pointRanking}
+                          ranking={service.average_rating_service}
+                          pointRanking={service.point_ranking}
                           type='Service'
-                          totalAverage={service.totalAverage}
-                          totalReviews={service.totalFeedbacks}
+                          totalAverage={service.average_rating_service}
+                          totalReviews={service.total_feedback}
                         />
                       )
                     })

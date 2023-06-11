@@ -16,7 +16,7 @@ import { TbDiamondFilled } from "react-icons/tb"
 import { RxDimensions } from "react-icons/rx";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { avatarSelector, bookmarkRoomsSelector, favouritesRoomsSelector } from "../../redux/selectors";
+import { avatarSelector, bookmarkRoomsSelector, checkinDateSelector, checkoutDateSelector, favouritesRoomsSelector } from "../../redux/selectors";
 import { addFavouriteRoom, removeFavouriteRoom, addCheckinDate, addCheckoutDate } from "../../redux/actions";
 import { ref, listAll, getDownloadURL } from "firebase/storage"
 import { storage } from "../../utils/firebase";
@@ -37,6 +37,7 @@ import "slick-carousel/slick/slick-theme.css";
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import OverviewCard from "../../components/OverviewCard/OverviewCard";
+import dayjs from "dayjs";
 
 const cx = classNames.bind(styles);
 
@@ -112,6 +113,9 @@ function SamplePrevArrow(props) {
 }
 
 export const RoomTypeDetail = () => {
+  const customParseFormat = require('dayjs/plugin/customParseFormat');
+  dayjs.extend(customParseFormat);
+
   const { roomTypeId } = useParams();
   const { http, user } = AuthUser();
   const location = useLocation();
@@ -200,9 +204,10 @@ export const RoomTypeDetail = () => {
   // Fetch room type state
   const [roomTypeDetail, setRoomTypeDetail] = useState({});
   const [totalRooms, setTotalRooms] = useState(0);
+  const [listReservationRooms, setListReservationRooms] = useState([]);
+  const [listBookmarkRooms, setListBookmarkRooms] = useState([]);
 
   const [listRoomsByRoomTypeId, setListRoomsByRoomTypeId] = useState([]);
-  const [listReservationRooms, setListReservationRooms] = useState([]);
   const [loadedRoom, setLoadedRoom] = useState(false);
 
   // Fetch list image state
@@ -237,6 +242,11 @@ export const RoomTypeDetail = () => {
     key: "selection"
   }]);
 
+  const checkinDate = useSelector(checkinDateSelector);
+  const checkoutDate = useSelector(checkoutDateSelector);
+  const timeStart = dayjs(checkinDate, "DD/MM/YYYY").locale('vi').format('YYYY-MM-DD');
+  const timeEnd = dayjs(checkoutDate, "DD/MM/YYYY").locale('vi').format('YYYY-MM-DD');
+
   const options = Object.entries(nameMapper).map(([value, label]) => ({ value, label }));
 
   const [toggleFavourite, setToggleFavourite] = useState(() => {
@@ -270,19 +280,6 @@ export const RoomTypeDetail = () => {
       dispatch(removeFavouriteRoom(parseInt(roomTypeId)));
       setToggleFavourite(false);
     }
-  }
-
-  const giveYourReview = () => {
-    toast.success('Give your review', {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: 0,
-      theme: "colored",
-    })
   }
 
   const handleClickPaginate = (page, pageSize) => {
@@ -354,6 +351,23 @@ export const RoomTypeDetail = () => {
 
     formData.append('time_start', format(rangeDate[0].startDate, "yyyy-MM-dd"));
     formData.append('time_end', format(rangeDate[0].endDate, "yyyy-MM-dd"));
+
+    http.get(`/customer/show-bill-not-pay-by-customer/${timeStart}/${timeEnd}`)
+      .then((resolve) => {
+        console.log(resolve);
+        setListReservationRooms(resolve.data.reservation_rooms);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      })
+
+    http.delete(`customer/delete-resevation_room_30_minnutes`)
+      .then((resolve) => {
+        console.log(resolve);
+      })
+      .catch((reject) => {
+        console.log(reject);
+      })
 
     http.post(`/customer/reserved-room/${roomTypeId}`, formData)
       .then((resolve) => {
@@ -494,6 +508,14 @@ export const RoomTypeDetail = () => {
           } else {
             setListReservationRooms(resolve.data.data);
           }
+        })
+        .catch((reject) => {
+          console.log(reject);
+        })
+      http.get(`/customer/show-bill-not-pay-by-customer/${timeStart}/${timeEnd}`)
+        .then((resolve) => {
+          console.log(resolve);
+          setListBookmarkRooms(resolve.data.reservation_rooms);
         })
         .catch((reject) => {
           console.log(reject);
@@ -862,7 +884,7 @@ export const RoomTypeDetail = () => {
                       </div>
 
                       <div className={cx("cart-detail__top-right")}>
-                        <h3>{bookmarkRooms.length}</h3>
+                        <h3>{listBookmarkRooms.length}</h3>
                       </div>
                     </div>
                     <div className={cx("cart-detail__bottom")}>
@@ -934,9 +956,6 @@ export const RoomTypeDetail = () => {
                   })()}
                 </div>
               </div>
-            </div>
-            <div className={cx("review-wrapper__right")}>
-              <button onClick={giveYourReview}>Give your review</button>
             </div>
           </div>
 

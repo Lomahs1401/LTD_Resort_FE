@@ -46,7 +46,7 @@ const ManageAccount = () => {
 
   // --------------------------     Fetch API     --------------------------
   useEffect(() => {
-
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

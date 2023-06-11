@@ -1,3 +1,53 @@
 .account-history-wrapper {
     
 }
+
+.table {
+    font-size: 16px !important;
+}
+.modal{
+    width: 1160px !important;
+}
+
+.content {
+    margin-top: 40px;
+    border: 1px solid whitesmoke;
+    border-radius: 10px;
+    background-color: whitesmoke;
+    padding-inline: 2%;
+    height: 80%;
+}
+
+.action-wrapper {
+    display: flex;
+    gap: 8px;
+
+    .btn-action {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background-color: #8DD3BB;
+        border: none;
+        transition: 0.3s;
+        padding: 8px 10px;
+        border-radius: 5px;
+
+        &:hover {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+    }
+}
+
+.comment-header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.comment-wrapper {
+    padding: 1% 2%;
+}

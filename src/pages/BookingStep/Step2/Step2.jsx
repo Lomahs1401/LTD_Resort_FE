@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styles from './Step2.module.scss'
 import classNames from "classnames/bind";
 import { useDispatch, useSelector } from 'react-redux';
-import { prevProgressStep, removeTotalAmount, removeTotalPeople, removeTotalRooms } from '../../../redux/actions';
+import { prevProgressStep, removeTotalAmount } from '../../../redux/actions';
 import { Button, Divider, Form, Input, Select } from 'antd';
 import creditCard from '../../../img/credit-card.png'
 import { bookmarkRoomsSelector, checkinDateSelector, checkoutDateSelector, totalAmountSelector, totalPeopleSelector, totalRoomsSelector } from '../../../redux/selectors';
@@ -28,23 +28,19 @@ const Step2 = ({ current, setCurrent }) => {
     },
   };
 
+  const customParseFormat = require('dayjs/plugin/customParseFormat');
+  dayjs.extend(customParseFormat);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const checkinDate = useSelector(checkinDateSelector);
   const checkoutDate = useSelector(checkoutDateSelector);
-  const bookmarkRooms = useSelector(bookmarkRoomsSelector);
   const totalAmount = useSelector(totalAmountSelector);
-  const totalRooms = useSelector(totalRoomsSelector);
-  const totalPeople = useSelector(totalPeopleSelector);
-
-  const roomIds = bookmarkRooms.map((bookmarkRoom) => {
-    return bookmarkRoom.id;
-  });
 
   const [form] = Form.useForm();
-  const [payTime, setPayTime] = useState(null);
+  const [, setPayTime] = useState(null);
   const [confirmPaySuccess, setConfirmPaySuccess] = useState(null);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [, setPaymentSuccess] = useState(false);
   const [isFirstRender, setIsFirstRender] = useState(true);
   var startTime = new Date();
   var expire = new Date(startTime.getTime() + 15 * 60000); // Thêm 15 phút (15 * 60 * 1000 milliseconds) vào thời gian bắt đầu
@@ -77,9 +73,7 @@ const Step2 = ({ current, setCurrent }) => {
   const handleGoBack = () => {
     setCurrent(current - 1);
     dispatch(prevProgressStep(current - 1));
-    dispatch(removeTotalAmount(0));
-    dispatch(removeTotalRooms(0));
-    dispatch(removeTotalPeople(0));
+    dispatch(removeTotalAmount(''));
   }
 
   const onFinish = (values) => {
@@ -134,23 +128,14 @@ const Step2 = ({ current, setCurrent }) => {
       if (responseCode === '00') {
         setConfirmPaySuccess(true);
         const paymentData = {
-          totalAmount: form.getFieldValue('totalAmount'),
-          totalRoom: form.getFieldValue('totalRooms'),
-          totalPeople: form.getFieldValue('totalPeople'),
           customerId: form.getFieldValue('customerId'),
-          paymentMethod: 'Online',
-          payTime: payTime,
-          checkinDate: checkinDate,
-          checkoutDate: checkoutDate,
-          tax: 0,
-          discount: 0,
-          room_id: roomIds.join(', ')
+          bill_code: startTimeFormatted,
         };
 
-        const timeStart = dayjs(checkinDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
-        const timeEnd = dayjs(checkoutDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+        const timeStart = dayjs(checkinDate, 'DD/MM/YYYY').locale('vi').format('YYYY-MM-DD');
+        const timeEnd = dayjs(checkoutDate, 'DD/MM/YYYY').locale('vi').format('YYYY-MM-DD');
 
-        http.post(`/customer/store-bill-room/${timeStart}/${timeEnd}`, paymentData)
+        http.patch(`/customer/pay-bill/${timeStart}/${timeEnd}`, paymentData)
           .then((response) => {
             console.log(response);
           })
@@ -158,6 +143,14 @@ const Step2 = ({ current, setCurrent }) => {
             console.log(error);
             // Xử lý lỗi khi không thể lưu dữ liệu
           });
+      
+        http.get(`/customer/get-ranking-point/${customerId}`)
+          .then((resolve) => {
+            console.log(resolve);
+          })
+          .catch((reject) => {
+            console.log(reject);
+          })
       } else {
         setConfirmPaySuccess(false);
       }
@@ -208,8 +201,6 @@ const Step2 = ({ current, setCurrent }) => {
               'customerId': customerId,
               'fullName': fullName,
               'totalAmount': totalAmount,
-              'totalRooms': totalRooms,
-              'totalPeople': totalPeople,
             }}
           >
             <Form.Item
@@ -309,34 +300,6 @@ const Step2 = ({ current, setCurrent }) => {
               hasFeedback
             >
               <Input placeholder={totalAmount} disabled />
-            </Form.Item>
-            <Form.Item
-              label="Total Rooms"
-              name="totalRooms"
-              rules={[
-                {
-                  required: true,
-                  message: 'Total rooms is required!',
-                },
-              ]}
-              style={{display: 'none'}}
-              hasFeedback
-            >
-              <Input placeholder={totalRooms} disabled />
-            </Form.Item>
-            <Form.Item
-              label="Total People"
-              name="totalPeople"
-              rules={[
-                {
-                  required: true,
-                  message: 'Total people is required!',
-                },
-              ]}
-              style={{display: 'none'}}
-              hasFeedback
-            >
-              <Input placeholder={totalPeople} disabled />
             </Form.Item>
             <Form.Item
               label="Customer ID"

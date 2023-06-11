@@ -28,15 +28,9 @@ const initState = {
     progressStep: localStorage.getItem('progress_step') == null
         ? 0
         : JSON.parse(localStorage.getItem('progress_step')),
-    totalAmount: localStorage.getItem('total_amount') == null 
-        ? 0 
+    totalAmount: localStorage.getItem('total_amount') == null
+        ? 0
         : JSON.parse(localStorage.getItem('total_amount')),
-    totalRooms: localStorage.getItem('total_rooms') == null 
-        ? 0 
-        : JSON.parse(localStorage.getItem('total_rooms')),
-    totalPeople: localStorage.getItem('total_people') == null 
-        ? 0 
-        : JSON.parse(localStorage.getItem('total_people')),
 }
 
 const rootReducer = (state = initState, action) => {
@@ -211,34 +205,6 @@ const rootReducer = (state = initState, action) => {
             return {
                 ...state,
                 totalAmount: action.payload,
-            }
-        case 'totalRooms/addTotalRooms':
-            localStorage.setItem('total_rooms', JSON.stringify(action.payload));
-
-            return {
-                ...state,
-                totalRooms: action.payload,
-        }
-        case 'totalRooms/removeTotalRooms':
-            localStorage.setItem('total_rooms', JSON.stringify(''));
-
-            return {
-                ...state,
-                totalRooms: action.payload,
-            }
-        case 'totalPeople/addTotalPeople':
-            localStorage.setItem('total_people', JSON.stringify(action.payload));
-
-            return {
-                ...state,
-                totalPeople: action.payload,
-        }
-        case 'totalPeople/removeTotalPeople':
-            localStorage.setItem('total_people', JSON.stringify(''));
-
-            return {
-                ...state,
-                totalPeople: action.payload,
             }
         default:
             return state;
