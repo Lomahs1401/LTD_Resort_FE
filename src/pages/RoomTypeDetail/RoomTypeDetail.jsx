@@ -298,7 +298,7 @@ export const RoomTypeDetail = () => {
   }
 
   const handleClickBookingRoom = () => {
-    if (bookmarkRooms.length === 0) {
+    if (listBookmarkRooms.length === 0) {
       Swal.fire({
         icon: 'error',
         title: 'No room chosen',
@@ -848,6 +848,7 @@ export const RoomTypeDetail = () => {
                         if (listReservationRooms.length !== 0) {
                           reservationFloors = listReservationRooms[index].list_floors;
                         }
+                        
                         return (
                           <div key={index}>
                             <BookingRoom
@@ -884,7 +885,13 @@ export const RoomTypeDetail = () => {
                       </div>
 
                       <div className={cx("cart-detail__top-right")}>
-                        <h3>{listBookmarkRooms.length}</h3>
+                        <h3>
+                          {
+                            listBookmarkRooms.reduce((total, bookmarkRoom) => {
+                              return total + bookmarkRoom.room.length;
+                            }, 0)
+                          }
+                        </h3>
                       </div>
                     </div>
                     <div className={cx("cart-detail__bottom")}>

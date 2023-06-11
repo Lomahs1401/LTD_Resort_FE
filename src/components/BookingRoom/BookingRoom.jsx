@@ -51,19 +51,6 @@ const BookingRoom = ({
                         key={roomIndex}
                         id={room.id}
                         roomName={room.room_name}
-                        areaId={room.area_id}
-                        floorId={room.floor_id}
-                        roomTypeId={roomTypeId}
-                        roomTypeName={roomTypeName}
-                        roomSize={roomSize}
-                        totalRooms={totalRooms}
-                        numberCustomers={numberCustomers}
-                        description={description}
-                        image={image}
-                        price={price}
-                        pointRanking={pointRanking}
-                        totalAverage={totalAverage}
-                        totalFeedbacks={totalFeedbacks}
                         setReloadBookmarkRoom={setReloadBookmarkRoom}
                       />
                     )
@@ -78,19 +65,6 @@ const BookingRoom = ({
                           id={room.id}
                           roomName={room.room_name}
                           status='BOOKED'
-                          areaId={room.area_id}
-                          floorId={room.floor_id}
-                          roomTypeId={roomTypeId}
-                          roomTypeName={roomTypeName}
-                          roomSize={roomSize}
-                          totalRooms={totalRooms}
-                          numberCustomers={numberCustomers}
-                          description={description}
-                          image={image}
-                          price={price}
-                          pointRanking={pointRanking}
-                          totalAverage={totalAverage}
-                          totalFeedbacks={totalFeedbacks}
                           setReloadBookmarkRoom={setReloadBookmarkRoom}
                         />
                       )
@@ -100,19 +74,6 @@ const BookingRoom = ({
                           key={roomIndex}
                           id={room.id}
                           roomName={room.room_name}
-                          areaId={room.area_id}
-                          floorId={room.floor_id}
-                          roomTypeId={roomTypeId}
-                          roomTypeName={roomTypeName}
-                          roomSize={roomSize}
-                          totalRooms={totalRooms}
-                          numberCustomers={numberCustomers}
-                          description={description}
-                          image={image}
-                          price={price}
-                          pointRanking={pointRanking}
-                          totalAverage={totalAverage}
-                          totalFeedbacks={totalFeedbacks}
                           setReloadBookmarkRoom={setReloadBookmarkRoom}
                         />
                       )

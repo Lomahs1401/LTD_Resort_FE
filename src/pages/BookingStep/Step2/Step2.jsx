@@ -199,7 +199,6 @@ const Step2 = ({ current, setCurrent }) => {
               'expired': expireFormatted,
               'billContent': `Invoice of customer ${fullName}`,
               'customerId': customerId,
-              'fullName': fullName,
               'totalAmount': totalAmount,
             }}
           >
@@ -272,20 +271,6 @@ const Step2 = ({ current, setCurrent }) => {
                 <Select.Option value="IVB">IVB</Select.Option>
                 <Select.Option value="VISA">VISA/MASTER</Select.Option>
               </Select>
-            </Form.Item>
-            <Form.Item
-              label="Full Name"
-              name="fullName"
-              rules={[
-                {
-                  required: true,
-                  message: 'Full name is required!',
-                },
-              ]}
-              style={{display: 'none'}}
-              hasFeedback
-            >
-              <Input placeholder={fullName} disabled />
             </Form.Item>
             <Form.Item
               label="Total Amount"

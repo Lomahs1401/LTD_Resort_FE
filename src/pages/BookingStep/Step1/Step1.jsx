@@ -15,6 +15,9 @@ import coins from "../../../img/coins.png"
 import currency from '../../../utils/currency';
 import AuthUser from '../../../utils/AuthUser';
 import { addTotalAmount, nextProgressStep } from '../../../redux/actions';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -44,6 +47,49 @@ const Step1 = ({ current, setCurrent }) => {
     setCurrent(current + 1);
     dispatch(nextProgressStep(current + 1));
     dispatch(addTotalAmount(totalAmount));
+  }
+
+  const navigate = useNavigate();
+
+  const handleDeleteRoom = (room) => {
+    console.log(room);
+    Swal.fire({
+      title: 'Delete this room?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        http.delete(`/customer/delete-resevation_room/${room}/${timeStart}/${timeEnd}`)
+          .then((resolve) => {
+            console.log(resolve);
+            Swal.fire(
+              'Deleted!',
+              'Successfully deleted room!',
+              'success'
+            ).then(() => {
+              navigate(1);
+              window.location.reload();
+            })
+          })
+          .catch((reject) => {
+            console.log(reject);
+            toast.error('Oops. Try again', {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            })
+          })
+      }
+    })
   }
 
   useEffect(() => {
@@ -104,8 +150,11 @@ const Step1 = ({ current, setCurrent }) => {
                     {                     
                       reservationRoom.room.map((room) => {
                         return (
-                          <button className={cx("room-info")}>
+                          <button className={cx("room-info__detail")}>
                             <p>{room.room_name}</p>
+                            <button className={cx("room-info__detail-delete")} onClick={() => handleDeleteRoom(room.id)}>
+                              X
+                            </button>
                           </button>
                         )
                       })
